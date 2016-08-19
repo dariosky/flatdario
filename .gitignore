@@ -1,0 +1,9 @@
+/.idea/
+/_dev/
+/.pycharmrc
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+*.json

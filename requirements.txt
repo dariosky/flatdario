@@ -1,0 +1,4 @@
+# Tested in Python3
+
+google-api-python-client
+tinydb
