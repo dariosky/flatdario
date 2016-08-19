@@ -47,7 +47,7 @@ class YouTubeLikesCollector(Collector):
             message="You need the %s file with your app credentials" % self.CLIENT_SECRETS_FILE,
             scope=self.YOUTUBE_READONLY_SCOPE)
 
-        storage = Storage("%s-oauth2.json" % sys.argv[0])
+        storage = Storage("client-youtube-oauth2.json")
         credentials = storage.get()
 
         if credentials is None or credentials.invalid:
