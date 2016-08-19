@@ -35,7 +35,7 @@ class Collector(object):
 
 
 class YouTubeLikesCollector(Collector):
-    CLIENT_SECRETS_FILE = os.path.join(os.path.dirname(__file__), "client_secrets.json")
+    CLIENT_SECRETS_FILE = os.path.join("appkeys", "google.json")
     YOUTUBE_READONLY_SCOPE = "https://www.googleapis.com/auth/youtube.readonly"
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
@@ -47,7 +47,7 @@ class YouTubeLikesCollector(Collector):
             message="You need the %s file with your app credentials" % self.CLIENT_SECRETS_FILE,
             scope=self.YOUTUBE_READONLY_SCOPE)
 
-        storage = Storage("client-youtube-oauth2.json")
+        storage = Storage(os.path.join("userkeys", "google.json"))
         credentials = storage.get()
 
         if credentials is None or credentials.invalid:
