@@ -37,7 +37,7 @@ def get_timestamp_from_epoch(epoch_string):
 def get_epoch_from_timestamp(timestamp):
     dt = datetime.datetime.strptime(timestamp[:19], "%Y-%m-%dT%H:%M:%S")
     epoch = datetime.datetime.utcfromtimestamp(0)
-    return (dt - epoch).total_seconds() * 1000.0
+    return int((dt - epoch).total_seconds())
 
 
 class PocketCollector(Collector):
