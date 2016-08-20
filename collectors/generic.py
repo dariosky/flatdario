@@ -1,5 +1,5 @@
 class Collector(object):
-    def initial_parameters(self, db):
+    def initial_parameters(self, db, refresh_duplicates, **kwargs):
         """ Given the DB return the initial parameters to be passed to the collector....
             for example to tell him where to start
             :rtype: dict

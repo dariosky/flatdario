@@ -1,14 +1,20 @@
+import datetime
 import json
 import logging
 import os
 import socket
 
+import pytz
 import requests
-from oauth2client.tools import ClientRedirectServer, ClientRedirectHandler
 
-from .generic import Collector
+from oauth2client.tools import ClientRedirectServer, ClientRedirectHandler
+from tinydb import Query
+
+from .generic import Collector, DuplicateFound
 
 logger = logging.getLogger(__name__)
+
+session = requests.session()
 
 
 def start_local_server(hostname='localhost', ports=(8080, 8090)):
@@ -20,6 +26,18 @@ def start_local_server(hostname='localhost', ports=(8080, 8090)):
             pass
         else:
             return httpd
+
+
+def get_timestamp_from_epoch(epoch_string):
+    epoch_time = int(epoch_string)
+    timestamp = datetime.datetime.fromtimestamp(epoch_time, pytz.UTC).isoformat("T") + "Z"
+    return timestamp
+
+
+def get_epoch_from_timestamp(timestamp):
+    dt = datetime.datetime.strptime(timestamp[:19], "%Y-%m-%dT%H:%M:%S")
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    return (dt - epoch).total_seconds() * 1000.0
 
 
 class PocketCollector(Collector):
@@ -61,7 +79,7 @@ class PocketCollector(Collector):
             logger.debug("Pocket Authentication")
 
             # Let's start by asking for a new request_token
-            response = requests.post(
+            response = session.post(
                 self.API_ENDPOINTS['request'],
                 headers={"X-Accept": "application/json"},
                 data=dict(
@@ -109,7 +127,7 @@ class PocketCollector(Collector):
 
             # here we got request in the webserver, or the user told us that he granted
             # DONE: we can ask for the access_token
-            response = requests.post(
+            response = session.post(
                 self.API_ENDPOINTS['authenticate'],
                 headers={"X-Accept": "application/json"},
                 data=dict(consumer_key=api_secrets['consumer_key'],
@@ -138,10 +156,82 @@ class PocketCollector(Collector):
         logger.debug("Saving Pocket client secrets")
         json.dump(user_secrets, open(self.user_secrets_file, 'w'))
 
+    def initial_parameters(self, db, refresh_duplicates=False, **kwargs):
+        """ If we are not refreshing we ask pocket only from the time of last element """
+        result = super(PocketCollector, self).initial_parameters(db, refresh_duplicates, **kwargs)
+        if not refresh_duplicates:
+            # we scan all item to get the max_timestamp
+            Item = Query()
+            items = db.search(Item.type == self.type)
+            max_timestamp = None
+            for item in items:
+                if max_timestamp is None or item['timestamp'] > max_timestamp:
+                    max_timestamp = item['timestamp']
+            result.update(dict(max_timestamp=max_timestamp))
+        return result
+
     def run(self, callback, **params):
+        refresh_duplicates = params.pop('refresh_duplicates', False)
         # tried to use the Google OAuth implementation, but:
         # * Pocket does not support GET requests
         # * The Flow is quite not standard
+        last_timestamp = params.get('max_timestamp')
 
+        chunk_size = 5
         credentials = self.authenticate()
-        print(credentials)
+
+        query = dict(
+            consumer_key=credentials['consumer_key'],
+            access_token=credentials['authentication_token'],
+            state="archive",
+            sort="newest",
+            detailType="complete",
+            count=chunk_size,
+        )
+        if last_timestamp:
+            query['since'] = get_epoch_from_timestamp(last_timestamp)
+
+        start_from = 0
+        count = 0
+        processed = 0
+
+        while True:
+            query['offset'] = start_from
+            logger.debug("Asking chunk %d-%d" % (start_from, start_from + chunk_size))
+            response = session.post(
+                self.API_ENDPOINTS['retrieve'],
+                headers={"X-Accept": "application/json"},
+                data=query
+            )
+            if response.status_code != 200:
+                raise Exception("Error getting list of items from Pocket")
+            data = response.json()
+            returned_elements = len(data['list'])
+            logger.debug("Pocket query returned %d elements" % returned_elements)
+            if data['list']:
+                for item_id, e in data['list'].items():
+                    # there are other times eventually:
+                    #  "time_added", "time_updated", "time_read", "time_favorited"
+                    item = dict(
+                        id=item_id,
+                        type=self.type,
+                        url=e['resolved_url'],
+                        timestamp=get_timestamp_from_epoch(e['time_updated']),
+                        timestamp_added=get_timestamp_from_epoch(e['time_added']),
+                        title=e['resolved_title'],
+                        tags=list(e.get('tags', {}).keys()),
+                        excerpt=e['excerpt'],
+                    )
+                    try:
+                        processed += 1
+                        callback(item, update=refresh_duplicates)
+                        count += 1
+                    except DuplicateFound:
+                        if not refresh_duplicates:
+                            logger.debug("We already know this one.")
+                            logger.debug("Stopping after %d added." % count)
+                            return
+            if returned_elements < chunk_size:
+                break
+            start_from += chunk_size
+        logger.info("Runner finished, after %d added, %d updated" % (count, processed))

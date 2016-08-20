@@ -40,7 +40,12 @@ class Aggregator(object):
         for collector_class in self.collectors:
             logger.info(collector_class.__name__)
             collector = collector_class()
-            initial_collect_params = collector.initial_parameters(self.db)
+            # we can decide the initial collect parameter looking at the DB?
+            initial_collect_params = collector.initial_parameters(
+                self.db,
+                refresh_duplicates=refresh_duplicates
+            )
+            # Run the collector
             collector.run(callback=self.save_item,
                           refresh_duplicates=refresh_duplicates,
                           **initial_collect_params)
