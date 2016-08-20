@@ -24,7 +24,13 @@ TODO Desiderata:
 Whatever you like in Youtube is saved.
 How to use it:
 It need Google API credentials:
- create an app that can access Youtube API save `google.json`
- then on the first run it will ask oauth2 authentication with your
+ create an app that can access Youtube API, and save its secrets as
+ `appkeys/google.json`  then on the first run it will ask
+ oauth2 authentication with your
  Youtube account (saved in `userkeys/google.json`).
 
+#### Pocket
+
+What you archive in Pocket is saved.
+You need pocket credentials, [get them here](https://getpocket.com/developer/docs/authentication)
+and put the consumer_key in a json file in `appkeys/pocket.json` 
