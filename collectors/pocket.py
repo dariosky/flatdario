@@ -29,7 +29,7 @@ class PocketCollector(Collector):
 
     API_ENDPOINTS = dict(
         request="https://getpocket.com/v3/oauth/request",
-        confirmation="https://getpocket.com/auth/authorize?" \
+        confirmation="https://getpocket.com/auth/authorize?"
                      "request_token={request_token}&redirect_uri={redirect_uri}",
         authenticate="https://getpocket.com/v3/oauth/authorize",
         retrieve="https://getpocket.com/v3/get",
@@ -55,10 +55,9 @@ class PocketCollector(Collector):
                 logger.error(
                     "Cannot read the user secrets for Pocket in %s." % self.user_secrets_file)
                 raise
-        request_token = user_secrets.get("request_token")
         access_token = user_secrets.get("access_token")
 
-        if not all([request_token, access_token]):
+        if access_token is None:
             logger.debug("Pocket Authentication")
 
             # Let's start by asking for a new request_token
@@ -76,8 +75,7 @@ class PocketCollector(Collector):
                 raise Exception("Cannot get request_token")
 
             request_token = response.json()['code']
-            user_secrets['request_token'] = request_token
-            logger.debug("Got request token: %s" % request_token)
+            # logger.debug("Got request token: %s" % request_token)
 
             import webbrowser
             server = start_local_server()
@@ -106,16 +104,16 @@ class PocketCollector(Collector):
                 )
 
                 webbrowser.open(authorize_url, new=1, autoraise=True)
-                logger.info("Opened broser to authorize access: ".format(address=authorize_url))
+                logger.info("Opened browser to authorize access: ".format(address=authorize_url))
                 server.handle_request()
 
             # here we got request in the webserver, or the user told us that he granted
             # DONE: we can ask for the access_token
-            requests.post(
+            response = requests.post(
                 self.API_ENDPOINTS['authenticate'],
                 headers={"X-Accept": "application/json"},
                 data=dict(consumer_key=api_secrets['consumer_key'],
-                          code=user_secrets['request_token'],  # Pocket doesn't love standards
+                          code=request_token,  # Pocket doesn't love standards
                           )
             )
             if response.status_code != 200:
@@ -123,11 +121,10 @@ class PocketCollector(Collector):
                 logger.error(response.headers.get('X-Error', 'Pocket error'))
                 raise Exception("Cannot get access_token")
 
-            print(response.text)
-            # Mmm, documentation says I should receive access_token and username
-            user_secrets['access_token'] = response.json()['code']
-            # user_secrets['username'] = response.json()['username']
-            logger.debug("Got access token: %s" % user_secrets['access_token'])
+            data = response.json()
+            # logger.debug("Got access_token response: %s" % data)
+            user_secrets['access_token'] = data['access_token']
+            user_secrets['username'] = data['username']
 
             # DONE: and save the credentials
             self.save_user_secrets(user_secrets)
