@@ -13,6 +13,8 @@ from tinydb import Query
 from .generic import Collector, DuplicateFound
 
 logger = logging.getLogger(__name__)
+requests_logger = logging.getLogger('requests')
+requests_logger.setLevel(logging.WARNING)
 
 session = requests.session()
 
@@ -212,6 +214,13 @@ class PocketCollector(Collector):
                 for item_id, e in data['list'].items():
                     # there are other times eventually:
                     #  "time_added", "time_updated", "time_read", "time_favorited"
+                    # get the images & video sources, preserving the order
+                    images = [e['images'][imgid]['src']
+                              for imgid in sorted(list(e.get('images', {}).keys()))
+                              ]
+                    videos = [e['videos'][imgid]['src']
+                              for imgid in sorted(list(e.get('videos', {}).keys()))
+                              ]
                     item = dict(
                         id=item_id,
                         type=self.type,
@@ -220,6 +229,8 @@ class PocketCollector(Collector):
                         timestamp_added=get_timestamp_from_epoch(e['time_added']),
                         title=e['resolved_title'],
                         tags=list(e.get('tags', {}).keys()),
+                        images=images,
+                        videos=videos,
                         excerpt=e['excerpt'],
                     )
                     try:

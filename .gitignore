@@ -6,4 +6,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-*.json
+
+
+# configuration files
+/appkeys/*
+/userkeys/*
+/db.json
+
+# The output of the build process: the flat site
+/build/*
+!.gitkeep

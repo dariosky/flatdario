@@ -1,13 +1,16 @@
+#!/usr/bin/env python
+import argparse
 import logging
 
+import datetime
 from tinydb import Query
 from tinydb import TinyDB
 
 from collectors import *
 from collectors.generic import DuplicateFound
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+VERSION = "0.1"
 
 
 class Aggregator(object):
@@ -51,8 +54,38 @@ class Aggregator(object):
                           **initial_collect_params)
 
 
-if __name__ == '__main__':
-    agg = Aggregator()
-    agg.collect(
-        refresh_duplicates=False
+def get_options():
+    parser = argparse.ArgumentParser(
+        "FlatDario",
+        description="Aggregate your social activities in a simple fast static flat site"
     )
+    parser.add_argument("-v", "--version", action="version", version=VERSION)
+    parser.add_argument("--debug",
+                        help="Run in debug mode, verbose output is shown",
+                        default=False,
+                        action="store_true")
+    parser.add_argument("--update",
+                        help="Scan all the elements and update them instead of doing an incremental sync",
+                        default=False,
+                        action="store_true")
+    parser.add_argument("--nocollect",
+                        help="Avoid the collection phase, just update the flatsite from DB",
+                        default=False,
+                        action="store_true")
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    print("FlatDario %s" % VERSION)
+    print("Copyright (C) 2015-%s  Dario Varotto\n" % datetime.date.today().year)
+
+    args = get_options()
+
+    # configure logging level
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
+
+    agg = Aggregator()
+    if not args.nocollect:
+        agg.collect(
+            refresh_duplicates=args.update
+        )
