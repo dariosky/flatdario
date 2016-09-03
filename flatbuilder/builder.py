@@ -2,6 +2,7 @@ import logging
 import os
 
 import yaml
+from pyquery import PyQuery
 
 from .util import recursive_overwrite
 
@@ -83,3 +84,14 @@ class Template():
                     f.write("<html><body><div {attr}='{value}'></div></body></html>".format(
                         attr=selector_name, value=selector_value
                     ))
+            with open(file_path, "r") as f:
+                c = PyQuery(f.read())
+                old_content = str(c(selector))
+                print(old_content)
+
+            c(selector).html("Generated content, should come from a template")
+            new_content = str(c(selector))
+            if old_content != new_content:
+                print("I should save back")
+                with open(file_path, "w") as f:
+                    f.write(str(c))
