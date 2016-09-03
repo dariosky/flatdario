@@ -9,6 +9,9 @@ tinydb
 # tinydb get improved performance with ujson
 ujson
 
+# parse html to detect where to put dynamic content
+pyquery
+
 # ...
 requests[secure]
 pytz

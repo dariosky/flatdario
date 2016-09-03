@@ -1,6 +1,10 @@
 description: An empty template for testing
 pages:
-  all:
-    path: index.html
+  - type: top
+    path: /
+    sort: timestamp_utc desc
+    blockSelector: .aggregation
+    count: 20
+  - path: /archive/
     blockSelector: .aggregation
     paginate: 20
