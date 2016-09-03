@@ -1,0 +1,6 @@
+description: An empty template for testing
+pages:
+  all:
+    path: index.html
+    blockSelector: .aggregation
+    paginate: 20

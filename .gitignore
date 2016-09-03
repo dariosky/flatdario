@@ -16,3 +16,7 @@ __pycache__/
 # The output of the build process: the flat site
 /build/*
 !.gitkeep
+
+# We are experimenting, let's keep templates private for now ;)
+/flatbuilder/*/
+!flatbuilder/empty/

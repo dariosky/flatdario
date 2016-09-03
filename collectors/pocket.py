@@ -245,4 +245,4 @@ class PocketCollector(Collector):
             if returned_elements < chunk_size:
                 break
             start_from += chunk_size
-        logger.info("Runner finished, after %d added, %d updated" % (count, processed))
+        logger.debug("Runner finished, after %d added, %d updated" % (count, processed))

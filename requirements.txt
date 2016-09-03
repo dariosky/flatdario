@@ -1,6 +1,15 @@
 # Tested in Python3
 
+# google apis to access youtube
 google-api-python-client
+
+# we store data in json via tinydb
 tinydb
+
+# tinydb get improved performance with ujson
+ujson
+
+# ...
 requests[secure]
 pytz
+pyyaml

@@ -78,7 +78,7 @@ class YouTubeLikesCollector(Collector):
                     description = snippet['description']
                     thumbnails = snippet['thumbnails']
 
-                    logger.info("{type} - {title} ({id})".format(type=self.type,
+                    logger.debug("{type} - {title} ({id})".format(type=self.type,
                                                                  title=title, id=video_id))
                     item = dict(
                         id=video_id,
@@ -101,4 +101,4 @@ class YouTubeLikesCollector(Collector):
                 playlistitems_list_request = youtube.playlistItems().list_next(
                     playlistitems_list_request,
                     playlistitems_list_response)
-        logger.info("Runner finished, after %d added" % count)
+        logger.debug("Runner finished, after %d added" % count)
