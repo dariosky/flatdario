@@ -2,6 +2,8 @@ import logging
 import os
 
 import yaml
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
 from pyquery import PyQuery
 
 from .util import recursive_overwrite
@@ -37,14 +39,14 @@ class Builder():
         """ Given an iterable of items generate the flat static site """
         logger.info("Generating the flat site in %s" % folder)
         try:
-            template = Template(folder)
+            template = Template(folder, build_folder=self.build_folder)
         except NotATemplateFolder:
             logger.error(
                 "Build folder doesn't seem coming from a template, we need %s" % CONFIG_FILENAME
             )
             return
 
-        template.process(items, folder=self.build_folder)
+        template.process(items)
 
 
 class NotATemplateFolder(Exception):
@@ -52,24 +54,25 @@ class NotATemplateFolder(Exception):
 
 
 class Template():
-    def __init__(self, folder):
+    def __init__(self, folder, build_folder=None):
         config_file = os.path.join(folder, CONFIG_FILENAME)
         self.name = os.path.basename(folder)
         if not os.path.isfile(config_file):
             raise NotATemplateFolder()
         self.config = yaml.load(open(config_file))
+        self.build_folder = build_folder
 
     def __str__(self):
         return self.name
 
-    def process(self, items, folder):
+    def process(self, items):
         """ Parse the pages of the template and do the dynamic substitutions in folder """
         for page in self.config['pages']:
             path = page['path'].lstrip("/")  # strip absolute path, we are relative to build
             if not path or path.endswith("/"):
                 path += "index.html"
             print("Processing page", page, path)
-            file_path = os.path.join(folder, path)
+            file_path = os.path.join(self.build_folder, path)
             selector = page['blockSelector']
             if not os.path.isfile(file_path):
                 logger.debug(
@@ -89,9 +92,34 @@ class Template():
                 old_content = str(c(selector))
                 print(old_content)
 
-            c(selector).html("Generated content, should come from a template")
+            c(selector).html(  # put the new content in the selector
+                self.get_content(items, page)
+            )
+
             new_content = str(c(selector))
             if old_content != new_content:
                 print("I should save back")
                 with open(file_path, "w") as f:
                     f.write(str(c))
+            else:
+                logger.debug("Nothing changed on %s" % path)
+
+    def get_content(self, items, page):
+        print(page)
+        page_type = page['type']
+        template_folder = self.build_folder
+        env = Environment(loader=FileSystemLoader(template_folder))
+        template = env.get_template('templates/item.inc.html')
+
+        if page_type == "all":
+            src = items
+        elif page_type == "top":
+            src = items[:page['count']]
+        else:
+            raise Exception("What kind of page is %s?" % page_type)
+
+        result_parts = []
+        for item in src:
+            part = template.render(item=item)
+            result_parts.append(part)
+        return "\n".join(result_parts)

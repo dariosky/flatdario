@@ -4,7 +4,10 @@ import logging
 from flask import Flask
 from flask import send_from_directory
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder=None
+)
 logger = logging.getLogger(__name__)
 
 

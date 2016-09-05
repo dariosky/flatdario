@@ -72,8 +72,7 @@ class Aggregator(object):
         logger.info("  target folder: %s" % folder)
 
         builder = Builder()
-        builder.run(items=self.db.all(),
-                    folder=folder)
+        builder.run(items=self.db.all(), folder=folder)
 
     def preview(self):
         logger.info("Serving locally a preview of the built site")
