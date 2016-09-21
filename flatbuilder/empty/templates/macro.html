@@ -1,0 +1,6 @@
+{% macro fa_icon(type, size="fa-3x") -%}
+	fa {{ size }}
+	{% if type=='Youtube like' %}fa-youtube
+	{% elif type=='Pocket archived' %}fa-get-pocket
+	{% else %}fa-link{% endif %}
+{%- endmacro %}

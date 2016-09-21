@@ -1,4 +1,5 @@
-$item-width: 200px;
+$item-width: 300px;
+$item-height: 180px;
 
 body {
   font-family: sans-serif;
@@ -15,13 +16,33 @@ body {
 }
 
 .aggregation {
+  .type {
+    position: absolute;
+    width: 1.1em;
+    height: 1.1em;
+    top: -2px;
+    right: -10px;
+    background: rgba(255, 255, 255, .8);
+    border-radius: 5px;
+    text-align: center;
+    margin: auto;
+
+    &.fa-get-pocket {
+      color: rgb(239, 68, 88); //getpocket official
+    }
+
+    &.fa-youtube {
+      color: #b31217; //youtube official red: https://www.youtube.com/yt/brand/color.html
+    }
+  }
+
   .item {
     position: relative;
     background-color: #999;
     border: 1px solid #666;
     margin: 10px;
     width: $item-width;
-    height: 150px;
+    height: $item-height;
 
     .item-content {
       background-color: white;

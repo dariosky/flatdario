@@ -2,3 +2,8 @@
 	Order Allow,Deny
 	Deny from all
 </Files>
+
+<Files "*.inc.html">
+	Order Allow,Deny
+	Deny from all
+</Files>
