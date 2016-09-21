@@ -1,3 +1,11 @@
 <div class="item">
-	item
+	<a class="item-content" href="{{ item.url }}">
+		{% if item.type == "Youtube like" %}
+			<div class="thumb"
+				 style="background-image:url('{{ item.thumbnails['medium']['url'] }}')">
+			</div>
+		{% endif %}
+		<div class="title">{{ item.title }}</div>
+	</a>
+	<div class="date">2016-10-12</div>
 </div>

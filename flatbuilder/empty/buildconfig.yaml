@@ -4,7 +4,7 @@ pages:
     path: /
     sort: timestamp_utc desc
     blockSelector: .aggregation
-    count: 3
+    count: 30
 
   - path: /archive/
     type: all
