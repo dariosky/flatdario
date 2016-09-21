@@ -162,13 +162,7 @@ class PocketCollector(Collector):
         """ If we are not refreshing we ask pocket only from the time of last element """
         result = super(PocketCollector, self).initial_parameters(db, refresh_duplicates, **kwargs)
         if not refresh_duplicates:
-            # we scan all item to get the max_timestamp
-            Item = Query()
-            items = db.search(Item.type == self.type)
-            max_timestamp = None
-            for item in items:
-                if max_timestamp is None or item['timestamp'] > max_timestamp:
-                    max_timestamp = item['timestamp']
+            max_timestamp=db.max_timestamp(type=self.type)
             result.update(dict(max_timestamp=max_timestamp))
         return result
 

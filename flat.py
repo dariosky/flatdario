@@ -3,12 +3,10 @@ import argparse
 import datetime
 import logging
 import os
-import shutil
 import sys
 import textwrap
 
-from tinydb import Query
-from tinydb import TinyDB
+from tinydb import Query, TinyDB
 
 from collectors import *
 from collectors.generic import DuplicateFound
@@ -20,24 +18,42 @@ VERSION = "0.1"
 TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
 
 
-class Aggregator(object):
-    collectors = [
-        YouTubeLikesCollector,
-        PocketCollector,
-    ]
+class Storage():
+    def save_item(self):
+        raise NotImplementedError()
 
-    def __init__(self, db_filename='db.json'):
-        super(Aggregator, self).__init__()
+    def search(self, id, type):
+        raise NotImplementedError()
+
+    def all(self):
+        raise NotImplementedError()
+
+    def upsert(self, item, update=False):
+        raise NotImplementedError
+
+
+class StorageTinyDB(Storage):
+    def __init__(self, db_filename):
+        super().__init__()
         self.db_filename = db_filename
         self.db = TinyDB(db_filename)
 
-    def save_item(self, item, update=False):
+    def search(self, id=None, type=None):
         Item = Query()
-        existing = self.db.search((Item.id == item['id']) & (Item.type == item['type']))
+        if type and id:
+            return self.db.search((Item.id == id) & (Item.type == type))
+        elif type:
+            return self.db.search(Item.type == type)
+        elif id:
+            return self.db.search(Item.id == id)
+
+    def upsert(self, item, update=False):
+        existing = self.search(id=item['id'], type=item['type'])
         if existing:
-            assert len(existing) == 1, 'We have 2 duplicates with id: {id} and type: {type}'.format(
-                id=item['id'], type=item['type']
-            )
+            assert len(existing) == 1, \
+                'We have 2 duplicates with id: {id} and type: {type}'.format(
+                    id=item['id'], type=item['type']
+                )
             existing = existing[0]
             if update:
                 existing.update(item)
@@ -46,6 +62,37 @@ class Aggregator(object):
             raise DuplicateFound('We already have the id %s of type %s in the DB')
         logger.info('Adding: %s' % item)
         self.db.insert(item)
+
+    def all(self):
+        data = self.db.all()
+        data.sort(key=lambda item: item['timestamp'], reverse=True)
+        return data
+
+    def max_timestamp(self, **kwargs):
+        items = self.search(**kwargs)
+        # we scan all item to get the max_timestamp
+        max_timestamp = None
+        for item in items:
+            if max_timestamp is None or item['timestamp'] > max_timestamp:
+                max_timestamp = item['timestamp']
+        return max_timestamp
+
+    def __str__(self):
+        return "DB: %s" % self.db_filename
+
+
+class Aggregator:
+    collectors = [
+        YouTubeLikesCollector,
+        PocketCollector,
+    ]
+
+    def __init__(self, db_filename='db.json'):
+        super(Aggregator, self).__init__()
+        self.db = StorageTinyDB(db_filename=db_filename)
+
+    def save_item(self, item, update=False):
+        self.db.upsert(item, update)  # insert/update and raise if exists
 
     def collect(self, refresh_duplicates=False):
         logger.info("Running the Collectors")
@@ -68,7 +115,7 @@ class Aggregator(object):
             logger.warning("Create it from a template with the 'init' action.")
             sys.exit(1)
         logger.info("Building the static site")
-        logger.info("  source DB: %s" % self.db_filename)
+        logger.info("  DB: %s" % self.db)
         logger.info("  target folder: %s" % folder)
 
         builder = Builder()
