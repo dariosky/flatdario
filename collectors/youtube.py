@@ -10,8 +10,7 @@ from oauth2client.tools import argparser, run_flow
 from .generic import Collector, DuplicateFound
 
 logger = logging.getLogger(__name__)
-gapi_logger = logging.getLogger('googleapiclient.discovery')
-gapi_logger.setLevel(logging.WARNING)
+logging.getLogger('googleapiclient.discovery').setLevel(logging.WARNING)
 
 
 class YouTubeLikesCollector(Collector):
@@ -38,7 +37,9 @@ class YouTubeLikesCollector(Collector):
         credentials = self.get_credentials()
 
         youtube = build(self.YOUTUBE_API_SERVICE_NAME, self.YOUTUBE_API_VERSION,
-                        http=credentials.authorize(httplib2.Http()))
+                        http=credentials.authorize(httplib2.Http()),
+                        cache_discovery=False,  # cache is disabled with oauthclient >= 4.0.0
+                        )
 
         channels_response = youtube.channels().list(
             mine=True,
@@ -79,7 +80,7 @@ class YouTubeLikesCollector(Collector):
                     thumbnails = snippet['thumbnails']
 
                     logger.debug("{type} - {title} ({id})".format(type=self.type,
-                                                                 title=title, id=video_id))
+                                                                  title=title, id=video_id))
                     item = dict(
                         id=video_id,
                         type=self.type,

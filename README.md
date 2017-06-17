@@ -10,7 +10,7 @@ This is an app that works scanning a number of social accounts related
 Services may require an API key to access the various API
 and a user authorization to access the data for read access
  (check the services documentation down here).
-Apps keys are in `appkeys/` user kets in `userkeys/`.
+Apps keys are in `appkeys/` user keys in `userkeys/`.
 
 TODO Desiderata:
 * Share a post to social networks, with a permanent link

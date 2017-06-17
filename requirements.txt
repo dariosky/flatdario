@@ -16,3 +16,8 @@ pyquery
 requests[secure]
 pytz
 pyyaml
+
+
+# building the flat site
+flask
+jinja2

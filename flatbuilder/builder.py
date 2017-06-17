@@ -90,7 +90,7 @@ class Template():
             with open(file_path, "r") as f:
                 c = PyQuery(f.read())
                 old_content = str(c(selector))
-                print(old_content)
+                # print(old_content)
 
             c(selector).html(  # put the new content in the selector
                 self.get_content(items, page)
