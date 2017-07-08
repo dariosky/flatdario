@@ -7,6 +7,12 @@
 			<div class="thumb"
 				 style="background-image:url('{{ item.thumbnails['medium']['url'] }}')">
 			</div>
+		{% elif item.type=="Pocket archived" %}
+			{% if item.images %}
+				<div class="thumb"
+					 style="background-image:url('{{ item.images[0] }}')">
+				</div>
+			{% endif %}
 		{% endif %}
 		<div class="title">
 			{{ item.title or item.url }}

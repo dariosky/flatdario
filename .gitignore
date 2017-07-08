@@ -20,3 +20,5 @@ __pycache__/
 # We are experimenting, let's keep templates private for now ;)
 /flatbuilder/*/
 !flatbuilder/empty/
+
+.python-version

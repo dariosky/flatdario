@@ -13,19 +13,17 @@ body {
   align-content: flex-end;
   align-items: flex-end;
   background-color: white;
-}
 
-.aggregation {
   .type {
     position: absolute;
-    width: 1.1em;
-    height: 1.1em;
+    padding: 3px;
     top: -2px;
     right: -10px;
     background: rgba(255, 255, 255, .8);
     border-radius: 5px;
     text-align: center;
     margin: auto;
+    box-shadow: -2px 3px 11px 3px #333;
 
     &.fa-get-pocket {
       color: rgb(239, 68, 88); //getpocket official
