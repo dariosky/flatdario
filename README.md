@@ -34,3 +34,33 @@ It need Google API credentials:
 What you archive in Pocket is saved.
 You need pocket credentials, [get them here](https://getpocket.com/developer/docs/authentication)
 and put the consumer_key in a json file in `appkeys/pocket.json` 
+
+
+# How to use it
+
+Collect all your data, scraping the supported services, and update the DB:
+	
+	flat.py collect
+
+This will update the DB, that by default is stored as `db.json`.
+
+The generated static site is stored in the `build` subfolder.
+
+Initialize the build subfolder typing
+
+	flat.py init --template empty
+	
+You can create a new template, for your site: check the `/flatbuilder/empty` folder
+and create a new template if you like.
+
+Now you can create the static site with the collected data:
+
+	flat.py build
+	
+The static file is ready to be served and deployed.
+
+If you want to check it out locally, you can run:
+
+	flat.py preview
+	
+And then point your browser to http://localhost:7747
