@@ -17,25 +17,6 @@ TODO Desiderata:
 * Be light, fast and save the planet
 
 
-### Supported services
-
-#### Youtube likes
-
-Whatever you like in Youtube is saved.
-How to use it:
-It need Google API credentials:
- create an app that can access Youtube API, and save its secrets as
- `appkeys/google.json`  then on the first run it will ask
- oauth2 authentication with your
- Youtube account (saved in `userkeys/google.json`).
-
-#### Pocket
-
-What you archive in Pocket is saved.
-You need pocket credentials, [get them here](https://getpocket.com/developer/docs/authentication)
-and put the consumer_key in a json file in `appkeys/pocket.json` 
-
-
 # How to use it
 
 Collect all your data, scraping the supported services, and update the DB:
@@ -64,3 +45,28 @@ If you want to check it out locally, you can run:
 	flat.py preview
 	
 And then point your browser to http://localhost:7747
+
+### Supported services
+
+#### Youtube likes
+
+Whatever you like in Youtube is saved.
+How to use it:
+It need Google API credentials:
+ create an app that can access Youtube API, and save its secrets as
+ `appkeys/google.json`  then on the first run it will ask
+ oauth2 authentication with your
+ Youtube account (saved in `userkeys/google.json`).
+
+#### Pocket
+
+What you archive in Pocket is saved.
+You need pocket credentials, [get them here](https://getpocket.com/developer/docs/authentication)
+and put the consumer_key in a json file in `appkeys/pocket.json` 
+
+#### Vimeo
+
+Whatever you like in Vimeo will be saved.
+You have to create an app [here](https://developer.vimeo.com/apps/new) and put their
+credentials in `appkeys/vimeo.json`
+

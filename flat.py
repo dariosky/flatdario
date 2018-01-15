@@ -85,6 +85,7 @@ class Aggregator:
     collectors = [
         YouTubeLikesCollector,
         PocketCollector,
+        VimeoCollector,
     ]
 
     def __init__(self, db_filename='db.json'):
