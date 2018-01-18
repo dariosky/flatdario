@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 
@@ -11,6 +12,11 @@ from .generic import Collector, DuplicateFound
 
 logger = logging.getLogger(__name__)
 logging.getLogger('googleapiclient.discovery').setLevel(logging.WARNING)
+
+
+def parse_datetime(timestamp):
+    return datetime.datetime.strptime(timestamp,
+                                      '%Y-%m-%dT%H:%M:%S.%fZ')
 
 
 class YouTubeLikesCollector(Collector):
@@ -75,7 +81,7 @@ class YouTubeLikesCollector(Collector):
                             "Skipping video {title} ({id})".format(title=title, id=video_id))
                         continue
 
-                    timestamp = snippet['publishedAt']
+                    timestamp = parse_datetime(snippet['publishedAt'])
                     description = snippet['description']
                     thumbnails = snippet['thumbnails']
 

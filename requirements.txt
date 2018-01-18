@@ -6,6 +6,7 @@ pyvimeo
 
 # we store data in json via tinydb
 tinydb
+sqlalchemy
 
 # tinydb get improved performance with ujson
 ujson

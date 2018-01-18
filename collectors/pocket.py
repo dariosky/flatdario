@@ -22,7 +22,12 @@ def get_timestamp_from_epoch(epoch_string):
 
 
 def get_epoch_from_timestamp(timestamp):
-    dt = datetime.datetime.strptime(timestamp[:19], "%Y-%m-%dT%H:%M:%S")
+    if isinstance(timestamp, str):
+        dt = datetime.datetime.strptime(timestamp[:19], "%Y-%m-%dT%H:%M:%S")
+    elif isinstance(timestamp, int):
+        return timestamp  # it's already epoch
+    else:
+        dt = timestamp  # timestamp is a datetime
     epoch = datetime.datetime.utcfromtimestamp(0)
     return int((dt - epoch).total_seconds())
 
@@ -112,8 +117,8 @@ class PocketCollector(OAuthCollector):
                         id=item_id,
                         type=self.type,
                         url=e['resolved_url'],
-                        timestamp=get_timestamp_from_epoch(e['time_updated']),
-                        timestamp_added=get_timestamp_from_epoch(e['time_added']),
+                        timestamp=parse_datetime(get_timestamp_from_epoch(e['time_updated'])),
+                        timestamp_added=parse_datetime(get_timestamp_from_epoch(e['time_added'])),
                         title=e['resolved_title'],
                         tags=list(e.get('tags', {}).keys()),
                         images=images,
@@ -133,3 +138,8 @@ class PocketCollector(OAuthCollector):
                 break
             start_from += chunk_size
         logger.debug("Runner finished, after %d added, %d updated" % (count, processed))
+
+
+def parse_datetime(timestamp):
+    return datetime.datetime.strptime(timestamp,
+                                      '%Y-%m-%dT%H:%M:%S+00:00Z')

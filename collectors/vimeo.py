@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import os
@@ -82,7 +83,13 @@ class VimeoCollector(OAuthCollector):
             response = likes.json()
             for video in response['data']:
                 assert video['metadata']['interactions']['like']['added'] == True
-                liked_timestamp = video['metadata']['interactions']['like']['added_time']
+                liked_timestamp = parse_datetime(
+                    video['metadata']['interactions']['like']['added_time']
+                )
+                logger.debug("{type} - {title} ({id})".format(
+                    type=self.type,
+                    title=video['name'],
+                    id=video['uri']))
                 item = dict(
                     id=video['uri'],
                     type=self.type,
@@ -107,3 +114,8 @@ class VimeoCollector(OAuthCollector):
                 break
 
         logger.debug("Runner finished, after %d added" % count)
+
+
+def parse_datetime(timestamp):
+    return datetime.datetime.strptime(timestamp,
+                                      '%Y-%m-%dT%H:%M:%S+00:00')

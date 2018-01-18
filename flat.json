@@ -1,0 +1,5 @@
+{
+  "db": "db.sqlite",
+  "format": "sqlite",
+  "template": "empty"
+}

@@ -1,84 +1,20 @@
 #!/usr/bin/env python
 import argparse
 import datetime
+import json
 import logging
 import os
 import sys
 import textwrap
 
-from tinydb import Query, TinyDB
-
 from collectors import *
-from collectors.generic import DuplicateFound
 from flatbuilder.builder import Builder, Template, NotATemplateFolder
 from flatbuilder.preview import serve
+from storage import Storage
 
 logger = logging.getLogger(__name__)
-VERSION = "0.1"
+VERSION = "0.2"
 TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
-
-
-class Storage():
-    def save_item(self):
-        raise NotImplementedError()
-
-    def search(self, id, type):
-        raise NotImplementedError()
-
-    def all(self):
-        raise NotImplementedError()
-
-    def upsert(self, item, update=False):
-        raise NotImplementedError
-
-
-class StorageTinyDB(Storage):
-    def __init__(self, db_filename):
-        super().__init__()
-        self.db_filename = db_filename
-        self.db = TinyDB(db_filename)
-
-    def search(self, id=None, type=None):
-        Item = Query()
-        if type and id:
-            return self.db.search((Item.id == id) & (Item.type == type))
-        elif type:
-            return self.db.search(Item.type == type)
-        elif id:
-            return self.db.search(Item.id == id)
-
-    def upsert(self, item, update=False):
-        existing = self.search(id=item['id'], type=item['type'])
-        if existing:
-            assert len(existing) == 1, \
-                'We have 2 duplicates with id: {id} and type: {type}'.format(
-                    id=item['id'], type=item['type']
-                )
-            existing = existing[0]
-            if update:
-                existing.update(item)
-                logger.info("Updating: %s" % item)
-                self.db.update(existing, eids=[existing.eid])
-            raise DuplicateFound('We already have the id %s of type %s in the DB')
-        logger.info('Adding: %s' % item)
-        self.db.insert(item)
-
-    def all(self):
-        data = self.db.all()
-        data.sort(key=lambda item: item['timestamp'], reverse=True)
-        return data
-
-    def max_timestamp(self, **kwargs):
-        items = self.search(**kwargs)
-        # we scan all item to get the max_timestamp
-        max_timestamp = None
-        for item in items:
-            if max_timestamp is None or item['timestamp'] > max_timestamp:
-                max_timestamp = item['timestamp']
-        return max_timestamp
-
-    def __str__(self):
-        return "DB: %s" % self.db_filename
 
 
 class Aggregator:
@@ -88,9 +24,23 @@ class Aggregator:
         VimeoCollector,
     ]
 
-    def __init__(self, db_filename='db.json'):
+    def __init__(self):
         super(Aggregator, self).__init__()
-        self.db = StorageTinyDB(db_filename=db_filename)
+        config = self.load_config()
+        c = config.get
+        self.db_filename = c('db', 'db.json')
+        self.db_format = c('format', 'json')
+        self.build_template = c('template', 'empty')
+
+        self.db = Storage.get(self.db_format, self.db_filename)
+
+    @staticmethod
+    def load_config(config_file='flat.json'):
+        if os.path.isfile(config_file):
+            logger.debug(f"Getting configuration from {config_file}")
+            with open(config_file, 'r', encoding='utf8') as f:
+                return json.load(f)
+        return {}
 
     def save_item(self, item, update=False):
         self.db.upsert(item, update)  # insert/update and raise if exists
@@ -122,7 +72,8 @@ class Aggregator:
         builder = Builder()
         builder.run(items=self.db.all(), folder=folder)
 
-    def preview(self):
+    @staticmethod
+    def preview():
         logger.info("Serving locally a preview of the built site")
         served_folder = os.path.realpath('build')
         if not os.path.isdir(served_folder):

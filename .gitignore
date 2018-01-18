@@ -12,6 +12,7 @@ __pycache__/
 /appkeys/*
 /userkeys/*
 /db.json
+/db.sqlite
 
 # The output of the build process: the flat site
 /build/*
