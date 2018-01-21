@@ -27,3 +27,6 @@ class Storage:
 
     def max_timestamp(self, **kwargs):
         raise NotImplementedError
+
+    def close(self):
+        raise NotImplementedError

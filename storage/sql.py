@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from collectors.generic import DuplicateFound
+from collectors.exceptions import DuplicateFound
 from storage import Storage
 
 logger = logging.getLogger(__name__)
@@ -44,19 +44,15 @@ class StorageSqliteDB(Storage):
         pass
 
     def upsert(self, item, update=False):
+        fields = {k: v for k, v in item.items() if k in self.SQL_FIELDS}
         extra = {k: v for k, v in item.items() if k not in self.SQL_FIELDS}
         new = Item(
-            id=item['id'],
-            type=item['type'],
-            url=item['url'],
-            timestamp=item['timestamp'],
-            title=item['title'],
+            **fields,
             extra=json.dumps(extra)
         )
         if update:
-            self.db.save_or_update(new)
+            self.db.merge(new)
         else:
-
             self.db.add(new)
 
         try:

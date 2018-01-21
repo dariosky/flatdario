@@ -6,7 +6,8 @@ import os
 import pytz
 import requests
 
-from .generic import DuplicateFound, OAuthCollector
+from collectors.exceptions import DuplicateFound
+from .generic import OAuthCollector
 
 logger = logging.getLogger(__name__)
 requests_logger = logging.getLogger('requests')
@@ -55,15 +56,17 @@ class PocketCollector(OAuthCollector):
         else:
             return api_secrets
 
-    def initial_parameters(self, db, refresh_duplicates=False, **kwargs):
+    def initial_parameters(self, **kwargs):
         """ If we are not refreshing we ask pocket only from the time of last element """
-        result = super(PocketCollector, self).initial_parameters(db, refresh_duplicates, **kwargs)
-        if not refresh_duplicates:
-            max_timestamp = db.max_timestamp(type=self.type)
+        result = super(PocketCollector, self).initial_parameters(
+            **kwargs
+        )
+        if not self.refresh_duplicates:
+            max_timestamp = self.db.max_timestamp(type=self.type)
             result.update(dict(max_timestamp=max_timestamp))
         return result
 
-    def run(self, callback, **params):
+    def run(self, **params):
         refresh_duplicates = params.pop('refresh_duplicates', False)
         # tried to use the Google OAuth implementation, but:
         # * Pocket does not support GET requests
@@ -127,7 +130,8 @@ class PocketCollector(OAuthCollector):
                     )
                     try:
                         processed += 1
-                        callback(item, update=refresh_duplicates)
+                        self.db.upsert(item,
+                                       update=refresh_duplicates)
                         count += 1
                     except DuplicateFound:
                         if not refresh_duplicates:

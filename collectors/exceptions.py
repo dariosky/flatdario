@@ -1,0 +1,2 @@
+class DuplicateFound(Exception):
+    pass

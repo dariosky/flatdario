@@ -8,7 +8,8 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import argparser, run_flow
 
-from .generic import Collector, DuplicateFound
+from .exceptions import DuplicateFound
+from .generic import Collector
 
 logger = logging.getLogger(__name__)
 logging.getLogger('googleapiclient.discovery').setLevel(logging.WARNING)
@@ -38,7 +39,7 @@ class YouTubeLikesCollector(Collector):
             credentials = run_flow(flow, storage, flags)
         return credentials
 
-    def run(self, callback, **params):
+    def run(self, **params):
         refresh_duplicates = params.pop('refresh_duplicates', False)
         credentials = self.get_credentials()
 
@@ -97,7 +98,7 @@ class YouTubeLikesCollector(Collector):
                         thumbnails=thumbnails,
                     )
                     try:
-                        callback(item, update=refresh_duplicates)
+                        self.db.upsert(item, update=refresh_duplicates)
                         count += 1
                     except DuplicateFound:
                         if not refresh_duplicates:

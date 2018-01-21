@@ -5,7 +5,8 @@ import os
 
 import vimeo
 
-from collectors.generic import OAuthCollector, DuplicateFound
+from collectors.generic import OAuthCollector
+from collectors.exceptions import DuplicateFound
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +14,8 @@ logger = logging.getLogger(__name__)
 class VimeoCollector(OAuthCollector):
     type = 'Vimeo'
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.vimeo = None
 
     def authenticate(self):
@@ -26,7 +27,8 @@ class VimeoCollector(OAuthCollector):
                 user_secrets = json.load(open(user_secrets_file))
             except ValueError:
                 logger.error(
-                    f"Cannot read the user secrets for {self.type} in {user_secrets_file}.")
+                    f"Cannot read the user secrets for {self.type}"
+                    f" in {user_secrets_file}.")
                 raise
         access_token = user_secrets.get("access_token")
         auth = dict(
@@ -73,8 +75,7 @@ class VimeoCollector(OAuthCollector):
                     dict(access_token=access_token)
                 )
 
-    def run(self, callback, **params):
-        refresh_duplicates = params.pop('refresh_duplicate', False)
+    def run(self, **params):
         self.authenticate()  # self.vimeo will be ready
 
         likes = self.vimeo.get('/me/likes')
@@ -97,13 +98,15 @@ class VimeoCollector(OAuthCollector):
                     timestamp=liked_timestamp,
                     title=video['name'],
                     description=video['description'],
-                    thumbnails=video['pictures']
+                    thumbnails=video['pictures'],
+                    tags=[t['name'] for t in video['tags']],
                 )
                 try:
-                    callback(item, update=refresh_duplicates)
+                    self.db.upsert(item,
+                                   update=self.refresh_duplicates)
                     count += 1
                 except DuplicateFound:
-                    if not refresh_duplicates:
+                    if not self.refresh_duplicates:
                         logger.debug(
                             "We already know this one. Stopping after %d added." % count)
                         return

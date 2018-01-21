@@ -2,7 +2,7 @@ import logging
 
 from tinydb import TinyDB, Query
 
-from collectors.generic import DuplicateFound
+from collectors.exceptions import DuplicateFound
 from storage import Storage
 
 logger = logging.getLogger(__name__)
@@ -57,3 +57,6 @@ class StorageTinyDB(Storage):
 
     def __str__(self):
         return "DB: %s" % self.db_filename
+
+    def close(self):
+        pass

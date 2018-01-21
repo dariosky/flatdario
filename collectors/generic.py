@@ -1,44 +1,38 @@
 import json
 import logging
-from oauth2client.tools import ClientRedirectServer, ClientRedirectHandler
 import os
 import socket
 
 import requests
+from oauth2client.tools import (ClientRedirectServer,
+                                ClientRedirectHandler)
 
 logger = logging.getLogger(__name__)
 
 
-class Collector(object):
+class Collector:
     type = 'Collectory Type not specified'
-    refresh_duplicates = False
 
-    def initial_parameters(self, db, refresh_duplicates, **kwargs):
+    def __init__(self, refresh_duplicates, db=None):
+        self.refresh_duplicates = refresh_duplicates
+        self.db = db
+
+    def initial_parameters(self, **kwargs):
         """ Given the DB return the initial parameters to be passed to the collector....
             for example to tell him where to start
             :rtype: dict
-            :type db: TinyDB
+            :type db: Storage
         """
         return dict()
 
-    def run(self, callback, **params):
+    def run(self, **params):
         raise NotImplementedError("Collectors should define what to do on run method")
 
 
-class DuplicateFound(Exception):
-    pass
-
-
 class OAuthCollector(Collector):
-
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.session = requests.session()
-
-    def initial_parameters(self, db, refresh_duplicates, **kwargs):
-        params = super().initial_parameters(db, refresh_duplicates, **kwargs)
-        self.refresh_duplicates = refresh_duplicates
-        return params
 
     def get_api_secrets(self):
         api_secrets_file = self.get_api_secrets_filepath()
@@ -176,3 +170,6 @@ class OAuthCollector(Collector):
         collectory_type = self.type.lower()
         api_secrets_file = os.path.join('appkeys', f'{collectory_type}.json')
         return api_secrets_file
+
+    def run(self, **params):
+        raise NotImplementedError()

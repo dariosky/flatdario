@@ -19,8 +19,8 @@ TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
 
 class Aggregator:
     collectors = [
-        YouTubeLikesCollector,
-        PocketCollector,
+        # YouTubeLikesCollector,
+        # PocketCollector,
         VimeoCollector,
     ]
 
@@ -42,23 +42,19 @@ class Aggregator:
                 return json.load(f)
         return {}
 
-    def save_item(self, item, update=False):
-        self.db.upsert(item, update)  # insert/update and raise if exists
-
     def collect(self, refresh_duplicates=False):
         logger.info("Running the Collectors")
         for collector_class in self.collectors:
             logger.info(collector_class.__name__)
-            collector = collector_class()
-            # we can decide the initial collect parameter looking at the DB?
-            initial_collect_params = collector.initial_parameters(
-                self.db,
-                refresh_duplicates=refresh_duplicates
+            collector = collector_class(
+                refresh_duplicates=refresh_duplicates,
+                db=self.db,
             )
+            # we can decide the initial collect parameter looking at the DB?
+            initial_collect_params = collector.initial_parameters()
             # Run the collector
-            collector.run(callback=self.save_item,
-                          refresh_duplicates=refresh_duplicates,
-                          **initial_collect_params)
+            collector.run(**initial_collect_params)
+        self.db.close()
 
     def build(self, folder="build"):
         if not os.path.isdir(folder):
@@ -169,7 +165,7 @@ if __name__ == '__main__':
         action = None
     if action in ("collect+build", "collect"):
         agg.collect(
-            refresh_duplicates=args.update
+            refresh_duplicates=args.update,
         )
 
     if action in ("collect+build", "build"):
