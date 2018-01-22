@@ -19,8 +19,8 @@ TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
 
 class Aggregator:
     collectors = [
-        # YouTubeLikesCollector,
-        # PocketCollector,
+        YouTubeLikesCollector,
+        PocketCollector,
         VimeoCollector,
     ]
 

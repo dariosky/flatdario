@@ -3,23 +3,15 @@
 	<i class="type {{ fa_icon(item.type) }}">
 	</i>
 	<a class="item-content" href="{{ item.url }}">
-		{% if item.type == "Youtube like" %}
-			<div class="thumb"
-				 style="background-image:url('{{ item.thumbnails['medium']['url'] }}')">
-			</div>
-		{% elif item.type=="Pocket" %}
-			{% if item.images %}
-				<div class="thumb"
-					 style="background-image:url('{{ item.images[0] }}')">
-				</div>
-			{% endif %}
-		{% elif item.type=="Vimeo" %}
-			{% if item.thumbnails %}
-				<div class="thumb"
-					 style="background-image:url('{{ item.thumbnails.sizes[2].link }}')">
-				</div>
-			{% endif %}
-		{% endif %}
+		<div class="thumb"
+			{% if item.type == "Youtube like" %}
+				style="background-image:url('{{ item.thumbnails['medium']['url'] }}')">
+			{% elif item.type=="Pocket" and item.images %}
+				style="background-image:url('{{ item.images[0] }}')">
+			{% elif item.type=="Vimeo" and item.thumbnails %}
+				style="background-image:url('{{ item.thumbnails.sizes[2].link }}')">
+			{% endif %}>
+		</div>
 		<div class="title">
 			{{ item.title or item.url }}
 		</div>

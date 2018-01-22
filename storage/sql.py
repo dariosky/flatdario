@@ -1,4 +1,5 @@
 import logging
+import sqlalchemy
 
 from flask import json
 from sqlalchemy import create_engine, Column, String, DateTime, func
@@ -29,7 +30,15 @@ class StorageSqliteDB(Storage):
     SQL_FIELDS = {'id', 'type', 'url', 'timestamp', 'title'}
 
     def all(self):
-        pass
+        items = []
+        for dbitem in self.db.query(Item) \
+                .order_by(sqlalchemy.desc(Item.timestamp)):
+            item = {k: getattr(dbitem, k) for k in self.SQL_FIELDS}
+            if dbitem.extra:
+                extra_fields = json.loads(dbitem.extra)
+                item.update(extra_fields)
+            items.append(item)
+        return items
 
     def __init__(self, db_filename) -> None:
         super().__init__()
