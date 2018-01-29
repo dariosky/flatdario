@@ -1,15 +1,14 @@
 {% from 'templates/macro.html' import fa_icon %}
 <div class="item">
-	<i class="type {{ fa_icon(item.type) }}">
-	</i>
+	<i class="type {{ fa_icon(item.type) }}"> </i>
 	<a class="item-content" href="{{ item.url }}">
 		<div class="thumb"
 			{% if item.type == "Youtube like" %}
-				style="background-image:url('{{ item.thumbnails['medium']['url'] }}')">
+				style="background-image:url('{{ item.thumbnails['medium']['url'] }}')"
 			{% elif item.type=="Pocket" and item.images %}
-				style="background-image:url('{{ item.images[0] }}')">
+				style="background-image:url('{{ item.images[0] }}')"
 			{% elif item.type=="Vimeo" and item.thumbnails %}
-				style="background-image:url('{{ item.thumbnails.sizes[2].link }}')">
+				style="background-image:url('{{ item.thumbnails.sizes[2].link }}')"
 			{% endif %}>
 		</div>
 		<div class="title">

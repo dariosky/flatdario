@@ -71,7 +71,7 @@ class Template():
             path = page['path'].lstrip("/")  # strip absolute path, we are relative to build
             if not path or path.endswith("/"):
                 path += "index.html"
-            print("Processing page", page, path)
+            # print("Processing page", page, path)
             file_path = os.path.join(self.build_folder, path)
             selector = page['blockSelector']
             if not os.path.isfile(file_path):
@@ -98,7 +98,7 @@ class Template():
 
             new_content = str(c(selector))
             if old_content != new_content:
-                print("I should save back")
+                logger.info("Saving %s" % path)
                 with open(file_path, "w") as f:
                     f.write(str(c))
             else:
