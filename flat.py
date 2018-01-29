@@ -101,6 +101,10 @@ class Aggregator:
                     print("\t{folder} - {desc}".format(folder=name, desc=description))
         print()
 
+    def runapi(self):
+        from api.api_server import run_api
+        run_api(self.db)
+
 
 def get_options():
     parser = argparse.ArgumentParser(
@@ -120,7 +124,7 @@ def get_options():
 
     parser.add_argument('action',
                         default="collect+build", nargs='?',
-                        choices="init, collect+build, collect, build, preview".split(", "),
+                        choices="init, collect+build, collect, build, preview, runapi".split(", "),
                         help=textwrap.dedent("""
                             init:    initialize the build/ folder with the template specified
                                      by the --template option (do --list to list templates)
@@ -176,3 +180,6 @@ if __name__ == '__main__':
 
     if action == "preview":
         agg.preview()
+
+    if action == "runapi":
+        agg.runapi()
