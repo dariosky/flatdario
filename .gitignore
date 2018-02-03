@@ -23,3 +23,5 @@ __pycache__/
 !flatbuilder/empty/
 
 .python-version
+node_modules
+api/ui/dist
