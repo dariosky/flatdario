@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "react",
+    "env"
+  ],
+  "plugins": [
+    [
+      "transform-class-properties",
+      {
+        "spec": true
+      }
+    ]
+  ]
+}
