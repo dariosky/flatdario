@@ -1,5 +1,5 @@
 import React from "react"
-import Item from './Item'
+import ItemList from './ItemList'
 
 
 const appStyle = {
@@ -15,32 +15,8 @@ const appStyle = {
 }
 
 class App extends React.Component {
-  constructor(props) {
-    super()
-  }
-
   render() {
-    const items = [
-      {
-        id: 1,
-        title: 'YT item',
-        type: 'youtube',
-        url: 'http://xyz.com'
-      },
-      {
-        id: 2,
-        title: 'Pocket item',
-        type: 'pocket',
-        url: 'http://xyz.com'
-      }
-    ]
-
-    const itemsBlock = items.map(
-      item => <Item key={item.id} item={item}/>
-    )
-    return <div style={appStyle}>
-      {itemsBlock}
-    </div>
+    return <ItemList style={appStyle}/>
   }
 }
 

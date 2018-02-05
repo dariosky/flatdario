@@ -10,8 +10,16 @@ const itemStyle = {
 }
 
 class Item extends React.Component {
+  item = () => {
+    let {['extra']: extraJSON, ...res} = this.props.item
+    const extraObj = JSON.parse(extraJSON)
+    const result = {...res, ...extraObj}
+    // console.log(result)
+    return result
+  }
+
   background = () => {
-    const {item} = this.props,
+    const item = this.item(),
       {type} = item
     switch (type) {
       case 'Youtube like':
@@ -28,7 +36,7 @@ class Item extends React.Component {
   }
 
   render() {
-    const {item} = this.props
+    const item = this.item()
     return (
       <div className="item" style={itemStyle}>
         <i className={`type ${item.type}`}/>

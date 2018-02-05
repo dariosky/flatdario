@@ -61,10 +61,10 @@ class YouTubeLikesCollector(Collector):
 
         count = 0
         for channel in channels_response["items"]:
-            likes_list_id = channel['contentDetails']['relatedPlaylists']['likes']
+            list_id = self.get_list_id(channel)
 
             playlistitems_list_request = youtube.playlistItems().list(
-                playlistId=likes_list_id,
+                playlistId=list_id,
                 part="snippet",
                 maxResults=5
             )
@@ -110,3 +110,8 @@ class YouTubeLikesCollector(Collector):
                     playlistitems_list_request,
                     playlistitems_list_response)
         logger.debug("Runner finished, after %d added" % count)
+
+    def get_list_id(self, channel):
+        return channel['contentDetails']['relatedPlaylists']['likes']
+
+# unfortunately since Sept.15, 2016 the watchLater playlist doesn't return items anymore
