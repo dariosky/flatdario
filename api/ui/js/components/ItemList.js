@@ -4,34 +4,32 @@ import gql from 'graphql-tag'
 import Item from './Item'
 
 const QUERY_ITEMS = gql`
-  query allItems {
-    items {
-      id
-      type
-      title
-      url
-      timestamp
-      extra
+ query allItems {
+  items(first:10, sort:TIMESTAMP_DESC) {
+    edges {
+      node {
+        id
+        type
+        title
+        url
+        timestamp
+        extra
+      }
     }
   }
+}
 `
+const styleItemList = {
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+  alignContent: "flex-end",
+  alignItems: "flex-end",
+}
 
 class ItemList extends React.Component {
   render() {
-    /*items = [
-    {
-      id: 1,
-      title: 'YT item',
-      type: 'youtube',
-      url: 'http://xyz.com'
-    },
-    {
-      id: 2,
-      title: 'Pocket item',
-      type: 'pocket',
-      url: 'http://xyz.com'
-    }
-  ]*/
     const {allItemsQuery} = this.props
 
     if (allItemsQuery && allItemsQuery.loading) {
@@ -40,12 +38,12 @@ class ItemList extends React.Component {
     if (allItemsQuery && allItemsQuery.error) {
       return <div>Error</div>
     }
-    const items = allItemsQuery.items
+    const items = allItemsQuery.items.edges
 
     const itemsBlock = items.map(
-      item => <Item key={item.id} item={item}/>
+      item => <Item key={item.node.id} item={item.node}/>
     )
-    return <div>
+    return <div className="itemList" style={styleItemList}>
       {itemsBlock}
     </div>
   }
