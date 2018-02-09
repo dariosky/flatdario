@@ -1,21 +1,47 @@
 'use strict'
 
 import React, {PropTypes} from 'react'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import {faGetPocket, faVimeo, faYoutube} from '@fortawesome/fontawesome-free-brands'
+import {faQuestionCircle} from '@fortawesome/fontawesome-free-solid'
+import styles from '../../styles/social.scss'
 
-const itemStyle = {
-  position: 'relative',
-  backgroundColor: '#999',
-  border: '1px solid #666',
-  margin: '10px',
+
+class Badge extends React.Component {
+  /* A Badge with the type of the content */
+  render() {
+    const {type} = this.props
+    let icon, color
+
+    switch (type) {
+      case "Pocket":
+        color = "rgb(239, 68, 88)" //getpocket official
+        icon = faGetPocket
+        break
+      case "Youtube like":
+        color = "#b31217" //youtube official red: https://www.youtube.com/yt/brand/color.html
+        icon = faYoutube
+        break
+      case "Vimeo":
+        icon = faVimeo
+        break
+      default:
+        console.warn("Unknown item type", type)
+        icon = faQuestionCircle
+    }
+    return <FontAwesomeIcon className={styles.type}
+                            color={color}
+                            icon={icon}
+                            size="3x"
+    />
+  }
 }
 
 class Item extends React.Component {
   item = () => {
     let {['extra']: extraJSON, ...res} = this.props.item
     const extraObj = JSON.parse(extraJSON)
-    const result = {...res, ...extraObj}
-    // console.log(result)
-    return result
+    return {...res, ...extraObj}
   }
 
   background = () => {
@@ -37,22 +63,22 @@ class Item extends React.Component {
 
   render() {
     const item = this.item()
-    return (
-      <div className="item" style={itemStyle}>
-        <i className={`type ${item.type}`}/>
-        <a href="" className="item-content">
-          <div className="thumb"
-               style={{backgroundImage: this.background()}}
-          />
-          <div className=" title">
-            {item.title || item.url}
-          </div>
-        </a>
-        <div className="date">
-          {item.timestamp}
+    console.log(styles)
+    return <div className={styles.item}>
+      <Badge type={item.type}/>
+      <a href={item.url} className="item-content">
+        <div className={styles.thumb}
+             style={{backgroundImage: this.background()}}
+        />
+        <div className={styles.title}>
+          {item.title || item.url}
         </div>
+      </a>
+      <div className={styles.date}>
+        {item.timestamp}
       </div>
-    )
+    </div>
+
   }
 }
 

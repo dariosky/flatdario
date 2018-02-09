@@ -1,7 +1,6 @@
 import React from "react"
 import ItemList from './ItemList'
 
-
 const appStyle = {
   display: 'flex',
   flexDirection: 'row',

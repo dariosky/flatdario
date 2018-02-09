@@ -2,10 +2,11 @@ import React from "react"
 import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
+import styles from '../../styles/social.scss'
 
 const QUERY_ITEMS = gql`
  query allItems {
-  items(first:10, sort:TIMESTAMP_DESC) {
+  items(first:30, sort:TIMESTAMP_DESC) {
     edges {
       node {
         id
@@ -19,14 +20,6 @@ const QUERY_ITEMS = gql`
   }
 }
 `
-const styleItemList = {
-  display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  justifyContent: "space-between",
-  alignContent: "flex-end",
-  alignItems: "flex-end",
-}
 
 class ItemList extends React.Component {
   render() {
@@ -43,7 +36,7 @@ class ItemList extends React.Component {
     const itemsBlock = items.map(
       item => <Item key={item.node.id} item={item.node}/>
     )
-    return <div className="itemList" style={styleItemList}>
+    return <div className={styles.aggregation}>
       {itemsBlock}
     </div>
   }
