@@ -12,18 +12,25 @@ and a user authorization to access the data for read access
  (check the services documentation down here).
 Apps keys are in `appkeys/` user keys in `userkeys/`.
 
-TODO Desiderata:
+*TODO* Desiderata:
 * Share a post to social networks, with a permanent link
 * Be light, fast and save the planet
+* Support for generic RSS feeds, in particular: tumblr, TinyTinyRSS
+* Full-text search for content
+* Login and update content
 
 
 # How to use it
+
+### collect
 
 Collect all your data, scraping the supported services, and update the DB:
 	
 	flat.py collect
 
 This will update the DB, that by default is stored as `db.json`.
+
+### build
 
 The generated static site is stored in the `build` subfolder.
 
@@ -40,33 +47,61 @@ Now you can create the static site with the collected data:
 	
 The static file is ready to be served and deployed.
 
+### serve static
+
 If you want to check it out locally, you can run:
 
 	flat.py preview
 	
-And then point your browser to http://localhost:7747
+And then point your browser to [http://localhost:7747](http://localhost:7747)
 
 ### Supported services
 
 #### Youtube likes
 
-Whatever you like in Youtube is saved.
+Collect videos you like in Youtube.
+
 How to use it:
-It need Google API credentials:
- create an app that can access Youtube API, and save its secrets as
- `appkeys/google.json`  then on the first run it will ask
- oauth2 authentication with your
- Youtube account (saved in `userkeys/google.json`).
+
+*	It needs Google API credentials:
+ 	create an app that can access Youtube API, and save its secrets as
+ 	`appkeys/google.json`
+ 
+ 		then on the first run it will ask oauth2 authentication with your
+ 		Youtube account (saved in `userkeys/google.json`).
 
 #### Pocket
 
 What you archive in Pocket is saved.
+
 You need pocket credentials, [get them here](https://getpocket.com/developer/docs/authentication)
 and put the consumer_key in a json file in `appkeys/pocket.json` 
 
 #### Vimeo
 
-Whatever you like in Vimeo will be saved.
-You have to create an app [here](https://developer.vimeo.com/apps/new) and put their
-credentials in `appkeys/vimeo.json`
+Collect videos you like in Vimeo.
 
+You have to create an app [here](https://developer.vimeo.com/apps/new)
+ and put their credentials in `appkeys/vimeo.json`
+
+### serve dynamically
+
+There is an additional mode to serve the generated site,
+that allows to serve the site dynamically, allowing search and (soon),
+autentication and updates the DB.
+
+You'll need to run an API server that is done in Python (Flask and GraphQL)
+to serve a React web application.
+
+* Start the API server
+
+		flat.py runapi
+		
+* Build the UI machinery using WebPack:
+  
+  	cd api/ui
+  	# install the dependencies 
+  	yarn
+  	# yarn run watch
+			
+* Connect to [http://localhost:3001/](http://localhost:3001/)
