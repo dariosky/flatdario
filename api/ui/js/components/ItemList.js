@@ -3,6 +3,7 @@ import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
 import styles from '../../styles/social.scss'
+import {SyncLoader} from 'react-spinners'
 
 const QUERY_ITEMS = gql`
  query allItems {
@@ -47,7 +48,11 @@ class ItemList extends React.Component {
     const {allItemsQuery} = this.props
 
     if (allItemsQuery && allItemsQuery.loading) {
-      return <div>Loading</div>
+      return <div className={styles.loader}>
+        <SyncLoader
+          color={'#777'}
+        />
+      </div>
     }
     if (allItemsQuery && allItemsQuery.error) {
       return <div>Error</div>

@@ -1,3 +1,5 @@
+from time import sleep
+
 import graphene
 from graphene import relay, Argument, List
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
@@ -51,6 +53,7 @@ class Query(graphene.ObjectType):
     def resolve_items(self, info, *args, sort=None, **kwargs, ):
         if sort is None:
             sort = ["timestamp desc", ]
+        # sleep(5)
         query = ItemType.get_query(info)
         return query.order_by(*sort)
 

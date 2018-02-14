@@ -1,8 +1,9 @@
-$item-width: 300px;
-$item-height: 180px;
+$item-width: 320px;
+$item-height: 220px;
 
 body {
   font-family: 'Open Sans', sans-serif;
+  padding: 15px 10px;
 }
 
 .aggregation {
@@ -38,7 +39,7 @@ body {
     position: relative;
     background-color: #999;
     border: 1px solid #666;
-    margin: 10px;
+    margin: 20px 0;
     width: $item-width;
     height: $item-height;
 
@@ -77,8 +78,8 @@ body {
 }
 
 .btn {
+  margin: 1em 0;
   padding: 10px 20px;
-  margin: 1em;
   text-align: center;
   background: #eee;
   border: 1px solid #333;
@@ -91,9 +92,14 @@ body {
   }
 }
 
+.loader {
+  text-align: center;
+}
+
 .footer {
   text-align: right;
   font-size: smaller;
+
   a {
     text-decoration: none;
     margin: 0 .5em;
