@@ -1,5 +1,7 @@
 const combineLoaders = require('webpack-combine-loaders')
 const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
 const config = {
   entry: __dirname + '/js/index.js',
   output: {
@@ -44,4 +46,13 @@ const config = {
     ]
   }
 }
-module.exports = config
+
+
+module.exports = {
+  ...config,
+  plugins: [
+    new CopyWebpackPlugin([
+      {from: 'assets'}
+    ])
+  ]
+}

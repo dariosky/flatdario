@@ -31,6 +31,7 @@
     "@fortawesome/fontawesome-free-solid": "^5.0.6",
     "@fortawesome/react-fontawesome": "^0.0.17",
     "apollo-client-preset": "^1.0.8",
+    "copy-webpack-plugin": "^4.4.1",
     "graphql": "^0.12.3",
     "graphql-tag": "^2.6.1",
     "react": "^16.2.0",
@@ -52,7 +53,7 @@
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.20.1",
-    "webpack": "^3.10.0",
+    "webpack": "^3.11.0",
     "webpack-combine-loaders": "^2.0.3",
     "webpack-dev-server": "^2.11.1"
   }

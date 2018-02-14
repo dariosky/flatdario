@@ -63,7 +63,6 @@ class Item extends React.Component {
 
   render() {
     const item = this.item()
-    console.log(styles)
     return <div className={styles.item}>
       <Badge type={item.type}/>
       <a href={item.url} className="item-content">

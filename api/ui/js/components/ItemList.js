@@ -21,7 +21,28 @@ const QUERY_ITEMS = gql`
 }
 `
 
+class LoadMoreBtn extends React.Component {
+  render() {
+    return <div className={styles.btn} onClick={this.props.onClick}>
+      Load More
+    </div>
+  }
+}
+
+
+const Footer = () => {
+  const year = (new Date()).getFullYear()
+  return <div className={styles.footer}>
+    <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a>
+    Dario Varotto {year}
+  </div>
+}
+
 class ItemList extends React.Component {
+  loadMore = () => {
+    console.log("Loading more")
+  }
+
   render() {
     const {allItemsQuery} = this.props
 
@@ -36,9 +57,14 @@ class ItemList extends React.Component {
     const itemsBlock = items.map(
       item => <Item key={item.node.id} item={item.node}/>
     )
-    return <div className={styles.aggregation}>
-      {itemsBlock}
-    </div>
+    return [
+      <div className={styles.aggregation}>
+        {itemsBlock}
+      </div>,
+      <LoadMoreBtn onClick={this.loadMore}/>,
+
+      <Footer/>
+    ]
   }
 }
 
