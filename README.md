@@ -12,14 +12,6 @@ and a user authorization to access the data for read access
  (check the services documentation down here).
 Apps keys are in `appkeys/` user keys in `userkeys/`.
 
-*TODO* Desiderata:
-* Share a post to social networks, with a permanent link
-* Be light, fast and save the planet
-* Support for generic RSS feeds, in particular: tumblr, TinyTinyRSS
-* Full-text search for content
-* Login and update content
-
-
 # How to use it
 
 ### collect
@@ -84,7 +76,7 @@ Collect videos you like in Vimeo.
 You have to create an app [here](https://developer.vimeo.com/apps/new)
  and put their credentials in `appkeys/vimeo.json`
 
-### serve dynamically
+### Serve dynamically
 
 There is an additional mode to serve the generated site,
 that allows to serve the site dynamically, allowing search and (soon),
@@ -99,9 +91,20 @@ to serve a React web application.
 		
 * Build the UI machinery using WebPack:
   
-  	cd api/ui
-  	# install the dependencies 
-  	yarn
-  	# yarn run watch
-			
+```bash
+    cd api/ui
+    # install the dependencies 
+    yarn
+    # yarn run watch
+```
+		
 * Connect to [http://localhost:3001/](http://localhost:3001/)
+
+
+# TODO - Desiderata:
+
+* Be light, fast and save the planet
+* Full-text search for content
+* Login and update content
+* Support for generic RSS feeds, in particular: tumblr, TinyTinyRSS
+* Share a post to social networks, with a permanent link

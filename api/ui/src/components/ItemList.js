@@ -5,9 +5,9 @@ import Item from './Item'
 import styles from '../../styles/social.scss'
 import {SyncLoader} from 'react-spinners'
 
-const QUERY_ITEMS = gql`
- query allItems {
-  items(first:30, sort:TIMESTAMP_DESC) {
+const QueryItems = gql`
+query getItems($cursor: String) {
+  items(first: 30, sort: TIMESTAMP_DESC, after: $cursor) {
     edges {
       node {
         id
@@ -17,6 +17,10 @@ const QUERY_ITEMS = gql`
         timestamp
         extra
       }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }
@@ -45,21 +49,23 @@ class ItemList extends React.Component {
   }
 
   render() {
-    const {allItemsQuery} = this.props
+    const {data, loading, loadNextPage} = this.props
 
-    if (allItemsQuery && allItemsQuery.loading) {
+    if (loading) {
       return <div className={styles.loader}>
         <SyncLoader
           color={'#777'}
         />
       </div>
     }
-    if (allItemsQuery && allItemsQuery.error) {
+    if (!data) {
+      loadNextPage()
+      return "No data"
+    }
+    if (data && data.error) {
       return <div>Error</div>
     }
-    const items = allItemsQuery.items.edges
-
-    const itemsBlock = items.map(
+    const itemsBlock = data.map(
       item => <Item key={item.node.id} item={item.node}/>
     )
     return [
@@ -73,4 +79,33 @@ class ItemList extends React.Component {
   }
 }
 
-export default graphql(QUERY_ITEMS, {name: 'allItemsQuery'})(ItemList)
+const ItemData = graphql(QueryItems,
+  {
+    props({data: {loading, data, fetchMore}}) {
+      console.log(`itemData: data: ${data}, loading: ${loading}`)
+      return {
+        loading,
+        data,
+        loadNextPage() {
+          console.log("next page data:", data)
+          return fetchMore({
+            variables: {
+              cursor: null,
+            },
+
+            updateQuery: (previousResult, {fetchMoreResult}) => {
+              if (!fetchMoreResult) {
+                return previousResult
+              }
+              const items = fetchMoreResult.items.edges
+
+              return [...previousResult, ...items]
+
+            },
+          })
+        },
+      }
+    },
+  })(ItemList)
+
+export default ItemData

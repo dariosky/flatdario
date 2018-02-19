@@ -42,9 +42,9 @@ class Query(graphene.ObjectType):
     def resolve_search(self, info, q):
         item_query = ItemType.get_query(info)
         return item_query.filter(
-            Item.type.contains(q) |
-            Item.title.contains(q) |
-            Item.extra.contains(q)
+            Item.type.contains(q)
+            | Item.title.contains(q)
+            # | Item.extra.contains(q)
         ).all()
 
     # if we don't want to use the ConnectionField but a list
