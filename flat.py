@@ -45,7 +45,7 @@ class Aggregator:
     def collect(self, refresh_duplicates=False):
         logger.info("Running the Collectors")
         for collector_class in self.collectors:
-            logger.info(collector_class.__name__)
+            logger.debug(collector_class.__name__)
             collector = collector_class(
                 refresh_duplicates=refresh_duplicates,
                 db=self.db,
