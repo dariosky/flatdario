@@ -6,8 +6,8 @@ import styles from '../../styles/social.scss'
 import {SyncLoader} from 'react-spinners'
 
 const QueryItems = gql`
-query getItems($cursor: String) {
-  items(first: 30, sort: TIMESTAMP_DESC, after: $cursor) {
+query getItems($first:Int = 30, $cursor: String) {
+  items(first: $first, sort: TIMESTAMP_DESC, after: $cursor) {
     edges {
       node {
         id
@@ -49,25 +49,24 @@ const Message = ({text}) => {
   </div>
 }
 
-class ItemList extends React.Component {
-  loadMore = () => {
-    console.log("Loading more")
-  }
+const Loader = () => {
+  return <div className={styles.loader}>
+    <SyncLoader
+      color={'#777'}
+    />
+  </div>
+}
 
+class ItemList extends React.Component {
   render() {
-    const {data} = this.props
+    const {data, loadMore} = this.props
 
     if (data.loading) {
-      return <div className={styles.loader}>
-        <SyncLoader
-          color={'#777'}
-        />
-      </div>
+      return <Loader/>
     }
     if (!data) {
       return <Message text="No data"/>
     }
-    console.log("We have data:", data)
     if (data && data.error) {
       return <div>Error</div>
     }
@@ -75,43 +74,52 @@ class ItemList extends React.Component {
     const itemsBlock = items.map(
       item => <Item key={item.node.id} item={item.node}/>
     )
-    return [
+    return <div>
       <div className={styles.aggregation}>
         {itemsBlock}
-      </div>,
-      <LoadMoreBtn onClick={data.fetchMore}/>,
+      </div>
+      {data.items.pageInfo.hasNextPage &&
+      <LoadMoreBtn onClick={loadMore}/>}
       <Footer/>
-    ]
+    </div>
   }
 }
 
-const ItemData = graphql(QueryItems,
-  /*  {
-      props({data: {loading, data, fetchMore}}) {
-        console.log(`itemData: data: ${data}, loading: ${loading}`)
-        return {
-          loading,
-          data,
-          loadNextPage() {
-            console.log("next page data:", data)
-            return fetchMore({
-              variables: {
-                cursor: null,
-              },
-
-              updateQuery: (previousResult, {fetchMoreResult}) => {
-                if (!fetchMoreResult) {
-                  return previousResult
-                }
-                const items = fetchMoreResult.items.edges
-
-                return [...previousResult, ...items]
-
-              },
-            })
+const queryOptions = {
+  options: (props) => {
+    return {
+      variables: {first: 10}
+    }
+  },
+  props: ({data}) => {
+    // get data from props, and return the new one
+    return {
+      data,
+      loadMore: () => {
+        return data.fetchMore({
+          variables: {
+            cursor: data.items.pageInfo.endCursor
           },
-        }
-      },
-    }*/)(ItemList)
+          updateQuery(previousResult, {fetchMoreResult}) {
+            if (!fetchMoreResult.items) {
+              return previousResult
+            }
+            const previousItems = previousResult.items.edges
+            const newItems = fetchMoreResult.items.edges
+            return {
+              ...fetchMoreResult,
+              items: {
+                ...fetchMoreResult.items,
+                edges: [...previousItems, ...newItems]
+              }
+            }
+          }
+        })
+      }
+    }
+  }
+}
+
+const ItemData = graphql(QueryItems, queryOptions)(ItemList)
 
 export default ItemData

@@ -51,7 +51,7 @@ class Item extends React.Component {
       case 'Youtube like':
         return `url(${item.thumbnails['medium']['url']})`
       case 'Pocket':
-        if (item.images) return `url(${item.images[0]})`
+        if (item.images) return `url(${item.images[0] || ''})`
         break
       case 'Vimeo':
         if (item.thumbnails)

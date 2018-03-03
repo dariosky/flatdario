@@ -32,7 +32,7 @@ class StorageSqliteDB(Storage):
     def all(self):
         items = []
         for dbitem in self.db.query(Item) \
-                .order_by(sqlalchemy.desc(Item.timestamp)):
+            .order_by(sqlalchemy.desc(Item.timestamp)):
             item = {k: getattr(dbitem, k) for k in self.SQL_FIELDS}
             if dbitem.extra:
                 extra_fields = json.loads(dbitem.extra)
@@ -46,6 +46,7 @@ class StorageSqliteDB(Storage):
                                # echo=True  # show the queries
                                )
         Base.metadata.create_all(engine)
+        # noinspection PyPep8Naming
         Session = sessionmaker(bind=engine)
         self.db = Session()
 

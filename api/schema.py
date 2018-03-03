@@ -3,7 +3,7 @@ from time import sleep
 import graphene
 from graphene import relay, Argument, List
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from sqlalchemy import inspect
+from sqlalchemy import inspect, desc
 
 from storage.sql import Item
 
@@ -51,8 +51,9 @@ class Query(graphene.ObjectType):
     # we have to implement pagination by ourselves:
 
     def resolve_items(self, info, *args, sort=None, **kwargs, ):
+        print(args, kwargs)
         if sort is None:
-            sort = ["timestamp desc", ]
+            sort = [desc(Item.timestamp), ]
         # sleep(5)
         query = ItemType.get_query(info)
         return query.order_by(*sort)
