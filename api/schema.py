@@ -51,10 +51,8 @@ class Query(graphene.ObjectType):
     # we have to implement pagination by ourselves:
 
     def resolve_items(self, info, *args, sort=None, **kwargs, ):
-        print(args, kwargs)
         if sort is None:
             sort = [desc(Item.timestamp), ]
-        # sleep(5)
         query = ItemType.get_query(info)
         return query.order_by(*sort)
 

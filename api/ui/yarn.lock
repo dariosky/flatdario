@@ -4655,6 +4655,12 @@ react-emotion@^8.0.6:
     babel-plugin-emotion "^8.0.12"
     emotion-utils "^8.0.12"
 
+react-infinite-scroller@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/react-infinite-scroller/-/react-infinite-scroller-1.1.3.tgz#c4230024bc237ce876c76b2e38d77dc1f6aabb26"
+  dependencies:
+    prop-types "^15.5.8"
+
 react-spinners@^0.2.6:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/react-spinners/-/react-spinners-0.2.6.tgz#15ba678d07636c3cf760563b0efb7b2566f465cb"

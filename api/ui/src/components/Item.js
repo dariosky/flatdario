@@ -65,7 +65,7 @@ class Item extends React.Component {
     const item = this.item()
     return <div className={styles.item}>
       <Badge type={item.type}/>
-      <a href={item.url} className="item-content">
+      <a href={item.url} target="_blank" className="item-content">
         <div className={styles.thumb}
              style={{backgroundImage: this.background()}}
         />

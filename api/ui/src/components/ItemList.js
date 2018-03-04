@@ -3,7 +3,8 @@ import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
 import styles from '../../styles/social.scss'
-import {SyncLoader} from 'react-spinners'
+import {Footer, Loader, Message} from './util'
+import InfiniteScroll from 'react-infinite-scroller'
 
 const QueryItems = gql`
 query getItems($first:Int = 30, $cursor: String) {
@@ -26,37 +27,6 @@ query getItems($first:Int = 30, $cursor: String) {
 }
 `
 
-class LoadMoreBtn extends React.Component {
-  render() {
-    return <div className={styles.btn} onClick={this.props.onClick}>
-      Load More
-    </div>
-  }
-}
-
-
-const Footer = () => {
-  const year = (new Date()).getFullYear()
-  return <div className={styles.footer}>
-    <a href="https://creativecommons.org/licenses/by/4.0/">CC-BY</a>
-    Dario Varotto {year}
-  </div>
-}
-
-const Message = ({text}) => {
-  return <div className={styles.message}>
-    {text}
-  </div>
-}
-
-const Loader = () => {
-  return <div className={styles.loader}>
-    <SyncLoader
-      color={'#777'}
-    />
-  </div>
-}
-
 class ItemList extends React.Component {
   render() {
     const {data, loadMore} = this.props
@@ -74,12 +44,16 @@ class ItemList extends React.Component {
     const itemsBlock = items.map(
       item => <Item key={item.node.id} item={item.node}/>
     )
+    const hasMore = data.items.pageInfo.hasNextPage
     return <div>
-      <div className={styles.aggregation}>
+      <InfiniteScroll
+        loadMore={loadMore}
+        hasMore={hasMore}
+        loader={<Loader key={0}/>}
+        className={styles.aggregation}>
         {itemsBlock}
-      </div>
-      {data.items.pageInfo.hasNextPage &&
-      <LoadMoreBtn onClick={loadMore}/>}
+      </InfiniteScroll>
+
       <Footer/>
     </div>
   }
@@ -88,7 +62,7 @@ class ItemList extends React.Component {
 const queryOptions = {
   options: (props) => {
     return {
-      variables: {first: 10}
+      variables: {first: 9}
     }
   },
   props: ({data}) => {
