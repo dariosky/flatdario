@@ -116,13 +116,14 @@ class PocketCollector(OAuthCollector):
                     videos = [e['videos'][imgid]['src']
                               for imgid in sorted(list(e.get('videos', {}).keys()))
                               ]
+                    title = e['resolved_title']
                     item = dict(
                         id=item_id,
                         type=self.type,
                         url=e['resolved_url'],
                         timestamp=parse_datetime(get_timestamp_from_epoch(e['time_updated'])),
                         timestamp_added=parse_datetime(get_timestamp_from_epoch(e['time_added'])),
-                        title=e['resolved_title'],
+                        title=title,
                         tags=list(e.get('tags', {}).keys()),
                         images=images,
                         videos=videos,
@@ -132,6 +133,8 @@ class PocketCollector(OAuthCollector):
                         processed += 1
                         self.db.upsert(item,
                                        update=refresh_duplicates)
+                        logger.info("{type} - {title} ({id})".format(type=self.type,
+                                                                     title=title, id=item_id))
                         count += 1
                     except DuplicateFound:
                         if not refresh_duplicates:

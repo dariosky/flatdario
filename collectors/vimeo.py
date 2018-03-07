@@ -87,16 +87,15 @@ class VimeoCollector(OAuthCollector):
                 liked_timestamp = parse_datetime(
                     video['metadata']['interactions']['like']['added_time']
                 )
-                logger.debug("{type} - {title} ({id})".format(
-                    type=self.type,
-                    title=video['name'],
-                    id=video['uri']))
+                title = video['name']
+                video_id = video['uri']
+
                 item = dict(
-                    id=video['uri'],
+                    id=video_id,
                     type=self.type,
                     url=video['link'],
                     timestamp=liked_timestamp,
-                    title=video['name'],
+                    title=title,
                     description=video['description'],
                     thumbnails=video['pictures'],
                     tags=[t['name'] for t in video['tags']],
@@ -104,6 +103,8 @@ class VimeoCollector(OAuthCollector):
                 try:
                     self.db.upsert(item,
                                    update=self.refresh_duplicates)
+                    logger.info("{type} - {title} ({id})".format(type=self.type,
+                                                                 title=title, id=video_id))
                     count += 1
                 except DuplicateFound:
                     if not self.refresh_duplicates:

@@ -87,8 +87,6 @@ class YouTubeLikesCollector(Collector):
                     description = snippet['description']
                     thumbnails = snippet['thumbnails']
 
-                    logger.debug("{type} - {title} ({id})".format(type=self.type,
-                                                                  title=title, id=video_id))
                     item = dict(
                         id=video_id,
                         type=self.type,
@@ -100,6 +98,8 @@ class YouTubeLikesCollector(Collector):
                     )
                     try:
                         self.db.upsert(item, update=refresh_duplicates)
+                        logger.info("{type} - {title} ({id})".format(type=self.type,
+                                                                     title=title, id=video_id))
                         count += 1
                     except DuplicateFound:
                         if not refresh_duplicates:
