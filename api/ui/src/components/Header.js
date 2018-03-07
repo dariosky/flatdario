@@ -1,4 +1,6 @@
 import React, {PropTypes} from 'react'
+import _ from 'lodash'
+
 
 class Header extends React.Component {
   state = {
@@ -30,7 +32,10 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.onScroll, false)
+    window.addEventListener('scroll',
+      _.throttle(this.onScroll, 30, {trailing: true, leading: true}),
+      false
+    )
   }
 
   render() {
