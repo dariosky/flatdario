@@ -8,6 +8,7 @@ import sys
 import textwrap
 
 from collectors import *
+from collectors.rss import RSSCollector
 from flatbuilder.builder import Builder, Template, NotATemplateFolder
 from flatbuilder.preview import serve
 from storage import Storage
@@ -22,6 +23,9 @@ class Aggregator:
         YouTubeLikesCollector,
         PocketCollector,
         VimeoCollector,
+        RSSCollector.get(url='https://dariosky.github.io/rss/index.rss'),
+        RSSCollector.get(url='http://rss.dariosky.it/public.php?'
+                             'op=rss&id=-2&key=bbwf1t5a80b21066d41'),
     ]
 
     def __init__(self):

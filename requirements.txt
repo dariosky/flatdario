@@ -3,6 +3,7 @@
 # google apis to access youtube
 google-api-python-client
 pyvimeo
+feedparser
 
 # we store data in json via tinydb
 tinydb

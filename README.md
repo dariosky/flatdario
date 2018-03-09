@@ -76,6 +76,11 @@ Collect videos you like in Vimeo.
 You have to create an app [here](https://developer.vimeo.com/apps/new)
  and put their credentials in `appkeys/vimeo.json`
 
+### RSS
+
+Collect entries from any RSS feed (or Atom or CDF).
+Just provide the feed url.
+
 ### Serve dynamically
 
 There is an additional mode to serve the generated site,
@@ -106,5 +111,10 @@ to serve a React web application.
 * Be light, fast and save the planet
 * Full-text search for content
 * Login and update content
-* Support for generic RSS feeds, in particular: tumblr, TinyTinyRSS
 * Share a post to social networks, with a permanent link
+* Tumblr specific reader (supporting pagination)
+* Instagram collector
+
+Done:
+
+* <del> Support for generic RSS feeds, in particular: TinyTinyRSS </del>

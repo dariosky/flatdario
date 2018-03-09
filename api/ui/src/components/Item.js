@@ -5,6 +5,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import {faGetPocket, faVimeo, faYoutube} from '@fortawesome/fontawesome-free-brands'
 import {faQuestionCircle} from '@fortawesome/fontawesome-free-solid'
 import styles from '../../styles/social.scss'
+import {faRssSquare} from '@fortawesome/fontawesome-free-solid'
 
 
 class Badge extends React.Component {
@@ -24,6 +25,10 @@ class Badge extends React.Component {
         break
       case "Vimeo":
         icon = faVimeo
+        break
+      case "RSS":
+        color = '#fbab19'
+        icon = faRssSquare
         break
       default:
         console.warn("Unknown item type", type)
