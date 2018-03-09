@@ -2,7 +2,10 @@
 
 import React, {PropTypes} from 'react'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import {faGetPocket, faVimeo, faYoutube} from '@fortawesome/fontawesome-free-brands'
+import {
+  faGetPocket, faVimeo,
+  faYoutube, faTumblrSquare
+} from '@fortawesome/fontawesome-free-brands'
 import {faQuestionCircle} from '@fortawesome/fontawesome-free-solid'
 import styles from '../../styles/social.scss'
 import {faRssSquare} from '@fortawesome/fontawesome-free-solid'
@@ -24,11 +27,16 @@ class Badge extends React.Component {
         icon = faYoutube
         break
       case "Vimeo":
+        color = "#000"
         icon = faVimeo
         break
       case "RSS":
         color = '#fbab19'
         icon = faRssSquare
+        break
+      case "Tumblr":
+        color = "#01273a" // tumblr official
+        icon = faTumblrSquare
         break
       default:
         console.warn("Unknown item type", type)

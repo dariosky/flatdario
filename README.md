@@ -112,9 +112,9 @@ to serve a React web application.
 * Full-text search for content
 * Login and update content
 * Share a post to social networks, with a permanent link
-* Tumblr specific reader (supporting pagination)
 * Instagram collector
 
 Done:
 
 * <del> Support for generic RSS feeds, in particular: TinyTinyRSS </del>
+* <del> Tumblr specific reader (supporting pagination)</del>

@@ -50,7 +50,7 @@ class ItemList extends React.Component {
         loadMore={loadMore}
         hasMore={hasMore}
         loader={<Loader key={0}/>}
-        useCapture={{passive:true}}
+        useCapture={{passive: true}}
         className={styles.aggregation}>
         {itemsBlock}
       </InfiniteScroll>

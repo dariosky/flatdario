@@ -28,7 +28,7 @@ a {
     padding: 3px;
     top: -2px;
     right: -10px;
-    background: rgba(255, 255, 255, .8);
+    background: rgba(255, 255, 255, 1);
     border-radius: 5px;
     text-align: center;
     margin: auto;
@@ -44,12 +44,17 @@ a {
   }
 
   .item {
+    transition: all .3s ease;
     position: relative;
     background-color: #999;
     border: 1px solid #666;
     margin: 20px 0;
     width: $item-width;
     height: $item-height;
+
+    &:hover {
+      transform: scale(1.1);
+    }
 
     .item-content {
       background-color: white;
@@ -73,6 +78,9 @@ a {
       right: 0;
       background: rgba(0, 0, 0, 0.95);
       padding: 5px 5px;
+      max-height: 3.9em;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .date {
@@ -109,7 +117,7 @@ a {
 }
 
 .footer {
-  text-align: right;
+  text-align: center;
   font-size: smaller;
   color: #ccc;
 

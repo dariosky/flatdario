@@ -54,8 +54,10 @@ class StorageSqliteDB(Storage):
         pass
 
     def upsert(self, item, update=False):
-        fields = {k: v for k, v in item.items() if k in self.SQL_FIELDS}
-        extra = {k: v for k, v in item.items() if k not in self.SQL_FIELDS}
+        fields = {k: v for k, v in item.items()
+                  if k in self.SQL_FIELDS}
+        extra = {k: v for k, v in item.items()
+                 if k not in self.SQL_FIELDS and v}
         new = Item(
             **fields,
             extra=json.dumps(extra)
@@ -67,11 +69,14 @@ class StorageSqliteDB(Storage):
 
         try:
             self.db.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             self.db.rollback()
-            raise DuplicateFound(
-                f"We already have the id {item['id']} of type {item['type']} in the DB"
-            )
+            if "UNIQUE constraint failed" in str(e.orig):
+                raise DuplicateFound(
+                    f"We already have the id {item['id']} of type {item['type']} in the DB"
+                )
+            else:
+                raise
 
     def max_timestamp(self, **kwargs):
         max_ts = self.db.query(func.max(Item.timestamp)).filter_by(**kwargs)
