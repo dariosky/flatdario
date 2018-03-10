@@ -78,9 +78,6 @@ a {
       right: 0;
       background: rgba(0, 0, 0, 0.95);
       padding: 5px 5px;
-      max-height: 3.9em;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .date {
@@ -134,3 +131,6 @@ a {
   text-align: center;
   background: #222;
 }
+
+
+@import "ellipsed-text";

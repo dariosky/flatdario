@@ -83,7 +83,9 @@ class Item extends React.Component {
              style={{backgroundImage: this.background()}}
         />
         <div className={styles.title}>
-          {item.title || item.url}
+          <div className={styles['ellipsed-text']}>
+            {item.title || item.url}
+          </div>
         </div>
       </a>
       <div className={styles.date}>
