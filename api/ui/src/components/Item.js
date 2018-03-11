@@ -11,6 +11,50 @@ import styles from '../../styles/social.scss'
 import {faRssSquare} from '@fortawesome/fontawesome-free-solid'
 
 
+const SubTitle = (props) => {
+  const {item} = props
+
+  if (item.type === 'Tumblr' && (item.description || item.subtitle)) {
+    return <div className={styles.subtitle}>
+      {item.description || item.subtitle}
+    </div>
+  }
+  return null
+}
+
+const CardContent = (props) => {
+  const {item} = props
+
+  const background = () => {
+    const {type} = item
+    switch (type) {
+      case 'Youtube like':
+        return `url(${item.thumbnails['medium']['url']})`
+      case 'Pocket':
+        if (item.images) return `url(${item.images[0] || ''})`
+        break
+      case 'Vimeo':
+        if (item.thumbnails)
+          return `url(${item.thumbnails.sizes[2].link})`
+        break
+      case 'Tumblr':
+        if (item.img)
+          return `url(${item.img})`
+        break
+    }
+    return ''
+  }
+
+  if (item.contentFormat === 'iframe') {
+    return <iframe src={item.content || item.url}
+                   frameBorder="0" allowFullScreen
+    />
+  }
+  return <div className={styles.thumb}
+              style={{backgroundImage: background()}}
+  />
+}
+
 class Badge extends React.Component {
   /* A Badge with the type of the content */
   render() {
@@ -57,34 +101,16 @@ class Item extends React.Component {
     return {...res, ...extraObj}
   }
 
-  background = () => {
-    const item = this.item(),
-      {type} = item
-    switch (type) {
-      case 'Youtube like':
-        return `url(${item.thumbnails['medium']['url']})`
-      case 'Pocket':
-        if (item.images) return `url(${item.images[0] || ''})`
-        break
-      case 'Vimeo':
-        if (item.thumbnails)
-          return `url(${item.thumbnails.sizes[2].link})`
-        break
-    }
-    return ''
-  }
-
   render() {
     const item = this.item()
     return <div className={styles.item}>
       <Badge type={item.type}/>
       <a href={item.url} target="_blank" className="item-content">
-        <div className={styles.thumb}
-             style={{backgroundImage: this.background()}}
-        />
+        <CardContent item={item}/>
         <div className={styles.title}>
           <div className={styles['ellipsed-text']}>
             {item.title || item.url}
+            <SubTitle item={item}/>
           </div>
         </div>
       </a>

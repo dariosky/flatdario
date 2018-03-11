@@ -46,7 +46,7 @@ a {
   .item {
     transition: all .3s ease;
     position: relative;
-    background-color: #999;
+    //background-color: #999;
     border: 1px solid #666;
     margin: 20px 0;
     width: $item-width;
@@ -64,8 +64,9 @@ a {
     .thumb {
       height: 100%;
       width: 100%;
-      background-color: #eee;
+      //background-color: #eee;
       background-size: contain;
+      background-position: center center;
       background-repeat: no-repeat;
     }
 
@@ -131,6 +132,5 @@ a {
   text-align: center;
   background: #222;
 }
-
 
 @import "ellipsed-text";

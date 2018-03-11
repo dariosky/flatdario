@@ -54,14 +54,8 @@ class Query(graphene.ObjectType):
         if sort is None:
             sort = [desc(Item.timestamp), ]
         query = ItemType.get_query(info)
+        # query = query.filter(Item.type == 'Tumblr')
         return query.order_by(*sort)
-
-    # def resolve_items(self, info, page=0):
-    #     page_size = 10
-    #     offset = page * page_size
-    #     item_query = ItemType.get_query(info)
-    #     return item_query.offset(offset).limit(page_size)
-    #
 
 
 schema = graphene.Schema(query=Query)

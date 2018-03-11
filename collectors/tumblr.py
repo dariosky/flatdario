@@ -1,9 +1,11 @@
 import datetime
+import html
 import json
 import logging
 import re
 
 import requests
+from pyquery import PyQuery
 
 from collectors.exceptions import DuplicateFound
 from collectors.rss import RSSCollector
@@ -13,11 +15,19 @@ logger = logging.getLogger(__name__)
 TAG_RE = re.compile(r'<[^>]+>')
 
 
-def strip_tags_from_string(s):
-    """ Remove all tags from string """
-    if isinstance(s, str):
-        return TAG_RE.sub('', s)
-    return s
+def text_from_html(s):
+    """ Get text from HTML string, removing all tags"""
+    if s is None:
+        return None
+    result = TAG_RE.sub('', s)
+    result = html.unescape(result)
+    return result
+
+
+def get_src_from_iframe(iframe):
+    c = PyQuery(iframe)
+    result = c('iframe').attr('src')
+    return result
 
 
 class TumblrCollector(RSSCollector):
@@ -55,33 +65,36 @@ class TumblrCollector(RSSCollector):
                 )
                 url = entry['url-with-slug']  # url to tumblr
                 post_type = entry['type']
-                content = None
+                context = {'tumblrType': post_type}
 
                 if post_type == 'video':
                     url = entry['video-source']
-                    content = entry['video-player']
                     title = entry['video-caption']
+                    context['content'] = get_src_from_iframe(entry['video-player'])
+                    context['contentFormat'] = 'iframe'
                 elif post_type == 'photo':
                     url = entry.get('photo-link-url', url)
                     title = entry['photo-caption']
-                    content = f'<img src="{url}" />'
+                    context['img'] = entry['photo-url-1280']
                 elif post_type == 'link':
-                    title = entry['link-text']
                     url = entry['link-url']
-                    content = ''
+                    title = entry['link-text']
+                    context['description'] = text_from_html(entry['link-description'])
                 elif post_type == 'regular':
                     title = entry['regular-title']
-                    content = entry['regular-body']
+                    context['subTitle'] = text_from_html(entry['regular-body'])
                 elif post_type == 'quote':
                     url = entry['quote-source']
                     title = entry['quote-text']
                 else:
                     raise ValueError("Unknown tumblr post type: {post_type}")
                 tags = entry.get('tags', [])
+                if tags:
+                    context['tags'] = tags
 
-                url, title, content = map(
-                    strip_tags_from_string,
-                    [url, title, content]
+                url, title = map(
+                    text_from_html,
+                    [url, title]
                 )
 
                 item = dict(
@@ -91,14 +104,12 @@ class TumblrCollector(RSSCollector):
                     url=url,
                     title=title,
 
-                    content=content,
-                    tags=tags,
+                    **context
                 )
                 try:
                     self.db.upsert(item,
                                    update=self.refresh_duplicates)
-                    logger.info("{type} - {title} ({id})".format(type=self.type,
-                                                                 title=title, id=url))
+                    logger.info(f"{self.type}-{post_type} - {title} ({url})")
                     count += 1
                 except DuplicateFound:
                     if not self.refresh_duplicates:

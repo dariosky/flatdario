@@ -110,9 +110,11 @@ to serve a React web application.
 
 * Be light, fast and save the planet
 * Full-text search for content
+* Search by feed
 * Login and update content
 * Share a post to social networks, with a permanent link
 * Instagram collector
+* Highlighted feed taking a full row, shown with content
 
 Done:
 
