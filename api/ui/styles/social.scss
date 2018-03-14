@@ -136,4 +136,10 @@ a {
   background: #222;
 }
 
+.searchbar {
+  margin: 1em auto;
+  max-width: $max-width;
+  text-align: right;
+}
+
 @import "ellipsed-text";

@@ -3,11 +3,12 @@ import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
 import styles from '../../styles/social.scss'
-import {Footer, Loader, Message} from './util'
+import {Loader, Message} from './util'
 import InfiniteScroll from 'react-infinite-scroller'
+import Search from './Search'
 
 const QueryItems = gql`
-query getItems($first:Int = 30, $cursor: String) {
+query getItems($first:Int = 3, $cursor: String) {
   items(first: $first, sort: TIMESTAMP_DESC, after: $cursor) {
     edges {
       node {
@@ -46,6 +47,7 @@ class ItemList extends React.Component {
     )
     const hasMore = data.items.pageInfo.hasNextPage
     return <div>
+      <Search/>
       <InfiniteScroll
         loadMore={loadMore}
         hasMore={hasMore}
@@ -54,8 +56,6 @@ class ItemList extends React.Component {
         className={styles.aggregation}>
         {itemsBlock}
       </InfiniteScroll>
-
-      <Footer/>
     </div>
   }
 }
