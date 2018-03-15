@@ -43,6 +43,7 @@ const config = {
     hot: true
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
       {from: 'assets'}
     ]),
