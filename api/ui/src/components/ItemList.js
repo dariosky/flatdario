@@ -3,9 +3,10 @@ import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
 import styles from '../../styles/social.scss'
-import {Loader, Message} from './util'
 import InfiniteScroll from 'react-infinite-scroller'
 import Search from './Search'
+import Loader from './utils/Loader'
+import Message from './utils/Message'
 
 const QueryItems = gql`
 query getItems($first:Int = 3, $cursor: String) {
@@ -36,10 +37,10 @@ class ItemList extends React.Component {
       return <Loader/>
     }
     if (!data) {
-      return <Message text="No data"/>
+      return <Message color="tomato" text="No data"/>
     }
     if (data && data.error) {
-      return <div>Error</div>
+      return <Message>Error</Message>
     }
     const items = data.items.edges
     const itemsBlock = items.map(

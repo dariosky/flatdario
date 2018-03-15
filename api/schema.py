@@ -18,5 +18,9 @@ class Query(graphene.ObjectType):
     ])
     item = relay.Node.Field(ItemType)
 
+    # def resolve_items(self, *args, **kwargs):
+    #     import time
+    #     time.sleep(50)
+
 
 schema = graphene.Schema(query=Query)

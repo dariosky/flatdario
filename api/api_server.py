@@ -32,4 +32,4 @@ def run_api(storage, host='127.0.0.1', port=3001):
     def shutdown_session(exception=None):
         db_session.close()
 
-    app.run(host=host, port=port)
+    app.run(host=host, port=port, threaded=True)

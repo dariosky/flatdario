@@ -95,45 +95,4 @@ a {
   }
 }
 
-.btn {
-  margin: 1em auto;
-  padding: 10px 20px;
-  text-align: center;
-  background: #eee;
-  color: #333;
-  border: 1px solid #333;
-  transition: all .2s ease;
-  cursor: pointer;
-  max-width: $item-width;
-
-  &:hover {
-    color: #555;
-    box-shadow: 0 0 50px 10px transparentize(#999, .2);
-  }
-}
-
-.loader {
-  text-align: center;
-  grid-column: 1/-1;
-}
-
-.footer {
-  text-align: center;
-  font-size: smaller;
-  color: #ccc;
-
-  a {
-    text-decoration: none;
-    margin: 0 .5em;
-    display: inline-block;
-  }
-}
-
-.message {
-  font-size: 16pt;
-  padding: 10px;
-  text-align: center;
-  background: #222;
-}
-
 @import "ellipsed-text";
