@@ -7,6 +7,17 @@ import requests
 from oauth2client.tools import (ClientRedirectServer,
                                 ClientRedirectHandler)
 
+muted_loggers = (
+    'googleapiclient.discovery',
+    'oauth2client',
+    'requests',
+    'urllib3',
+)
+
+for logger_name in muted_loggers:
+    logger = logging.getLogger(logger_name)
+    logger.setLevel(logging.WARNING)
+
 logger = logging.getLogger(__name__)
 
 

@@ -10,8 +10,6 @@ from collectors.exceptions import DuplicateFound
 from .generic import OAuthCollector
 
 logger = logging.getLogger(__name__)
-requests_logger = logging.getLogger('requests')
-requests_logger.setLevel(logging.WARNING)
 
 session = requests.session()
 
@@ -94,7 +92,7 @@ class PocketCollector(OAuthCollector):
 
         while True:
             query['offset'] = start_from
-            logger.debug("Asking chunk %d-%d" % (start_from, start_from + chunk_size))
+            # logger.debug("Asking chunk %d-%d" % (start_from, start_from + chunk_size))
             response = session.post(
                 endpoints['retrieve'],
                 headers={"X-Accept": "application/json"},
@@ -104,7 +102,7 @@ class PocketCollector(OAuthCollector):
                 raise Exception("Error getting list of items from Pocket")
             data = response.json()
             returned_elements = len(data['list'])
-            logger.debug("Pocket query returned %d elements" % returned_elements)
+            # logger.debug("Pocket query returned %d elements" % returned_elements)
             if data['list']:
                 for item_id, e in data['list'].items():
                     # there are other times eventually:
@@ -138,8 +136,8 @@ class PocketCollector(OAuthCollector):
                         count += 1
                     except DuplicateFound:
                         if not refresh_duplicates:
-                            logger.debug("We already know this one.")
-                            logger.debug("Stopping after %d added." % count)
+                            logger.debug(
+                                "We already know this one. Stopping after %d added." % count)
                             return
             if returned_elements < chunk_size:
                 break

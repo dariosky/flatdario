@@ -12,8 +12,6 @@ from .exceptions import DuplicateFound
 from .generic import Collector
 
 logger = logging.getLogger(__name__)
-logging.getLogger('googleapiclient.discovery').setLevel(logging.WARNING)
-logging.getLogger('oauth2client').setLevel(logging.WARNING)
 
 
 def parse_datetime(timestamp):

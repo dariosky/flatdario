@@ -9,8 +9,10 @@ import Loader from './utils/Loader'
 import Message from './utils/Message'
 
 const QueryItems = gql`
-query getItems($first:Int = 3, $cursor: String) {
-  items(first: $first, sort: TIMESTAMP_DESC, after: $cursor) {
+query getItems($first:Int = 3, $cursor: String, $query:String) {
+  items(first: $first, sort: TIMESTAMP_DESC, after: $cursor
+        q:$query
+  ) {
     edges {
       node {
         id

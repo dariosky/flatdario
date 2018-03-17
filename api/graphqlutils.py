@@ -1,7 +1,14 @@
+import logging
+
 import graphene
+import sqlalchemy
 from graphene import NonNull, Argument, List
 from graphene_sqlalchemy import SQLAlchemyConnectionField
+from graphql import ResolveInfo
+from graphql.language.ast import Variable
 from sqlalchemy import inspect
+
+logger = logging.getLogger(__name__)
 
 
 def sort_enum_for(cls):
@@ -56,46 +63,77 @@ class FilterableConnectionField(SQLAlchemyConnectionField):
 
     @classmethod
     def get_query(cls, model, info, **kwargs):
-        sort = kwargs.pop('sort', None)
         query = super().get_query(model, info, **kwargs)
 
-        for field, value in kwargs.items():
-            if field not in FilterableConnectionField.RELAY_ARGS:
-                query = query.filter(getattr(model, field.lower()) == value)
+        attrs = info_to_kwargs(info)
+        for field, value in attrs.items():
+            if field == 'sort':
+                order_field = get_arg_val(value, info).lower()
 
-        if sort:
-            query = query.order_by(*sort)
+                if order_field.endswith('_desc'):
+                    order_field = order_field[:-5]
+                    order = sqlalchemy.desc(order_field)
+                else:
+                    order = order_field
+                logger.debug("Sorting by %s" % order)
+                query = query.order_by(order)
+            elif field not in FilterableConnectionField.RELAY_ARGS:
+                model_field = getattr(model, field.lower(), None)
+                if model_field:
+                    sql_value = get_arg_val(value, info)
+                    logger.debug(f"Filter {model_field} == {sql_value}")
+                    query = query.filter(model_field == sql_value)
+
         return query
 
 
 class FTSFilterableConnectionField(FilterableConnectionField):
     _fulltext_field_suffix = '__like'
 
-    def __init__(self, type, *args, fts_fields=None, **kwargs):
-        self.fts_fields = fts_fields
-
+    def __init__(self, type, *args, fts=None, **kwargs):
+        # add the *__like additional arguments to the schema
+        self.fts = fts
         filter_fields = {}
         self._fts_attributes = {}  # the attribute with it's fieldname
-        for field_name in fts_fields or []:
+        for field_name in fts['fields'] or []:
             attr_name = field_name + self._fulltext_field_suffix
             attr_name = self.set_field_case(attr_name)
             field_type = type._meta.fields[field_name]
             filter_fields[attr_name] = self.get_type(field_type)
             self._fts_attributes[attr_name] = field_name
-
         super().__init__(type, *args, **filter_fields, **kwargs)
 
     @classmethod
     def get_query(cls, model, info, **kwargs):
         # for attr_name, fieldname in self._fts_attributes.items()
-        fts_query = {}
-        for attr_name in list(kwargs.keys()):
-            if attr_name.endswith(cls._fulltext_field_suffix):
-                field_name = attr_name[:-len(cls._fulltext_field_suffix)]
-                fts_query[field_name] = kwargs.pop(attr_name)
-
         query = super().get_query(model, info, **kwargs)
-        for field_name, value in fts_query.items():
-            column = getattr(model, field_name)
-            query = query.filter(column.like(f"%{value}%"))
+
+        attrs = info_to_kwargs(info)
+        for attr_name, value in attrs.items():
+            if attr_name.lower().endswith(cls._fulltext_field_suffix):  # when they ends in __like
+                field_name = attr_name[:-len(cls._fulltext_field_suffix)]
+                logger.debug(f'Filter field {field_name} like {value}')
+                column = getattr(model, field_name)
+                query = query.filter(column.like(f"%{value.value}%"))
+
         return query
+
+
+def info_to_kwargs(info):
+    return {
+        argument.name.value: argument.value
+        for argument in info.field_asts[0].arguments
+    }
+
+
+def get_arg_val(arg, info: ResolveInfo):
+    result = arg
+    if hasattr(result, 'value'):
+        result = arg.value
+    if isinstance(result, Variable):
+        variable_name = result.name.value
+        return info.variable_values.get(variable_name)
+    if hasattr(result, 'value'):
+        return result.value
+    else:
+        return result
