@@ -1,6 +1,31 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
 import _ from 'lodash'
+import injectSheet from 'react-jss'
 
+const styles = {
+  header: {
+    minHeight: "50vh",
+    position: "relative",
+    background: "black no-repeat 50%",
+    backgroundImage: `url(/img/coding-bkg.jpg)`,
+    backgroundSize: 'cover',
+    padding: '15px 10px',
+    display: 'flex',
+    flexDirection: 'column',
+    textAlign: 'center',
+  },
+
+  logo: `
+    width: 90%;
+    max-width: 600px;
+    margin: auto;
+    display: block;
+    transform: translateY( calc( var(--scrollparallax) * 1px ) );
+    opacity: calc( (200 - var(--scrollparallax)) /200 );
+  `,
+
+  sub: `font-size: larger;`
+}
 
 class Header extends React.Component {
   state = {
@@ -39,18 +64,14 @@ class Header extends React.Component {
   }
 
   render() {
-    const logoStyle = {
-      transform: 'translateY( calc( var(--scrollparallax) * 1px ) )',
-      opacity: 'calc( (200 - var(--scrollparallax)) /200 )'
-    }
-    return <header>
-      <img id="logo" src="dist/img/dariovarotto-white.svg"
+    const {classes} = this.props
+    return <header className={classes.header}>
+      <img className={classes.logo} src="/img/dariovarotto-white.svg"
            ref={($logo) => {
              this.$logo = $logo
            }}
-           style={logoStyle}
            alt="Dario Varotto"/>
-      <p className="sub">
+      <p className={classes.sub}>
         Dreaming Electric Sheep
       </p>
       <div className="subheader">
@@ -61,4 +82,4 @@ class Header extends React.Component {
   }
 }
 
-export default Header
+export default injectSheet(styles)(Header)

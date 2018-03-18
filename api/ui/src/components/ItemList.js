@@ -2,11 +2,11 @@ import React from "react"
 import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
-import styles from '../../styles/social.scss'
 import InfiniteScroll from 'react-infinite-scroller'
 import Search from './Search'
 import Loader from './utils/Loader'
 import Message from './utils/Message'
+import injectSheet from 'react-jss'
 
 const QueryItems = gql`
 query getItems($first:Int = 3, $cursor: String, $query:String) {
@@ -31,9 +31,25 @@ query getItems($first:Int = 3, $cursor: String, $query:String) {
 }
 `
 
+const styles = {
+  aggregation: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, 320px)",
+    gridGap: "2rem",
+    justifyContent: "center",
+    maxWidth: "1024px",
+    margin: "auto",
+
+    "&:after": {
+      content: "",
+      flex: "auto",
+    }
+  }
+}
+
 class ItemList extends React.Component {
   render() {
-    const {data, loadMore} = this.props
+    const {data, loadMore, classes} = this.props
 
     if (data.loading) {
       return <Loader/>
@@ -49,17 +65,17 @@ class ItemList extends React.Component {
       item => <Item key={item.node.id} item={item.node}/>
     )
     const hasMore = data.items.pageInfo.hasNextPage
-    return <div>
-      <Search/>
+    return [
+      <Search key="search"/>,
       <InfiniteScroll
         loadMore={loadMore}
         hasMore={hasMore}
         loader={<Loader key={0}/>}
         useCapture={{passive: true}}
-        className={styles.aggregation}>
+        className={classes.aggregation}>
         {itemsBlock}
       </InfiniteScroll>
-    </div>
+    ]
   }
 }
 
@@ -98,6 +114,8 @@ const queryOptions = {
   }
 }
 
-const ItemData = graphql(QueryItems, queryOptions)(ItemList)
+const ItemData = graphql(QueryItems, queryOptions)(
+  injectSheet(styles)(ItemList)
+)
 
 export default ItemData

@@ -4,10 +4,10 @@ import Header from './Header'
 
 class App extends React.Component {
   render() {
-    return <div>
-      <Header/>
-      <ItemList/>
-    </div>
+    return [
+      <Header key="header"/>,
+      <ItemList key="list"/>
+    ]
   }
 }
 

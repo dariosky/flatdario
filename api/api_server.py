@@ -4,12 +4,15 @@ from flask_graphql import GraphQLView
 
 from api.schema import schema
 from storage.sql import StorageSqliteDB
+from flask_cors import CORS
 
 
 def run_api(storage, host='127.0.0.1', port=3001):
     app = Flask(__name__,
                 static_folder='ui/dist',
                 template_folder='ui/')
+    CORS(app)
+
     app.debug = True
     assert isinstance(storage, StorageSqliteDB)
     db_session = storage.db

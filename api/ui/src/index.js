@@ -1,6 +1,8 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import App from "./components/App"
+import React from 'react'
+import ReactDOM from 'react-dom'
+import registerServiceWorker from './registerServiceWorker'
+import App from './components/App'
+import './styles/site.css'
 
 // --- GraphQL ---
 import {ApolloProvider} from 'react-apollo'
@@ -17,9 +19,20 @@ const client = new ApolloClient({
 
 // --- Init ---
 
-ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App/>
-  </ApolloProvider>,
-  document.getElementById("app")
-)
+let rootEl = document.getElementById('app')
+ReactDOM.render(<ApolloProvider client={client}>
+  <App/>
+</ApolloProvider>, rootEl)
+registerServiceWorker()
+
+if (module.hot) {
+  // https://medium.com/superhighfives/hot-reloading-create-react-app-73297a00dcad
+  module.hot.accept('./components/App', () => {
+    console.info("Hotload")
+    const NextApp = require('./components/App').default
+    ReactDOM.render(
+      <NextApp/>,
+      rootEl
+    )
+  })
+}

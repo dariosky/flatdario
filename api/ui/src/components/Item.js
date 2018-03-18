@@ -1,29 +1,71 @@
-'use strict'
+import React from 'react'
+import injectSheet from 'react-jss'
+import Badge from './Badge'
 
-import React, {PropTypes} from 'react'
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import {
-  faGetPocket, faVimeo,
-  faYoutube, faTumblrSquare
-} from '@fortawesome/fontawesome-free-brands'
-import {faQuestionCircle} from '@fortawesome/fontawesome-free-solid'
-import styles from '../../styles/social.scss'
-import {faRssSquare} from '@fortawesome/fontawesome-free-solid'
+const styles = {
+  item: {
+    transition: "all .3s ease",
 
+    position: "relative",
+    border: "1px solid #666",
+    margin: "20px 0",
+    width: "320px",
+    height: "220px",
+
+    "&:hover": {
+      border: "0",
+      transform: "scale(1.1)",
+      zIndex: "2",
+    }
+  },
+
+  itemContent: `
+    background-color: white;
+    width: 100%;
+  `,
+
+  thumb: `
+    height: 100%;
+    width: 100%;
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+  `,
+
+  title: `
+    color: #eee;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    padding: 5px 5px;
+  `,
+
+  date: `
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin: 2px 0;
+    text-align: right;
+    font-size: 10px;
+  `
+}
 
 const SubTitle = (props) => {
   const {item} = props
 
   if (item.type === 'Tumblr' && (item.description || item.subtitle)) {
-    return <div className={styles.subtitle}>
+    return <div className="subtitle">
       {item.description || item.subtitle}
     </div>
   }
   return null
 }
 
-const CardContent = (props) => {
-  const {item} = props
+const CardContent = injectSheet(styles)((props) => {
+  const {item, classes} = props
 
   const background = () => {
     const {type} = item
@@ -41,58 +83,25 @@ const CardContent = (props) => {
         if (item.img)
           return `url(${item.img})`
         break
+      default:
+        return ''
     }
     return ''
   }
 
   if (item.contentFormat === 'iframe') {
     return <iframe src={item.content || item.url}
+                   className={classes.thumb}
+                   title={item.title}
                    frameBorder="0" allowFullScreen
     />
   }
-  return <div className={styles.thumb}
-              style={{backgroundImage: background()}}
-  />
-}
-
-class Badge extends React.Component {
-  /* A Badge with the type of the content */
-  render() {
-    const {type} = this.props
-    let icon, color
-
-    switch (type) {
-      case "Pocket":
-        color = "rgb(239, 68, 88)" //getpocket official
-        icon = faGetPocket
-        break
-      case "Youtube like":
-        color = "#b31217" //youtube official red: https://www.youtube.com/yt/brand/color.html
-        icon = faYoutube
-        break
-      case "Vimeo":
-        color = "#000"
-        icon = faVimeo
-        break
-      case "RSS":
-        color = '#fbab19'
-        icon = faRssSquare
-        break
-      case "Tumblr":
-        color = "#01273a" // tumblr official
-        icon = faTumblrSquare
-        break
-      default:
-        console.warn("Unknown item type", type)
-        icon = faQuestionCircle
-    }
-    return <FontAwesomeIcon className={styles.type}
-                            color={color}
-                            icon={icon}
-                            size="3x"
+  else {
+    return <div className={classes.thumb}
+                style={{backgroundImage: background()}}
     />
   }
-}
+})
 
 class Item extends React.Component {
   item = () => {
@@ -102,19 +111,20 @@ class Item extends React.Component {
   }
 
   render() {
-    const item = this.item()
-    return <div className={styles.item}>
+    const item = this.item(),
+      {classes} = this.props
+    return <div className={classes.item}>
       <Badge type={item.type}/>
-      <a href={item.url} target="_blank" className="item-content">
+      <a href={item.url} target="_blank" className={classes.itemContent}>
         <CardContent item={item}/>
-        <div className={styles.title}>
+        <div className={classes.title}>
           <div className={styles['ellipsed-text']}>
             {item.title || item.url}
             <SubTitle item={item}/>
           </div>
         </div>
       </a>
-      <div className={styles.date}>
+      <div className={classes.date}>
         {item.timestamp}
       </div>
     </div>
@@ -122,4 +132,4 @@ class Item extends React.Component {
   }
 }
 
-export default Item
+export default injectSheet(styles)(Item)
