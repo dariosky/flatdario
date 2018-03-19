@@ -2,6 +2,7 @@ import React from 'react'
 import {faSearch} from '@fortawesome/fontawesome-free-solid'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import injectSheet from 'react-jss'
+import withRouter from 'react-router-dom/es/withRouter'
 
 
 const styles = {
@@ -49,8 +50,16 @@ const styles = {
 
 class Search extends React.Component {
   state = {query: ""}
+
   handleChange = (e) => {
-    this.setState({query: e.target.value})
+    const q = e.target.value,
+      {history} = this.props
+
+    this.setState({query: q})
+    if (q)
+      history.push('/search/' + q)
+    else
+      history.push('/')
   }
 
   render() {
@@ -75,4 +84,4 @@ class Search extends React.Component {
   }
 }
 
-export default injectSheet(styles)(Search)
+export default withRouter(injectSheet(styles)(Search))

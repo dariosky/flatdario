@@ -118,7 +118,7 @@ class Item extends React.Component {
       <a href={item.url} target="_blank" className={classes.itemContent}>
         <CardContent item={item}/>
         <div className={classes.title}>
-          <div className={styles['ellipsed-text']}>
+          <div className='ellipsed-text'>
             {item.title || item.url}
             <SubTitle item={item}/>
           </div>

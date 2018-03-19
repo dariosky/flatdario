@@ -55,10 +55,11 @@ class ItemList extends React.Component {
       return <Loader/>
     }
     if (!data) {
-      return <Message color="tomato" text="No data"/>
+      return <Message color="orange" text="No data"/>
     }
     if (data && data.error) {
-      return <Message>Error</Message>
+      console.error("error:", data.error.message)
+      return <Message color="tomato" text="Error getting data"/>
     }
     const items = data.items.edges
     const itemsBlock = items.map(
@@ -68,6 +69,7 @@ class ItemList extends React.Component {
     return [
       <Search key="search"/>,
       <InfiniteScroll
+        key="scroller"
         loadMore={loadMore}
         hasMore={hasMore}
         loader={<Loader key={0}/>}
@@ -80,13 +82,17 @@ class ItemList extends React.Component {
 }
 
 const queryOptions = {
-  options: (props) => {
+  options: ({query}) => {
+    // map the object props to query options
     return {
-      variables: {first: 9}
+      variables: {
+        first: 9,
+        query,
+      }
     }
   },
   props: ({data}) => {
-    // get data from props, and return the new one
+    // get data from GQL response, and return object props
     return {
       data,
       loadMore: () => {
