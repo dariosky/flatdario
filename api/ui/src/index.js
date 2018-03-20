@@ -4,7 +4,7 @@ import registerServiceWorker from './registerServiceWorker'
 import App from './components/App'
 import './styles/site.css'
 // -- ReactRouter ---
-import {BrowserRouter} from 'react-router-dom'
+import {BrowserRouter as Router} from 'react-router-dom'
 
 // --- GraphQL ---
 import {ApolloProvider} from 'react-apollo'
@@ -24,9 +24,9 @@ const client = new ApolloClient({
 let rootEl = document.getElementById('app')
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <BrowserRouter>
+    <Router>
       <App/>
-    </BrowserRouter>
+    </Router>
   </ApolloProvider>,
   rootEl)
 registerServiceWorker()

@@ -49,7 +49,11 @@ const styles = {
 }
 
 class Search extends React.Component {
-  state = {query: ""}
+  constructor(props) {
+    super(props)
+    const query = this.props.match.params.query || ""
+    this.state = {query}
+  }
 
   handleChange = (e) => {
     const q = e.target.value,

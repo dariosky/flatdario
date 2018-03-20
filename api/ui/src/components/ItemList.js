@@ -3,7 +3,6 @@ import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
 import InfiniteScroll from 'react-infinite-scroller'
-import Search from './Search'
 import Loader from './utils/Loader'
 import Message from './utils/Message'
 import injectSheet from 'react-jss'
@@ -67,7 +66,6 @@ class ItemList extends React.Component {
     )
     const hasMore = data.items.pageInfo.hasNextPage
     return [
-      <Search key="search"/>,
       <InfiniteScroll
         key="scroller"
         loadMore={loadMore}
@@ -82,7 +80,8 @@ class ItemList extends React.Component {
 }
 
 const queryOptions = {
-  options: ({query}) => {
+  options: (props) => {
+    const query = props.match.params.query
     // map the object props to query options
     return {
       variables: {

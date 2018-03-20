@@ -13,7 +13,6 @@ const styles = {
     height: "220px",
 
     "&:hover": {
-      border: "0",
       transform: "scale(1.1)",
       zIndex: "2",
     }
