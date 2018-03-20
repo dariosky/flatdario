@@ -107,9 +107,9 @@ class Aggregator:
                     print("\t{folder} - {desc}".format(folder=name, desc=description))
         print()
 
-    def runapi(self):
+    def runapi(self, production=False):
         from api.api_server import run_api
-        run_api(self.db)
+        run_api(self.db, production=production)
 
 
 def get_options():
@@ -188,4 +188,4 @@ if __name__ == '__main__':
         agg.preview()
 
     if action == "runapi":
-        agg.runapi()
+        agg.runapi(production=not args.debug)

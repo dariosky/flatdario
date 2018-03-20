@@ -25,4 +25,7 @@ pyyaml
 flask
 jinja2
 
+# deployment
+fabric3
+
 -r api/requirements.txt
