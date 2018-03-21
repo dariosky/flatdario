@@ -1,11 +1,15 @@
+import glob
 import os
 from contextlib import contextmanager
 
 from fabric.api import env, task
-from fabric.context_managers import prefix, cd
+from fabric.context_managers import prefix, cd, lcd
 from fabric.contrib.files import exists
 from fabric.operations import run, put
 from fabric.tasks import execute
+
+project_folder = os.path.dirname(__file__)
+os.chdir(project_folder)
 
 
 class Config:
@@ -69,14 +73,16 @@ def collect():
 @task
 def upload_secrets():
     """ Send local secrets to the remote server """
+    uploads = glob.glob('appkeys/*.json')+glob.glob('userkeys/*.json')
+    upload_files(uploads)
 
 
 def upload_files(uploads):
-    project_folder = os.path.dirname(__file__)
     remote_folder = Config.project_path
-    for filepath in uploads:
-        put(os.path.join(project_folder, filepath),
-            os.path.join(remote_folder, filepath))
+    with lcd(project_folder):
+        for filepath in uploads:
+            put(os.path.join(project_folder, filepath),
+                os.path.join(remote_folder, filepath))
 
 
 @task
