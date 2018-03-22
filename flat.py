@@ -15,7 +15,7 @@ from flatbuilder.preview import serve
 from storage import Storage
 
 logger = logging.getLogger(__name__)
-VERSION = "0.2"
+VERSION = "0.3"
 TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
 
 
@@ -107,9 +107,9 @@ class Aggregator:
                     print("\t{folder} - {desc}".format(folder=name, desc=description))
         print()
 
-    def runapi(self, production=False):
+    def runapi(self, production=False, port=3001):
         from api.api_server import run_api
-        run_api(self.db, production=production)
+        run_api(self.db, production=production, port=port)
 
 
 def get_options():
@@ -149,6 +149,11 @@ def get_options():
                         help="List all the available templates",
                         default=False,
                         action="store_true")
+    parser.add_argument("--port",
+                        help="Serve the API and the Dynamic server on a given port",
+                        type=int,
+                        default=3001,
+                        )
 
     return parser.parse_args()
 
@@ -188,4 +193,5 @@ if __name__ == '__main__':
         agg.preview()
 
     if action == "runapi":
-        agg.runapi(production=not args.debug)
+        agg.runapi(production=not args.debug,
+                   port=args.port)

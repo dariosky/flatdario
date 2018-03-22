@@ -71,7 +71,7 @@ class StorageSqliteDB(Storage):
             self.db.commit()
         except IntegrityError as e:
             self.db.rollback()
-            if "UNIQUE constraint failed" in str(e.orig):
+            if "unique" in str(e.orig).lower():
                 raise DuplicateFound(
                     f"We already have the id {item['id']} of type {item['type']} in the DB"
                 )

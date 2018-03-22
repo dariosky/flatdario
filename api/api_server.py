@@ -1,4 +1,3 @@
-import bjoern
 import flask
 from flask import Flask
 from flask_cors import CORS
@@ -6,6 +5,11 @@ from flask_graphql import GraphQLView
 
 from api.schema import schema
 from storage.sql import StorageSqliteDB
+
+try:
+    import bjoern
+except ImportError:
+    bjoern = None
 
 
 def run_api(storage, host='127.0.0.1', port=3001,
@@ -38,7 +42,7 @@ def run_api(storage, host='127.0.0.1', port=3001,
     def shutdown_session(exception=None):
         db_session.close()
 
-    if production:
+    if production and bjoern:
         # apt-get install libev-dev
         # apt-get install python3-dev
         print(f"Running production server on http://{host}:{port}")

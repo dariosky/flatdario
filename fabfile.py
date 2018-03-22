@@ -1,6 +1,7 @@
 import glob
 import os
 from contextlib import contextmanager
+from functools import wraps
 
 from fabric.api import env, task
 from fabric.context_managers import prefix, cd, lcd
@@ -14,10 +15,10 @@ os.chdir(project_folder)
 
 class Config:
     project_path = '~/webapps/darioskyflat'
-    port = 29606
     venv = "~/.pyenv/versions/flat"
     git_repo = 'git@github.com:dariosky/flatdario.git'
     requirements = 'requirements.txt'
+    port = 29606
 
 
 if os.path.exists(os.path.expanduser("~/.ssh/config")):
@@ -37,16 +38,27 @@ def virtualenv():
         yield
 
 
+def flat_command(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        with virtualenv():
+            with cd(Config.project_path):
+                return func(*args, **kwargs)
+
+    return wrapped
+
+
 def clone():
     with cd(Config.project_path):
         run(f"git clone {Config.git_repo} .")
 
 
+@task
+@flat_command
 def update_requirements():
-    with virtualenv():
-        with cd(Config.project_path):
-            run(f'pip install -q -U pip wheel')
-            run(f'pip install -q -r {Config.requirements}')
+    """ Silently update requirements """
+    run(f'pip install -q -U pip wheel')
+    run(f'pip install -q -r {Config.requirements}')
 
 
 def pull_repo():
@@ -66,14 +78,9 @@ def deploy():
 
 
 @task
-def collect():
-    """ Update the collected sources """
-
-
-@task
 def upload_secrets():
     """ Send local secrets to the remote server """
-    uploads = glob.glob('appkeys/*.json')+glob.glob('userkeys/*.json')
+    uploads = glob.glob('appkeys/*.json') + glob.glob('userkeys/*.json')
     upload_files(uploads)
 
 
@@ -86,11 +93,45 @@ def upload_files(uploads):
 
 
 @task
+def upload_build():
+    """ Upload the React build """
+    # be sure that the build folder is there:
+    build_folder = 'api/ui/build'
+    with cd(Config.project_path):
+        run(f"mkdir -p {build_folder}")
+    upload_files([build_folder])
+
+
+@task
 def upload_db():
     """ Upload the local DB online (deleting it) """
     uploads = ['db.sqlite']
     upload_files(uploads)
 
 
+@task
+@flat_command
+def collect():
+    """ Update the collected sources """
+    run('python flat.py collect')
+
+
+@task
+@flat_command
+def start():
+    """ Run the API as production """
+    run(f'python flat.py runapi --port {Config.port}')
+
+
 if not env.hosts:
     set_hosts('dariosky')  # the host where to deploy
+
+if __name__ == '__main__':
+    # to debug the fabfile, we can specify the command here
+    import sys
+    from fabric.main import main
+
+    sys.argv[1:] = [
+        "start",
+    ]
+    main()
