@@ -43,10 +43,13 @@ def run_api(storage, host='127.0.0.1', port=3001,
         db_session.close()
 
     if production and bjoern:
-        # apt-get install libev-dev
-        # apt-get install python3-dev
         print(f"Running production server on http://{host}:{port}")
-        bjoern.run(app, host, port)
+        if bjoern:
+            # apt-get install libev-dev
+            # apt-get install python3-dev
+            bjoern.run(app, host, port)
+        else:
+            app.run(host=host, port=port, threaded=True, debug=False, reload=False)
     else:
         # flask runserver
         app.run(host=host, port=port, threaded=True)
