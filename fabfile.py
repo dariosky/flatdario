@@ -3,6 +3,7 @@ import os
 from contextlib import contextmanager
 from functools import wraps
 
+from crontab import CronTab
 from fabric.api import env, task
 from fabric.context_managers import prefix, cd, lcd
 from fabric.contrib.files import exists
@@ -120,7 +121,44 @@ def collect():
 @flat_command
 def start():
     """ Run the API as production """
-    run(f'python flat.py runapi --port {Config.port}')
+    run_params = f'runapi --port {Config.port}'
+    run(f'python flat.py {run_params}')
+
+
+@task
+@flat_command
+def install():
+    """ Install a cronjob in the current host to start the api if it's not running """
+    cron = CronTab(user=True)
+
+    command = 'flat.py'
+    command_full_path = os.path.join(Config.project_path, command)
+    run_params = f'runapi --port {Config.port}'
+    log_destination = os.path.join(Config.project_path, 'logs', 'flat_run.log')
+    python = os.path.join(Config.venv, 'bin', 'python')
+
+    check_command = f'pgrep -f {command}'
+    run_command = f'nohup {python} {command_full_path} {run_params}'
+    log_command = f'>> {log_destination} 2>&1'
+    cd_command = f'cd {Config.project_path}'
+
+    full_command = f'{check_command} || {cd_command} && {run_command} {log_command} &'
+    comment_id = 'flat-dariosky'
+
+    existing_jobs = list(cron.find_comment(comment_id))
+
+    if not existing_jobs:
+        # create the job
+        print("Creating job:")
+        job = cron.new(command=full_command, comment=comment_id)
+        job.every(5).minutes()
+        print(job)
+        # create log folder
+        with lcd(project_folder):
+            os.makedirs('./logs', exist_ok=True)
+        cron.write()
+
+    # */5 * * * *  > test.out
 
 
 if not env.hosts:
@@ -132,6 +170,6 @@ if __name__ == '__main__':
     from fabric.main import main
 
     sys.argv[1:] = [
-        "start",
+        "install",
     ]
     main()

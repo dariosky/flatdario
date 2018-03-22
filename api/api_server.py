@@ -42,14 +42,18 @@ def run_api(storage, host='127.0.0.1', port=3001,
     def shutdown_session(exception=None):
         db_session.close()
 
-    if production and bjoern:
-        print(f"Running production server on http://{host}:{port}")
-        if bjoern:
+    if production:
+        print(f"Running production server as "
+              f"{'bjoern' if bjoern else 'Flask'}"
+              f" on http://{host}:{port}")
+        if bjoern and False:
             # apt-get install libev-dev
             # apt-get install python3-dev
+            print("Running as bjoern")
             bjoern.run(app, host, port)
         else:
-            app.run(host=host, port=port, threaded=True, debug=False, reload=False)
+            print("Using Flask threaded")
+            app.run(host=host, port=port, threaded=True, debug=False, use_reloader=False)
     else:
-        # flask runserver
+        print("Running in Flask debug mode")
         app.run(host=host, port=port, threaded=True)
