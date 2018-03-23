@@ -125,16 +125,12 @@ def start():
     run(f'python flat.py {run_params}')
 
 
-@task
-@flat_command
-def install():
-    """ Install a cronjob in the current host to start the api if it's not running """
+def add_to_cron_command(command, run_params, comment_id, log_filename, schedule):
     cron = CronTab(user=True)
 
-    command = 'flat.py'
     command_full_path = os.path.join(Config.project_path, command)
-    run_params = f'runapi --port {Config.port}'
-    log_destination = os.path.join(Config.project_path, 'logs', 'flat_run.log')
+
+    log_destination = os.path.join(Config.project_path, 'logs', log_filename)
     python = os.path.join(Config.venv, 'bin', 'python')
 
     check_command = f'pgrep -f {command}'
@@ -143,7 +139,6 @@ def install():
     cd_command = f'cd {Config.project_path}'
 
     full_command = f'{check_command} || {cd_command} && {run_command} {log_command} &'
-    comment_id = 'flat-dariosky'
 
     existing_jobs = list(cron.find_comment(comment_id))
 
@@ -151,14 +146,41 @@ def install():
         # create the job
         print("Creating job:")
         job = cron.new(command=full_command, comment=comment_id)
-        job.every(5).minutes()
+        for time_attr, value in schedule.items():
+            every = job.every(value)
+            getattr(every, time_attr)()  # example: job.every(5).minutes()
+
         print(job)
         # create log folder
         with lcd(project_folder):
             os.makedirs('./logs', exist_ok=True)
         cron.write()
 
-    # */5 * * * *  > test.out
+
+@task
+@flat_command
+def local_install():
+    """ Install a cronjob in the current host to start the api if it's not running """
+    add_to_cron_command(command='flat.py',
+                        run_params=f'runapi --port {Config.port}',
+                        comment_id='flat-dariosky',
+                        log_filename='flat_run.log',
+                        schedule={"minutes": 5},
+                        )
+    #  Install a cronjob in the current host to collect from all available sources
+    add_to_cron_command(command='flat.py',
+                        run_params=f'collect',
+                        comment_id='flat-dariosky-collect',
+                        log_filename='flat_collect.log',
+                        schedule={"hours": 6},
+                        )
+
+
+@task
+@flat_command
+def remote_install():
+    """ Update the collected sources """
+    run('fab local_install')
 
 
 if not env.hosts:
@@ -170,6 +192,6 @@ if __name__ == '__main__':
     from fabric.main import main
 
     sys.argv[1:] = [
-        "install",
+        "local_install",
     ]
     main()
