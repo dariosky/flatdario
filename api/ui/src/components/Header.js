@@ -4,6 +4,7 @@ import injectSheet from 'react-jss'
 
 const styles = {
   header: {
+    color: "#eee",
     minHeight: "50vh",
     position: "relative",
     background: "black no-repeat 50%",
@@ -24,14 +25,14 @@ const styles = {
     opacity: calc( (200 - var(--scrollparallax)) /200 );
   `,
 
-  sub: `font-size: larger;`
+  sub: `font-size: larger;`,
 }
 
 class Header extends React.Component {
   state = {
     scrollPosition: 0,
     ticking: false,
-    $logo: null
+    $logo: null,
   }
 
   onScroll = () => {
@@ -59,7 +60,7 @@ class Header extends React.Component {
   componentDidMount() {
     window.addEventListener('scroll',
       _.throttle(this.onScroll, 10, {trailing: true, leading: true}),
-      false
+      false,
     )
   }
 

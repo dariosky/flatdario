@@ -5,6 +5,10 @@ import {Route, Switch} from 'react-router-dom'
 import Search from './Search'
 import NavBar, {Fixed} from './NavBar'
 import Contacts from './Contacts'
+import withTracker from '../analytics/withTracker'
+import ReactGA from 'react-ga'
+
+ReactGA.initialize('UA-62120-5')
 
 class App extends React.Component {
   render() {
@@ -19,9 +23,9 @@ class App extends React.Component {
       </Fixed>,
 
       <Switch key="routes">
-        <Route path="/" exact component={ItemList}/>
-        <Route path="/search/:query" exact component={ItemList}/>
-        <Route path="/contacts" exact component={Contacts}/>
+        <Route path="/" exact component={withTracker(ItemList)}/>
+        <Route path="/search/:query" exact component={withTracker(ItemList)}/>
+        <Route path="/contacts" exact component={withTracker(Contacts)}/>
       </Switch>,
     ]
   }

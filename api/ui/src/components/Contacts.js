@@ -29,12 +29,16 @@ class Contacts extends React.Component {
         <div>
           <h2>Social profiles:</h2>
           <LinkBtn icon={faGithub}
+                   style={{color: 'black'}}
                    external="https://github.com/dariosky">Github</LinkBtn>
           <LinkBtn icon={faLinkedin}
+                   style={{color: 'black'}}
                    external="https://www.linkedin.com/in/dariovarotto/">Linked In</LinkBtn>
           <LinkBtn icon={faInstagram}
+                   style={{color: 'black'}}
                    external="https://www.instagram.com/dariosky/">Instagram</LinkBtn>
           <LinkBtn icon={faTwitter}
+                   style={{color: 'black'}}
                    external="https://twitter.com/dariosky">Twitter</LinkBtn>
         </div>
 

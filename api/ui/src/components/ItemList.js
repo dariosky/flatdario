@@ -42,8 +42,8 @@ const styles = {
     "&:after": {
       content: "",
       flex: "auto",
-    }
-  }
+    },
+  },
 }
 
 class ItemList extends React.Component {
@@ -62,7 +62,7 @@ class ItemList extends React.Component {
     }
     const items = data.items.edges
     const itemsBlock = items.map(
-      item => <Item key={item.node.id} item={item.node}/>
+      item => <Item key={item.node.id} item={item.node}/>,
     )
     const hasMore = data.items.pageInfo.hasNextPage
     return [
@@ -74,7 +74,7 @@ class ItemList extends React.Component {
         useCapture={{passive: true}}
         className={classes.aggregation}>
         {itemsBlock}
-      </InfiniteScroll>
+      </InfiniteScroll>,
     ]
   }
 }
@@ -87,7 +87,7 @@ const queryOptions = {
       variables: {
         first: 9,
         query,
-      }
+      },
     }
   },
   props: ({data}) => {
@@ -97,7 +97,7 @@ const queryOptions = {
       loadMore: () => {
         return data.fetchMore({
           variables: {
-            cursor: data.items.pageInfo.endCursor
+            cursor: data.items.pageInfo.endCursor,
           },
           updateQuery(previousResult, {fetchMoreResult}) {
             if (!fetchMoreResult.items) {
@@ -109,18 +109,18 @@ const queryOptions = {
               ...fetchMoreResult,
               items: {
                 ...fetchMoreResult.items,
-                edges: [...previousItems, ...newItems]
-              }
+                edges: [...previousItems, ...newItems],
+              },
             }
-          }
+          },
         })
-      }
+      },
     }
-  }
+  },
 }
 
 const ItemData = graphql(QueryItems, queryOptions)(
-  injectSheet(styles)(ItemList)
+  injectSheet(styles)(ItemList),
 )
 
 export default ItemData

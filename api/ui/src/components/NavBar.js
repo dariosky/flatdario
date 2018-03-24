@@ -43,19 +43,21 @@ const LinkBtn = injectSheet(styles)((
     title, url,
     external, children,
     icon,
-    classes,
+    classes, ...rest
   }) => {
   return external ?
-    <a href={external} className={classes.link}
-       target="_blank">
-      <FontAwesomeIcon
-        icon={icon || faExternalLinkAlt}
-        className={classes.icon}
-      />
-      {children}
-    </a>
-    :
     <li className={classes.li}>
+      <a href={external} className={classes.link} {...rest}
+         target="_blank">
+        <FontAwesomeIcon
+          icon={icon || faExternalLinkAlt}
+          className={classes.icon}
+        />
+        {children}
+      </a>
+    </li>
+    :
+    <li className={classes.li} {...rest} >
       <Link to={url} className={classes.link}>
         {children}
       </Link>

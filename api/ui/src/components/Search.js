@@ -19,7 +19,7 @@ const styles = {
     width: "100%",
     height: "1.2em",
     padding: "5px",
-    background: "#CCC",
+    background: "#FFF",
     color: "black",
     fontSize: "1.2rem",
     transition: "all 1s",

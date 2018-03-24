@@ -194,6 +194,13 @@ def remote_install():
     run('fab local_install')
 
 
+@task
+@flat_command
+def reset():
+    """ Update the collected sources """
+    run('git reset --hard')
+
+
 if not env.hosts:
     set_hosts('dariosky')  # the host where to deploy
 
