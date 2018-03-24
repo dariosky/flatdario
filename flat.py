@@ -7,6 +7,8 @@ import os
 import sys
 import textwrap
 
+from sing import single
+
 from collectors import *
 from collectors.rss import RSSCollector
 from collectors.tumblr import TumblrCollector
@@ -193,5 +195,8 @@ if __name__ == '__main__':
         agg.preview()
 
     if action == "runapi":
+        if not single():
+            print("Process already runing")
+            sys.exit()
         agg.runapi(production=not args.debug,
                    port=args.port)

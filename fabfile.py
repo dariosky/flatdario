@@ -97,9 +97,14 @@ def upload_secrets():
 def upload_files(uploads):
     remote_folder = Config.project_path
     with lcd(project_folder):
-        for filepath in uploads:
-            put(os.path.join(project_folder, filepath),
-                os.path.join(remote_folder, filepath))
+        with cd(Config.project_path):
+            for filepath in uploads:
+                src_path = os.path.join(project_folder, filepath)
+                dst_path = os.path.join(remote_folder, filepath)
+                if os.path.isdir(src_path):
+                    run(f"mkdir -p {dst_path}")
+                    dst_path = os.path.dirname(dst_path)
+                put(src_path, dst_path)
 
 
 @task
@@ -107,8 +112,6 @@ def upload_build():
     """ Upload the React build """
     # be sure that the build folder is there:
     build_folder = 'api/ui/build'
-    with cd(Config.project_path):
-        run(f"mkdir -p {build_folder}")
     upload_files([build_folder])
 
 
@@ -142,12 +145,11 @@ def add_to_cron_command(command, run_params, comment_id, log_filename, schedule)
     log_destination = os.path.join(Config.project_path, 'logs', log_filename)
     python = os.path.join(Config.venv, 'bin', 'python')
 
-    check_command = f'pgrep -f {command}'
     run_command = f'nohup {python} {command_full_path} {run_params}'
     log_command = f'>> {log_destination} 2>&1'
     cd_command = f'cd {Config.project_path}'
 
-    full_command = f'{check_command} || {cd_command} && {run_command} {log_command} &'
+    full_command = f'{cd_command} && {run_command} {log_command} &'
 
     existing_jobs = list(cron.find_comment(comment_id))
 
@@ -201,6 +203,6 @@ if __name__ == '__main__':
     from fabric.main import main
 
     sys.argv[1:] = [
-        "local_install",
+        "deploy",
     ]
     main()

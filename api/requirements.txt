@@ -6,3 +6,4 @@ Flask-GraphQL
 flask-cors
 python-crontab
 bjoern
+sing
