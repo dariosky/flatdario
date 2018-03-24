@@ -7,7 +7,7 @@ from crontab import CronTab
 from fabric.api import env, task
 from fabric.context_managers import prefix, cd, lcd
 from fabric.contrib.files import exists
-from fabric.operations import run, put
+from fabric.operations import run, put, local
 from fabric.tasks import execute
 
 project_folder = os.path.dirname(__file__)
@@ -74,8 +74,17 @@ def deploy():
         if not exists('.git'):
             print("Cloning GIT repo")
             execute(clone)
-        execute(update_requirements)
         execute(pull_repo)
+        execute(update_requirements)
+        execute(build)
+        execute(upload_build)
+
+
+@task
+def build():
+    """ Create an optimized production build """
+    with lcd(os.path.join(project_folder, 'api', 'ui')):
+        local('yarn build')
 
 
 @task

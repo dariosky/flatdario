@@ -33,7 +33,7 @@ query getItems($first:Int = 3, $cursor: String, $query:String) {
 const styles = {
   aggregation: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, 320px)",
+    gridTemplateColumns: "repeat(auto-fill, minmax(320px, auto))",
     gridGap: "2rem",
     justifyContent: "center",
     maxWidth: "1024px",

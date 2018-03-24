@@ -6,18 +6,6 @@ import withRouter from 'react-router-dom/es/withRouter'
 
 
 const styles = {
-  searchBar: {
-    position: 'sticky',
-    backgroundColor: "black",
-    top: 0,
-    width: '100%',
-    zIndex: 3,
-    padding: '1em 0',
-    boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.2), ' +
-    '0 4px 5px 0px rgba(0, 0, 0, 0.14),' +
-    ' 0 1px 10px 0px rgba(0, 0, 0, 0.12)',
-  },
-
   searchContainer: {
     width: "100%",
     maxWidth: "1024px",

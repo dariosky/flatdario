@@ -12,7 +12,13 @@ import {ApolloClient} from 'apollo-client'
 import {HttpLink} from 'apollo-link-http'
 import {InMemoryCache} from 'apollo-cache-inmemory'
 
-const httpLink = new HttpLink({uri: '/graphql'})
+console.info()
+const env_urls = {
+    // in development use the python API in another port
+    development: 'http://localhost:3001/graphql'
+  },
+  api_url = env_urls[process.env.NODE_ENV] || '/graphql'
+const httpLink = new HttpLink({uri: api_url})
 
 const client = new ApolloClient({
   link: httpLink,

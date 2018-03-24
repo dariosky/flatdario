@@ -58,7 +58,7 @@ class Header extends React.Component {
 
   componentDidMount() {
     window.addEventListener('scroll',
-      _.throttle(this.onScroll, 30, {trailing: true, leading: true}),
+      _.throttle(this.onScroll, 10, {trailing: true, leading: true}),
       false
     )
   }

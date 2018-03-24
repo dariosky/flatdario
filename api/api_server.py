@@ -36,6 +36,8 @@ def run_api(storage, host='127.0.0.1', port=3001,
 
     @app.route("/")
     def index():
+        if not production:
+            return flask.redirect('http://localhost:3000')
         return flask.render_template("index.html")
 
     @app.teardown_appcontext
@@ -46,7 +48,7 @@ def run_api(storage, host='127.0.0.1', port=3001,
         print(f"Running production server as "
               f"{'bjoern' if bjoern else 'Flask'}"
               f" on http://{host}:{port}")
-        if bjoern and False:
+        if bjoern:
             # apt-get install libev-dev
             # apt-get install python3-dev
             print("Running as bjoern")

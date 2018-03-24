@@ -9,13 +9,12 @@ const styles = {
     position: "relative",
     border: "1px solid #666",
     margin: "20px 0",
-    width: "320px",
     height: "220px",
 
     "&:hover": {
       transform: "scale(1.1)",
       zIndex: "2",
-    }
+    },
   },
 
   itemContent: `
@@ -49,7 +48,7 @@ const styles = {
     margin: 2px 0;
     text-align: right;
     font-size: 10px;
-  `
+  `,
 }
 
 const SubTitle = (props) => {
@@ -104,7 +103,7 @@ const CardContent = injectSheet(styles)((props) => {
 
 class Item extends React.Component {
   item = () => {
-    let {['extra']: extraJSON, ...res} = this.props.item
+    let {'extra': extraJSON, ...res} = this.props.item
     const extraObj = JSON.parse(extraJSON)
     return {...res, ...extraObj}
   }

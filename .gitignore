@@ -16,7 +16,8 @@ __pycache__/
 
 # The output of the build process: the flat site
 /build/*
-!.gitkeep
+/logs/*
+
 
 # We are experimenting, let's keep templates private for now ;)
 /flatbuilder/*/
@@ -25,3 +26,5 @@ __pycache__/
 .python-version
 node_modules
 api/ui/dist
+
+!.gitkeep
