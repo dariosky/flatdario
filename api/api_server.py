@@ -1,7 +1,10 @@
+import os
+
 import flask
 from flask import Flask
 from flask_cors import CORS
 from flask_graphql import GraphQLView
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 from api.schema import schema
 from storage.sql import StorageSqliteDB
@@ -11,18 +14,11 @@ try:
 except ImportError:
     bjoern = None
 
-from jinja2 import Environment, PackageLoader, select_autoescape
-
-jinja_env = Environment(
-    loader=PackageLoader('api', 'templates'),
-    autoescape=select_autoescape(['html', 'xml'])
-)
-
 
 def run_api(storage, host='127.0.0.1', port=3001,
             production=True):
     app = Flask(__name__,
-                # static_url_path=None,
+                # static_url_path="",
                 static_folder='ui/build',
                 template_folder='ui/build')
     CORS(app)
@@ -41,12 +37,17 @@ def run_api(storage, host='127.0.0.1', port=3001,
         )
     )
 
-    @app.route("/")
-    def index():
-        if not production:
-            return flask.redirect('http://localhost:3000')
-        return flask.render_template("index.html")
+    @app.route("/404/")
+    def not_found():
+        jinja_env = Environment(
+            loader=PackageLoader('api', 'templates'),
+            autoescape=select_autoescape(['html', 'xml'])
+        )
 
+        template = jinja_env.get_template('404.html')
+        return template.render(), 404
+
+    @app.route("/", defaults={"url": ""})
     @app.route('/<path:url>')
     def catch_all(url):
         """ Handle the page-not-found - apply some backward-compatibility redirect """
@@ -54,8 +55,10 @@ def run_api(storage, host='127.0.0.1', port=3001,
             return flask.redirect('https://getvideo.dariosky.it')
         if url.startswith('home'):
             return flask.redirect('https://home.dariosky.it')
-        template = jinja_env.get_template('404.html')
-        return template.render(), 404
+        ext = os.path.splitext(url)[-1]
+        if ext in {'.jpg', '.ico', '.png', '.map', '.js', '.svg', '.json', '.css'}:
+            return flask.send_from_directory('ui/build', url)
+        return flask.render_template("index.html")
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
