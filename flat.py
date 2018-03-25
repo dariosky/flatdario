@@ -17,7 +17,7 @@ from flatbuilder.preview import serve
 from storage import Storage
 
 logger = logging.getLogger(__name__)
-VERSION = "0.3"
+VERSION = "1.0"
 TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
 
 
@@ -195,7 +195,8 @@ if __name__ == '__main__':
         agg.preview()
 
     if action == "runapi":
-        if not single():
+        if not args.debug and not single():
+            # in debug mode, we have the watcher that run the 2nd time
             print("Process already runing")
             sys.exit()
         agg.runapi(production=not args.debug,

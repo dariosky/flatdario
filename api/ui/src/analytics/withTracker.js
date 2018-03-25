@@ -5,21 +5,25 @@
 
 import React, {Component} from 'react'
 import ReactGA from 'react-ga'
+import _ from 'lodash'
 
-export default function withTracker(WrappedComponent, options = {}) {
-  const trackPage = (page) => {
-    ReactGA.set({
-      page,
-      ...options,
-    })
-    ReactGA.pageview(page)
-  }
+const trackPage = (page) => {
+  ReactGA.set({
+    page,
+  })
+  ReactGA.pageview(page)
+}
 
+const throttledTrack = _.throttle(
+  trackPage,
+  1500, {trailing: true, leading: false},
+)
+
+export default function withTracker(WrappedComponent) {
   return class extends Component {
     componentDidMount() {
       const page = this.props.location.pathname
-      console.log("Tracking page", page)
-      trackPage(page)
+      throttledTrack(page)
     }
 
     componentWillReceiveProps(nextProps) {

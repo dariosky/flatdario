@@ -23,7 +23,7 @@ def run_api(storage, host='127.0.0.1', port=3001,
                 template_folder='ui/build')
     CORS(app)
 
-    app.debug = True
+    app.debug = not production
     assert isinstance(storage, StorageSqliteDB)
     db_session = storage.db
 
@@ -78,4 +78,4 @@ def run_api(storage, host='127.0.0.1', port=3001,
             app.run(host=host, port=port, threaded=True, debug=False, use_reloader=False)
     else:
         print("Running in Flask debug mode")
-        app.run(host=host, port=port, threaded=True)
+        app.run(host=host, port=port)
