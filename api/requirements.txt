@@ -7,8 +7,9 @@ flask-cors
 python-crontab
 
 sing
-gevent
-gunicorn
 
-# removed, it wasn't as light as expected
-# bjoern
+setproctitle
+
+bjoern
+# gunicorn
+# gevent

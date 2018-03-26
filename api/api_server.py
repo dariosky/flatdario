@@ -1,4 +1,5 @@
 import os
+from setproctitle import setproctitle
 
 import flask
 from flask import Flask
@@ -16,6 +17,7 @@ except ImportError:
 
 
 def get_app(storage, production=True):
+    setproctitle('flatAPI')
     app = Flask(__name__,
                 # static_url_path="",
                 static_folder='ui/build',
