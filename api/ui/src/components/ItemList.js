@@ -6,6 +6,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import Loader from './utils/Loader'
 import Message from './utils/Message'
 import injectSheet from 'react-jss'
+import Fade from './Animator'
 
 const QueryItems = gql`
 query getItems($first:Int = 3, $cursor: String, $query:String) {
@@ -62,7 +63,9 @@ class ItemList extends React.Component {
     }
     const items = data.items.edges
     const itemsBlock = items.map(
-      item => <Item key={item.node.id} item={item.node}/>,
+      (item, p) => <Fade in={true} key={item.node.id}>
+        <Item item={item.node}/>
+      </Fade>,
     )
     const hasMore = data.items.pageInfo.hasNextPage
     return [
