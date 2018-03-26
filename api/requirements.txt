@@ -5,5 +5,10 @@ Flask
 Flask-GraphQL
 flask-cors
 python-crontab
-bjoern
+
 sing
+gevent
+gunicorn
+
+# removed, it wasn't as light as expected
+# bjoern

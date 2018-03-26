@@ -15,8 +15,7 @@ except ImportError:
     bjoern = None
 
 
-def run_api(storage, host='127.0.0.1', port=3001,
-            production=True):
+def get_app(storage, production=True):
     app = Flask(__name__,
                 # static_url_path="",
                 static_folder='ui/build',
@@ -64,6 +63,12 @@ def run_api(storage, host='127.0.0.1', port=3001,
     def shutdown_session(exception=None):
         db_session.close()
 
+    return app
+
+
+def run_api(storage, host='127.0.0.1', port=3001,
+            production=True):
+    app = get_app(storage, production)
     if production:
         print(f"Running production server as "
               f"{'bjoern' if bjoern else 'Flask'}"
