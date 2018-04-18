@@ -34,10 +34,11 @@ query getItems($first:Int = 3, $cursor: String, $query:String) {
 const styles = {
   aggregation: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(320px, auto))",
+    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
     gridGap: "2rem",
     justifyContent: "center",
     maxWidth: "1024px",
+    padding: "0 20px", // badges are positioned off-screen: this prevents also scroll
     margin: "auto",
 
     "&:after": {
