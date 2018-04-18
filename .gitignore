@@ -30,3 +30,5 @@ api/ui/dist
 !.gitkeep
 .environment
 gunicorn.pid
+
+*.log

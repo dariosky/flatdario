@@ -65,7 +65,7 @@ class PocketCollector(OAuthCollector):
         return result
 
     def run(self, **params):
-        refresh_duplicates = params.pop('refresh_duplicates', False)
+        refresh_duplicates = self.refresh_duplicates
         # tried to use the Google OAuth implementation, but:
         # * Pocket does not support GET requests
         # * The Flow is quite not standard

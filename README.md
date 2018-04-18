@@ -49,7 +49,7 @@ And then point your browser to [http://localhost:7747](http://localhost:7747)
 
 ### Supported services
 
-#### Youtube likes
+#### Youtube (likes and uploaded)
 
 Collect videos you like in Youtube.
 

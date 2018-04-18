@@ -42,7 +42,7 @@ class Badge extends React.Component {
         color = "rgb(239, 68, 88)" //getpocket official
         icon = faGetPocket
         break
-      case "Youtube like":
+      case "Youtube":
         color = "#b31217" //youtube official red: https://www.youtube.com/yt/brand/color.html
         icon = faYoutube
         break

@@ -68,7 +68,7 @@ const CardContent = injectSheet(styles)((props) => {
   const background = () => {
     const {type} = item
     switch (type) {
-      case 'Youtube like':
+      case 'Youtube':
         return `url(${item.thumbnails['medium']['url']})`
       case 'Pocket':
         if (item.images) return `url(${item.images[0] || ''})`

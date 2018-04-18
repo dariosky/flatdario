@@ -3,7 +3,7 @@
 	<i class="type {{ fa_icon(item.type) }}"> </i>
 	<a class="item-content" href="{{ item.url }}">
 		<div class="thumb"
-			{% if item.type == "Youtube like" %}
+			{% if item.type == "Youtube" %}
 				style="background-image:url('{{ item.thumbnails['medium']['url'] }}')"
 			{% elif item.type=="Pocket" and item.images %}
 				style="background-image:url('{{ item.images[0] }}')"

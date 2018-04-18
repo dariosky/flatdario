@@ -24,7 +24,8 @@ class YouTubeLikesCollector(Collector):
     YOUTUBE_READONLY_SCOPE = "https://www.googleapis.com/auth/youtube.readonly"
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
-    type = 'Youtube like'
+    type = 'Youtube'
+    subtype = 'like'
 
     def get_credentials(self):
         flow = flow_from_clientsecrets(
@@ -39,7 +40,7 @@ class YouTubeLikesCollector(Collector):
         return credentials
 
     def run(self, **params):
-        refresh_duplicates = params.pop('refresh_duplicates', False)
+        refresh_duplicates = self.refresh_duplicates
         credentials = self.get_credentials()
 
         youtube = build(self.YOUTUBE_API_SERVICE_NAME, self.YOUTUBE_API_VERSION,
@@ -60,7 +61,7 @@ class YouTubeLikesCollector(Collector):
 
             playlistitems_list_request = youtube.playlistItems().list(
                 playlistId=list_id,
-                part="snippet",
+                part="snippet,status",
                 maxResults=5
             )
 
@@ -69,6 +70,9 @@ class YouTubeLikesCollector(Collector):
 
                 # Print information about each video.
                 for playlist_item in playlistitems_list_response["items"]:
+                    if playlist_item['status']['privacyStatus'] == 'unlisted':
+                        # ignore unlisted
+                        continue
                     snippet = playlist_item["snippet"]
                     title = snippet["title"]
                     video_id = snippet["resourceId"]["videoId"]
@@ -84,6 +88,7 @@ class YouTubeLikesCollector(Collector):
                     item = dict(
                         id=video_id,
                         type=self.type,
+                        subtype=self.subtype,
                         url="https://www.youtube.com/watch?v=%s" % video_id,
                         timestamp=timestamp,
                         title=title,
@@ -113,7 +118,8 @@ class YouTubeLikesCollector(Collector):
 # unfortunately since Sept.15, 2016 the watchLater playlist doesn't return items anymore
 
 class YouTubeMineCollector(YouTubeLikesCollector):
-    type = 'Youtube mine'
+    type = 'Youtube'
+    subtype = 'upload'
 
     def get_list_id(self, channel):
         return channel['contentDetails']['relatedPlaylists']['uploads']

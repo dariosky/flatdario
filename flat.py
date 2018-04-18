@@ -25,13 +25,13 @@ TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
 class Aggregator:
     collectors = [
         YouTubeMineCollector,
-        # YouTubeLikesCollector,
-        # PocketCollector,
-        # VimeoCollector,
-        # RSSCollector.get(url='https://dariosky.github.io/rss/index.rss'),
-        # RSSCollector.get(url='http://rss.dariosky.it/public.php?'
-        #                      'op=rss&id=-2&key=bbwf1t5a80b21066d41'),
-        # TumblrCollector.get('https://tumblr.dariosky.it'),
+        YouTubeLikesCollector,
+        PocketCollector,
+        VimeoCollector,
+        RSSCollector.get(url='https://dariosky.github.io/rss/index.rss'),
+        RSSCollector.get(url='http://rss.dariosky.it/public.php?'
+                             'op=rss&id=-2&key=bbwf1t5a80b21066d41'),
+        TumblrCollector.get('https://tumblr.dariosky.it'),
     ]
 
     def __init__(self):
