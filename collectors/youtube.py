@@ -47,16 +47,12 @@ class YouTubeLikesCollector(Collector):
                         cache_discovery=False,  # cache is disabled with oauthclient >= 4.0.0
                         )
 
+        logger.debug("Running %s collector." % self.type)
+
         channels_response = youtube.channels().list(
             mine=True,
             part="contentDetails"
         ).execute()
-
-        last_video_id = params.pop('last_id', None)
-        logger.debug(
-            "Running %s collector." % self.type +
-            "until %s" % last_video_id if last_video_id else ""
-        )
 
         count = 0
         for channel in channels_response["items"]:
@@ -113,4 +109,11 @@ class YouTubeLikesCollector(Collector):
     def get_list_id(self, channel):
         return channel['contentDetails']['relatedPlaylists']['likes']
 
+
 # unfortunately since Sept.15, 2016 the watchLater playlist doesn't return items anymore
+
+class YouTubeMineCollector(YouTubeLikesCollector):
+    type = 'Youtube mine'
+
+    def get_list_id(self, channel):
+        return channel['contentDetails']['relatedPlaylists']['uploads']

@@ -17,7 +17,7 @@ except ImportError:
 
 
 def get_app(storage, production=True):
-    setproctitle('flatAPI')
+    setproctitle('api webserver [flatAPI]')
     app = Flask(__name__,
                 # static_url_path="",
                 static_folder='ui/build',

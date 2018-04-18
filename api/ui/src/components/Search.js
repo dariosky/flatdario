@@ -11,6 +11,8 @@ const styles = {
     maxWidth: "1024px",
     display: 'flex',
     margin: "0 auto",
+    boxSizing: 'border-box',
+    padding: '0 30px',
     justifyContent: "flex-end",
   },
 
