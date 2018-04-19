@@ -13,3 +13,6 @@ setproctitle
 bjoern
 # gunicorn
 # gevent
+
+# reading opengraph
+git+https://github.com/erikriver/opengraph.git@master

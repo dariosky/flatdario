@@ -66,25 +66,7 @@ const CardContent = injectSheet(styles)((props) => {
   const {item, classes} = props
 
   const background = () => {
-    const {type} = item
-    switch (type) {
-      case 'Youtube':
-        return `url(${item.thumbnails['medium']['url']})`
-      case 'Pocket':
-        if (item.images) return `url(${item.images[0] || ''})`
-        break
-      case 'Vimeo':
-        if (item.thumbnails)
-          return `url(${item.thumbnails.sizes[2].link})`
-        break
-      case 'Tumblr':
-        if (item.img)
-          return `url(${item.img})`
-        break
-      default:
-        return ''
-    }
-    return ''
+    return `url(${item.thumb})` || ''
   }
 
   if (item.contentFormat === 'iframe') {
