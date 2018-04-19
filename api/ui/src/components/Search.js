@@ -14,11 +14,13 @@ const styles = {
     boxSizing: 'border-box',
     padding: '0 30px',
     justifyContent: "flex-end",
+    alignItems: "center",
   },
 
   searchInput: {
     flexGrow: 1,
     width: "100%",
+    margin: '10px auto',
     height: "1.2em",
     padding: "5px",
     background: "#FFF",

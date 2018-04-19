@@ -23,6 +23,7 @@ const styles = {
     display: block;
     transform: translateY( calc( var(--scrollparallax) * 1px ) );
     opacity: calc( (200 - var(--scrollparallax)) /200 );
+    will-change: transform, opacity;
   `,
 
   sub: `font-size: larger;`,
