@@ -54,10 +54,11 @@ class StorageSqliteDB(Storage):
         pass
 
     def upsert(self, item, update=False):
+        """ Write to SQL Item - move all extra fields in an extra json"""
         fields = {k: v for k, v in item.items()
                   if k in self.SQL_FIELDS}
         extra = {k: v for k, v in item.items()
-                 if k not in self.SQL_FIELDS and v}
+                 if k not in self.SQL_FIELDS}
         new = Item(
             **fields,
             extra=json.dumps(extra)

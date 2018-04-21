@@ -10,6 +10,7 @@ import textwrap
 from sing import single
 
 from collectors import *
+from collectors.grab_opengraph import fill_missing_infos
 from collectors.rss import RSSCollector
 from collectors.tumblr import TumblrCollector
 from collectors.youtube import YouTubeMineCollector
@@ -64,6 +65,7 @@ class Aggregator:
             initial_collect_params = collector.initial_parameters()
             # Run the collector
             collector.run(**initial_collect_params)
+        fill_missing_infos(self.db)
         self.db.close()
 
     def build(self, folder="build"):

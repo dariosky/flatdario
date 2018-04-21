@@ -16,7 +16,7 @@ ujson
 pyquery
 
 # ...
-requests[secure]
+requests
 pytz
 pyyaml
 
