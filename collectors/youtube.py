@@ -70,7 +70,7 @@ class YouTubeLikesCollector(Collector):
 
                 # Print information about each video.
                 for playlist_item in playlistitems_list_response["items"]:
-                    if playlist_item['status']['privacyStatus'] == 'unlisted':
+                    if playlist_item['status']['privacyStatus'] in ('unlisted', 'private'):
                         # ignore unlisted
                         continue
                     snippet = playlist_item["snippet"]
