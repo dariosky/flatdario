@@ -10,7 +10,7 @@ import textwrap
 from sing import single
 
 from collectors import *
-from collectors.grab_opengraph import fill_missing_infos
+from collectors.scrapers.grab_opengraph import fill_missing_infos
 from collectors.rss import RSSCollector
 from collectors.tumblr import TumblrCollector
 from collectors.youtube import YouTubeMineCollector
