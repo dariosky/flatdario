@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
@@ -33,19 +33,19 @@ query getItems($first:Int = 3, $cursor: String, $query:String) {
 
 const styles = {
   aggregation: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-    gridGap: "2rem",
-    justifyContent: "center",
-    maxWidth: "1024px",
-    padding: "0 20px", // badges are positioned off-screen: this prevents also scroll
-    margin: "auto",
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+    gridGap: '2rem',
+    justifyContent: 'center',
+    maxWidth: '1024px',
+    padding: '0 20px', // badges are positioned off-screen: this prevents also scroll
+    margin: 'auto',
 
-    "&:after": {
-      content: "",
-      flex: "auto",
-    },
-  },
+    '&:after': {
+      content: '',
+      flex: 'auto'
+    }
+  }
 }
 
 class ItemList extends React.Component {
@@ -59,14 +59,14 @@ class ItemList extends React.Component {
       return <Message color="orange" text="No data"/>
     }
     if (data && data.error) {
-      console.error("error:", data.error.message)
+      console.error('error:', data.error.message)
       return <Message color="tomato" text="Error getting data"/>
     }
     const items = data.items.edges
     const itemsBlock = items.map(
       (item, p) => <Fade in={true} key={item.node.id}>
         <Item item={item.node}/>
-      </Fade>,
+      </Fade>
     )
     const hasMore = data.items.pageInfo.hasNextPage
     return [
@@ -78,7 +78,7 @@ class ItemList extends React.Component {
         useCapture={{passive: true}}
         className={classes.aggregation}>
         {itemsBlock}
-      </InfiniteScroll>,
+      </InfiniteScroll>
     ]
   }
 }
@@ -90,8 +90,8 @@ const queryOptions = {
     return {
       variables: {
         first: 9,
-        query,
-      },
+        query
+      }
     }
   },
   props: ({data}) => {
@@ -101,7 +101,7 @@ const queryOptions = {
       loadMore: () => {
         return data.fetchMore({
           variables: {
-            cursor: data.items.pageInfo.endCursor,
+            cursor: data.items.pageInfo.endCursor
           },
           updateQuery(previousResult, {fetchMoreResult}) {
             if (!fetchMoreResult.items) {
@@ -113,18 +113,18 @@ const queryOptions = {
               ...fetchMoreResult,
               items: {
                 ...fetchMoreResult.items,
-                edges: [...previousItems, ...newItems],
-              },
+                edges: [...previousItems, ...newItems]
+              }
             }
-          },
+          }
         })
-      },
+      }
     }
-  },
+  }
 }
 
 const ItemData = graphql(QueryItems, queryOptions)(
-  injectSheet(styles)(ItemList),
+  injectSheet(styles)(ItemList)
 )
 
 export default ItemData

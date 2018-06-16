@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 import ItemList from './ItemList'
 import Header from './Header'
 import {Route, Switch} from 'react-router-dom'
@@ -26,7 +26,7 @@ class App extends React.Component {
         <Route path="/" exact component={withTracker(ItemList)}/>
         <Route path="/search/:query" exact component={withTracker(ItemList)}/>
         <Route path="/contacts" exact component={withTracker(Contacts)}/>
-      </Switch>,
+      </Switch>
     ]
   }
 }

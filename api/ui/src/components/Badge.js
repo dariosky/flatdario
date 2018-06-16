@@ -1,11 +1,7 @@
 import React from 'react'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import {
-  faGetPocket, faVimeo,
-  faYoutube, faTumblrSquare
-} from '@fortawesome/fontawesome-free-brands'
-import {faQuestionCircle} from '@fortawesome/fontawesome-free-solid'
-import {faRssSquare} from '@fortawesome/fontawesome-free-solid'
+import {faGetPocket, faTumblrSquare, faVimeo, faYoutube} from '@fortawesome/fontawesome-free-brands'
+import {faQuestionCircle, faRssSquare} from '@fortawesome/fontawesome-free-solid'
 import injectSheet from 'react-jss'
 
 const styles = {
@@ -38,28 +34,28 @@ class Badge extends React.Component {
     let icon, color
 
     switch (type) {
-      case "Pocket":
-        color = "rgb(239, 68, 88)" //getpocket official
+      case 'Pocket':
+        color = 'rgb(239, 68, 88)' //getpocket official
         icon = faGetPocket
         break
-      case "Youtube":
-        color = "#b31217" //youtube official red: https://www.youtube.com/yt/brand/color.html
+      case 'Youtube':
+        color = '#b31217' //youtube official red: https://www.youtube.com/yt/brand/color.html
         icon = faYoutube
         break
-      case "Vimeo":
-        color = "#000"
+      case 'Vimeo':
+        color = '#000'
         icon = faVimeo
         break
-      case "RSS":
+      case 'RSS':
         color = '#fbab19'
         icon = faRssSquare
         break
-      case "Tumblr":
-        color = "#01273a" // tumblr official
+      case 'Tumblr':
+        color = '#01273a' // tumblr official
         icon = faTumblrSquare
         break
       default:
-        console.warn("Unknown item type", type)
+        console.warn('Unknown item type', type)
         icon = faQuestionCircle
     }
     return <FontAwesomeIcon className={classes.type}

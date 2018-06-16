@@ -1,10 +1,7 @@
 import React from 'react'
 import injectSheet from 'react-jss'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import {
-  faHome, faExternalLinkAlt,
-  faPencilAlt,
-} from '@fortawesome/fontawesome-free-solid'
+import {faExternalLinkAlt, faHome, faPencilAlt} from '@fortawesome/fontawesome-free-solid'
 import {Link} from 'react-router-dom'
 
 const styles = {
@@ -12,29 +9,29 @@ const styles = {
     maxWidth: '1024px',
     margin: '0 auto',
     padding: '0 30px',
-    listStyle: 'none',
+    listStyle: 'none'
   },
 
   li: {
     display: 'inline-block',
-    marginRight: '5px',
+    marginRight: '5px'
   },
 
   link: {
     display: 'inline-block',
     padding: '5px 15px',
-    transition: "all .3s ease",
+    transition: 'all .3s ease',
 
     '&:hover': {
-      backgroundColor: "#666",
-      color: 'white',
-    },
+      backgroundColor: '#666',
+      color: 'white'
+    }
   },
 
   icon: {
-    verticalAlign: "-2px",
-    marginRight: "7px",
-  },
+    verticalAlign: '-2px',
+    marginRight: '7px'
+  }
 
 }
 
@@ -96,22 +93,22 @@ class NavBar extends React.Component {
 const fixedStyles = {
   fixed: {
     position: 'sticky',
-    backgroundColor: "black",
+    backgroundColor: 'black',
     top: 0,
     width: '100%',
     zIndex: 3,
     padding: '10px 0',
     boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.2), ' +
-    '0 4px 5px 0px rgba(0, 0, 0, 0.14),' +
-    ' 0 1px 10px 0px rgba(0, 0, 0, 0.12)',
-  },
+      '0 4px 5px 0px rgba(0, 0, 0, 0.14),' +
+      ' 0 1px 10px 0px rgba(0, 0, 0, 0.12)'
+  }
 }
 const Fixed = injectSheet(fixedStyles)(
   ({children, classes}) => {
     return <div className={classes.fixed}>
       {children}
     </div>
-  },
+  }
 )
 
 export {Fixed, LinkBtn}

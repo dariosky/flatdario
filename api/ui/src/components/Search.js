@@ -7,44 +7,53 @@ import withRouter from 'react-router-dom/es/withRouter'
 
 const styles = {
   searchContainer: {
-    width: "100%",
-    maxWidth: "1024px",
+    width: '100%',
+    maxWidth: '1024px',
     display: 'flex',
-    margin: "0 auto",
+    margin: '0 auto',
     boxSizing: 'border-box',
     padding: '0 30px',
-    justifyContent: "flex-end",
-    alignItems: "center",
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   },
 
   searchInput: {
     flexGrow: 1,
-    width: "100%",
+    width: '100%',
     margin: '10px auto',
-    height: "1.2em",
-    padding: "5px",
-    background: "#FFF",
-    color: "black",
-    fontSize: "1.2rem",
-    transition: "all 1s",
-    border: "1px silver",
+    height: '1.2em',
+    padding: '5px',
+    background: '#FFF',
+    color: 'black',
+    fontSize: '1.2rem',
+    transition: 'all 1s',
+    border: '1px silver',
 
-    "&:focus": {
-      background: "white"
+    '&:focus': {
+      background: 'white'
     }
   },
 
   searchIcon: {
     verticalAlign: 'middle',
-    marginLeft: '20px',
+    marginLeft: '20px'
   }
 }
 
 class Search extends React.Component {
   constructor(props) {
     super(props)
-    const query = this.props.match.params.query || ""
-    this.state = {query}
+    this.state = {query: ''}
+  }
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
+
+  componentWillReceiveProps(newProps) {
+    const query = newProps.match.params.query || ''
+    this.setState({query})
   }
 
   handleChange = (e) => {
@@ -60,12 +69,13 @@ class Search extends React.Component {
 
   render() {
     const {classes} = this.props
+    const {query} = this.state
     return (
       <div className={classes.searchBar}>
         <div className={classes.searchContainer}>
           <input className={classes.searchInput}
                  placeholder="Search ..."
-                 value={this.state.query}
+                 value={query}
                  onChange={this.handleChange}
           />
           <FontAwesomeIcon

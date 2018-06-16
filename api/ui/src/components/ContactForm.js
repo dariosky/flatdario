@@ -5,7 +5,7 @@ import injectSheet from 'react-jss'
 const styles = {
   form: {
     maxWidth: '1024px',
-    margin: '30px auto',
+    margin: '30px auto'
   },
   input: {
     width: '500px',
@@ -15,12 +15,12 @@ const styles = {
     margin: '15px 0',
     fontSize: '18pt',
     border: 0,
-    boxSizing: 'border-box',
+    boxSizing: 'border-box'
   },
   textarea: {},
   send: {
-    backgroundColor: 'white',
-  },
+    backgroundColor: 'white'
+  }
 }
 
 class ContactForm extends React.Component {

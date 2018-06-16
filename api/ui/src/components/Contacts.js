@@ -1,18 +1,13 @@
 import React from 'react'
 import injectSheet from 'react-jss'
 import {LinkBtn} from './NavBar'
-import {
-  faTwitter,
-  faLinkedin,
-  faInstagram,
-  faGithub,
-} from '@fortawesome/fontawesome-free-brands'
+import {faGithub, faInstagram, faLinkedin, faTwitter} from '@fortawesome/fontawesome-free-brands'
 
 const styles = {
   block: {
     maxWidth: '1024px',
-    margin: '30px auto',
-  },
+    margin: '30px auto'
+  }
 
 }
 

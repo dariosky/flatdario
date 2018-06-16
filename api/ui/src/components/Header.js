@@ -4,16 +4,16 @@ import injectSheet from 'react-jss'
 
 const styles = {
   header: {
-    color: "#eee",
-    minHeight: "50vh",
-    position: "relative",
-    background: "black no-repeat 50%",
+    color: '#eee',
+    minHeight: '50vh',
+    position: 'relative',
+    background: 'black no-repeat 50%',
     backgroundImage: `url(/img/coding-bkg.jpg)`,
     backgroundSize: 'cover',
     padding: '15px 10px',
     display: 'flex',
     flexDirection: 'column',
-    textAlign: 'center',
+    textAlign: 'center'
   },
 
   logo: `
@@ -26,14 +26,14 @@ const styles = {
     will-change: transform, opacity;
   `,
 
-  sub: `font-size: larger;`,
+  sub: `font-size: larger;`
 }
 
 class Header extends React.Component {
   state = {
     scrollPosition: 0,
     ticking: false,
-    $logo: null,
+    $logo: null
   }
 
   onScroll = () => {
@@ -53,7 +53,7 @@ class Header extends React.Component {
   update = () => {
     if (this.$logo) {
       const {scrollPosition} = this.state
-      this.$logo.style.setProperty("--scrollparallax", scrollPosition / 2)
+      this.$logo.style.setProperty('--scrollparallax', scrollPosition / 2)
     }
     this.setState({ticking: false})
   }
@@ -61,7 +61,7 @@ class Header extends React.Component {
   componentDidMount() {
     window.addEventListener('scroll',
       _.throttle(this.onScroll, 10, {trailing: true, leading: true}),
-      false,
+      false
     )
   }
 

@@ -9,14 +9,14 @@ import _ from 'lodash'
 
 const trackPage = (page) => {
   ReactGA.set({
-    page,
+    page
   })
   ReactGA.pageview(page)
 }
 
 const throttledTrack = _.throttle(
   trackPage,
-  1500, {trailing: true, leading: false},
+  1500, {trailing: true, leading: false}
 )
 
 export default function withTracker(WrappedComponent) {

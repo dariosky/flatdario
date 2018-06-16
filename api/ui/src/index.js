@@ -5,7 +5,6 @@ import App from './components/App'
 import './styles/site.css'
 // -- ReactRouter ---
 import {BrowserRouter as Router} from 'react-router-dom'
-
 // --- GraphQL ---
 import {ApolloProvider} from 'react-apollo'
 import {ApolloClient} from 'apollo-client'
