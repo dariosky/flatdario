@@ -4,17 +4,17 @@ import Badge from './Badge'
 
 const styles = {
   item: {
-    transition: "all .3s ease",
+    transition: 'all .3s ease',
 
-    position: "relative",
-    border: "1px solid #666",
-    margin: "20px 0",
-    height: "220px",
+    position: 'relative',
+    border: '1px solid #666',
+    margin: '20px 0',
+    height: '220px',
 
-    "&:hover": {
-      transform: "scale(1.1)",
-      zIndex: "2",
-    },
+    '&:hover': {
+      transform: 'scale(1.1)',
+      zIndex: '2'
+    }
   },
 
   itemContent: `
@@ -48,7 +48,7 @@ const styles = {
     margin: 2px 0;
     text-align: right;
     font-size: 10px;
-  `,
+  `
 }
 
 const SubTitle = (props) => {
@@ -95,7 +95,7 @@ class Item extends React.Component {
       {classes} = this.props
     return <div className={classes.item}>
       <Badge type={item.type}/>
-      <a href={item.url} target="_blank" className={classes.itemContent}>
+      <a href={item.url} target="_blank" rel="noopener" className={classes.itemContent}>
         <CardContent item={item}/>
         <div className={classes.title}>
           <div className='ellipsed-text'>

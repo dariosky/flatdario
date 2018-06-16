@@ -57,7 +57,7 @@ def get_app(storage, production=True):
         if url.startswith('home'):
             return flask.redirect('https://home.dariosky.it')
         ext = os.path.splitext(url)[-1]
-        if ext in {'.jpg', '.ico', '.png', '.map', '.js', '.svg', '.json', '.css'}:
+        if ext in {'.jpg', '.ico', '.png', '.map', '.js', '.svg', '.json', '.css', '.txt'}:
             return flask.send_from_directory('ui/build', url)
         return flask.render_template("index.html")
 
