@@ -12,6 +12,7 @@ muted_loggers = (
     'oauth2client',
     'requests',
     'urllib3',
+    'watchdog',
 )
 
 for logger_name in muted_loggers:

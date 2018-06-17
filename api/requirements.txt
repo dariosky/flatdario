@@ -16,3 +16,6 @@ bjoern
 
 # reading opengraph
 git+https://github.com/erikriver/opengraph.git@master
+
+# push notifications
+pywebpush

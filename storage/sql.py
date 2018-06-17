@@ -1,8 +1,9 @@
 import logging
-import sqlalchemy
 
+import sqlalchemy
 from flask import json
-from sqlalchemy import create_engine, Column, String, DateTime, func
+from sqlalchemy import (create_engine, Column, String,
+                        DateTime, func, Integer)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -24,6 +25,21 @@ class Item(Base):
     timestamp = Column(DateTime, nullable=False)
     title = Column(String, nullable=False)
     extra = Column(String)
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+
+
+class Subscription(Base):
+    __tablename__ = 'subscriptions'
+
+    id = Column(Integer, primary_key=True)
+    subscription = Column(String, nullable=False)
 
 
 class StorageSqliteDB(Storage):

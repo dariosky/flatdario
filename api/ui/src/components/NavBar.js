@@ -3,22 +3,25 @@ import injectSheet from 'react-jss'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import {faExternalLinkAlt, faHome, faPencilAlt} from '@fortawesome/fontawesome-free-solid'
 import {Link} from 'react-router-dom'
+import SubscribeBtn from './SubscriptionBtn'
+import config from '../util/config'
 
 const styles = {
   navbar: {
     maxWidth: '1024px',
     margin: '0 auto',
     padding: '0 30px',
-    listStyle: 'none'
+    listStyle: 'none',
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'left'
   },
 
   li: {
-    display: 'inline-block',
-    marginRight: '5px'
+    margin: '5px'
   },
 
   link: {
-    display: 'inline-block',
     padding: '5px 15px',
     transition: 'all .3s ease',
 
@@ -86,6 +89,8 @@ class NavBar extends React.Component {
         />
         Contacts
       </LinkBtn>
+
+      <SubscribeBtn applicationServerKey={config.APPLICATION_SERVER_KEY}/>
     </ul>
   }
 }

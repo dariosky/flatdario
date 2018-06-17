@@ -32,3 +32,4 @@ api/ui/dist
 gunicorn.pid
 
 *.log
+*.pem

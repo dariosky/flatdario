@@ -1,3 +1,5 @@
+import json
+import logging
 import os
 from setproctitle import setproctitle
 
@@ -8,12 +10,14 @@ from flask_graphql import GraphQLView
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from api.schema import schema
-from storage.sql import StorageSqliteDB
+from storage.sql import StorageSqliteDB, Subscription
 
 try:
     import bjoern
 except ImportError:
     bjoern = None
+
+logger = logging.getLogger("flat.api.server")
 
 
 def get_app(storage, production=True):
@@ -47,6 +51,32 @@ def get_app(storage, production=True):
 
         template = jinja_env.get_template('404.html')
         return template.render(), 404
+
+    @app.route("/push/subscribe", methods=['POST'])
+    def subscribe():
+        subinfo = flask.request.json
+        logger.info(f"Got sub-request: {subinfo}")
+        sub_json = json.dumps(subinfo, sort_keys=True)
+        subscription = Subscription(
+            subscription=sub_json
+        )
+        db_session.add(subscription)
+        db_session.commit()
+        return "You subscribed :)"
+
+    @app.route("/push/unsubscribe", methods=['POST'])
+    def unsubscribe():
+        subinfo = flask.request.json
+        sub_json = json.dumps(subinfo, sort_keys=True)
+        logger.info(f"Got unsub-request: {subinfo}")
+        subscriptions = db_session.query(Subscription).filter_by(
+            subscription=sub_json
+        )
+        if subscriptions.count() != 1:
+            return "Cannot unsubscribe", 409
+        subscriptions.delete()
+        db_session.commit()
+        return "You Unsubscribed :)"
 
     @app.route("/", defaults={"url": ""})
     @app.route('/<path:url>')

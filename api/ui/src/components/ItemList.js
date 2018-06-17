@@ -40,6 +40,7 @@ const styles = {
     maxWidth: '1024px',
     padding: '0 20px', // badges are positioned off-screen: this prevents also scroll
     margin: 'auto',
+    overflow: 'hidden',
 
     '&:after': {
       content: '',

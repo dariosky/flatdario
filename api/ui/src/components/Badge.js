@@ -61,7 +61,7 @@ class Badge extends React.Component {
     return <FontAwesomeIcon className={classes.type}
                             color={color}
                             icon={icon}
-                            size="3x"
+                            size="2x"
     />
   }
 }
