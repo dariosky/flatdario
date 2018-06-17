@@ -7,6 +7,8 @@ import NavBar, {Fixed} from './NavBar'
 import Contacts from './Contacts'
 import withTracker from '../analytics/withTracker'
 import ReactGA from 'react-ga'
+// Hot-loader
+import {hot} from 'react-hot-loader'
 
 ReactGA.initialize('UA-62120-5')
 
@@ -31,4 +33,4 @@ class App extends React.Component {
   }
 }
 
-export default App
+export default hot(module)(App)
