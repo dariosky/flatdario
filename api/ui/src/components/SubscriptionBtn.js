@@ -29,8 +29,8 @@ const styles = {
     backgroundColor: red;
   `,
   subscribed: `
-    backgroundColor: #BFFFAE;
-    color: black;  
+    backgroundColor: #1a3446;
+    color: white;  
   `,
   icon: `
     margin-left: 5px;
