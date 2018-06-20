@@ -16,7 +16,8 @@ const isLocalhost = Boolean(
   window.location.hostname.match(
     /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
   )
-);
+)
+const RUN_LOCALHOST = true;
 
 export default function register() {
   // to enable SW only in production add: process.env.NODE_ENV === 'production' &&
@@ -31,8 +32,7 @@ export default function register() {
     }
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL}/custom-service-worker.js`;
-
-      if (isLocalhost) {
+      if (isLocalhost && !RUN_LOCALHOST) {
         // This is running on localhost. Lets check if a service worker still exists or not.
         checkValidServiceWorker(swUrl);
 

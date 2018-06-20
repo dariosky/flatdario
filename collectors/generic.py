@@ -13,6 +13,7 @@ muted_loggers = (
     'requests',
     'urllib3',
     'watchdog',
+    'PIL',
 )
 
 for logger_name in muted_loggers:

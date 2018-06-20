@@ -10,6 +10,7 @@ from flask_graphql import GraphQLView
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from api.schema import schema
+from api.util.flask_utils import nocache
 from storage.sql import StorageSqliteDB, Subscription
 
 try:
@@ -18,6 +19,10 @@ except ImportError:
     bjoern = None
 
 logger = logging.getLogger("flat.api.server")
+
+SERVED_EXTENSIONS = {'.jpg', '.ico', '.png', '.map', '.js', '.svg',
+                     '.json', '.css', '.txt'}
+service_worker_path = '/custom-service-worker.js'  # this is served with no cache
 
 
 def get_app(storage, production=True):
@@ -31,6 +36,25 @@ def get_app(storage, production=True):
     app.debug = not production
     assert isinstance(storage, StorageSqliteDB)
     db_session = storage.db
+
+    def get_latest_sw():
+        latest_file = None
+        latest_time = 0
+        ui_path = os.path.join(os.path.dirname(__file__), 'ui')
+        for path in (
+            'build/custom-service-worker.js',
+            # 'src/custom-service-worker.js',
+        ):
+            mtime = os.path.getmtime(
+                os.path.join(ui_path, path)
+            )
+            if mtime > latest_time:
+                latest_file = path
+                latest_time = mtime
+        logger.debug(f"Serviceworker: {latest_file}")
+        return latest_file
+
+    latest_sw = get_latest_sw()
 
     app.add_url_rule(
         '/graphql',
@@ -78,6 +102,11 @@ def get_app(storage, production=True):
         db_session.commit()
         return "You Unsubscribed :)"
 
+    @app.route(service_worker_path)
+    @nocache
+    def service_worker():
+        return flask.send_from_directory('ui', latest_sw)
+
     @app.route("/", defaults={"url": ""})
     @app.route('/<path:url>')
     def catch_all(url):
@@ -87,7 +116,7 @@ def get_app(storage, production=True):
         if url.startswith('home'):
             return flask.redirect('https://home.dariosky.it')
         ext = os.path.splitext(url)[-1]
-        if ext in {'.jpg', '.ico', '.png', '.map', '.js', '.svg', '.json', '.css', '.txt'}:
+        if ext in SERVED_EXTENSIONS:
             return flask.send_from_directory('ui/build', url)
         return flask.render_template("index.html")
 

@@ -10,11 +10,12 @@ const path = require('path');
 module.exports = function override(config, env) {
   config = rewireReactHotLoader(config, env) // hot-loader
 
-  if (env === 'production') { // webpack bundle analyzer
-    config = rewireWebpackBundleAnalyzer(config, env, {
-      analyzerMode: 'static',
-      reportFilename: 'report.html'
-    })
+  if (env === 'production') {
+    // webpack bundle analyzer
+    /* config = rewireWebpackBundleAnalyzer(config, env, {
+       analyzerMode: 'static',
+       reportFilename: 'report.html'
+     })*/
 
     // workbox service adding custom Service-worker
     // the basic workbox config is like this:
@@ -25,8 +26,6 @@ module.exports = function override(config, env) {
       swSrc: path.join(__dirname, 'src', 'custom-service-worker.js')
     };
     config = rewireWorkboxInject(workboxConfig)(config, env);
-
-
   }
   return config
 }

@@ -40,7 +40,6 @@ const styles = {
     maxWidth: '1024px',
     padding: '0 20px', // badges are positioned off-screen: this prevents also scroll
     margin: 'auto',
-    overflow: 'hidden',
 
     '&:after': {
       content: '',
@@ -70,17 +69,18 @@ class ItemList extends React.Component {
       </Fade>
     )
     const hasMore = data.items.pageInfo.hasNextPage
-    return [
-      <InfiniteScroll
-        key="scroller"
-        loadMore={loadMore}
-        hasMore={hasMore}
-        loader={<Loader key={0}/>}
-        useCapture={{passive: true}}
-        className={classes.aggregation}>
-        {itemsBlock}
-      </InfiniteScroll>
-    ]
+    return (
+      <div className="clipper" style={{overflow: 'auto'}}>
+        <InfiniteScroll
+          loadMore={loadMore}
+          hasMore={hasMore}
+          loader={<Loader key={0}/>}
+          useCapture={{passive: true}}
+          className={classes.aggregation}>
+          {itemsBlock}
+        </InfiniteScroll>
+      </div>
+    )
   }
 }
 

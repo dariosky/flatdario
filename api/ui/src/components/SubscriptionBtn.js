@@ -54,7 +54,6 @@ class SubscriptionBtn extends React.Component {
       visible: false
     })
     isSubscribed().then((result) => {
-      console.log('subscribed?', result)
       this.setState({
         subscribed: result,
         visible: isSubscribeAvailable()
