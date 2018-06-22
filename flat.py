@@ -19,7 +19,7 @@ from flatbuilder.preview import serve
 from storage import Storage
 
 logger = logging.getLogger(__name__)
-VERSION = "1.0"
+VERSION = "1.1"
 TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
 PROJECT_PATH = os.path.dirname(__file__)
 os.chdir(PROJECT_PATH)
@@ -147,7 +147,10 @@ def get_options():
 
     parser.add_argument('action',
                         default="collect+build", nargs='?',
-                        choices="init, collect+build, collect, build, preview, runapi, notify".split(", "),
+                        choices=("init",
+                                 "collect+build", "collect", "build",
+                                 "preview", "runapi",
+                                 "notify"),
                         help=textwrap.dedent("""
                             init:    initialize the build/ folder with the template specified
                                      by the --template option (do --list to list templates)
@@ -200,6 +203,7 @@ if __name__ == '__main__':
         agg.collect(
             refresh_duplicates=args.update,
         )
+        agg.send_push_history()  # notify after collection
 
     if action in ("collect+build", "build"):
         agg.build()
