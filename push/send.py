@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-from pywebpush import webpush
+from pywebpush import webpush, WebPushException
 
 logger = logging.getLogger("flat.push")
 
@@ -47,6 +47,12 @@ def send_notification(data, subscription, db):
         PushSender.send_push_notification(
             data, sub_data
         )
+    except WebPushException as e:
+        if e.message == "Push failed: 410 NotRegistered":
+            logger.warning("Subscription is now invalid, deactivating.")
+            db.invalidate_subscription(subscription)
+        else:
+            raise
     except Exception as e:
         logger.error(f"Error on notification:\n{e}\n{subscription}")
     else:

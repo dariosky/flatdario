@@ -44,6 +44,7 @@ class Subscription(Base):
     user_agent = Column(String, nullable=True)
     subscription = Column(String, nullable=False)
     last_notification = Column(DateTime, nullable=True)
+    invalidation_date = Column(DateTime, nullable=True)
 
     @property
     def min_date(self):
@@ -115,6 +116,7 @@ class StorageSqliteDB(Storage):
     def active_subscriptions(self):
         return list(
             self.db.query(Subscription)
+                .filter(Subscription.invalidation_date.is_(None))
                 .order_by(sqlalchemy.asc(Subscription.subscription_date))
         )
 
@@ -124,5 +126,13 @@ class StorageSqliteDB(Storage):
             Subscription.subscription == subscription
         )
         subscription = q.first()
-        subscription.last_notification = datetime.datetime.now()
+        subscription.last_notification = datetime.datetime.utcnow()
+        self.db.commit()
+
+    def invalidate_subscription(self, subscription):
+        q = self.db.query(Subscription).filter(
+            Subscription.subscription == subscription
+        )
+        subscription = q.first()
+        subscription.invalidation_date = datetime.datetime.utcnow()
         self.db.commit()
