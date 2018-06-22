@@ -66,7 +66,7 @@ def broadcast_notification(data, db):
 
 def send_all_missing_notifications(db):
     subscriptions = db.active_subscriptions()
-    
+
     if not subscriptions:
         return
     min_date = subscriptions[0].min_date
@@ -78,7 +78,7 @@ def send_all_missing_notifications(db):
     logger.debug(f"Notifications for {len(items)} items")
 
     for subitem in subscriptions:
-        start_date = subitem.last_notification or subitem.subscription_date
+        start_date = subitem.min_date
         for item in items:
             if item['timestamp'] > start_date:
                 data = dict(
