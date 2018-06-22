@@ -111,7 +111,7 @@ class StorageSqliteDB(Storage):
         self.db.close()
 
     def active_subscriptions(self):
-        return (
+        return list(
             self.db.query(Subscription)
                 .order_by(sqlalchemy.asc(Subscription.subscription_date))
         )

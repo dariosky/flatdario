@@ -66,6 +66,7 @@ def broadcast_notification(data, db):
 
 def send_all_missing_notifications(db):
     subscriptions = db.active_subscriptions()
+    
     if not subscriptions:
         return
     min_date = subscriptions[0].min_date

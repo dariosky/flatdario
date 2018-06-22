@@ -147,13 +147,14 @@ def get_options():
 
     parser.add_argument('action',
                         default="collect+build", nargs='?',
-                        choices="init, collect+build, collect, build, preview, runapi".split(", "),
+                        choices="init, collect+build, collect, build, preview, runapi, notify".split(", "),
                         help=textwrap.dedent("""
                             init:    initialize the build/ folder with the template specified
                                      by the --template option (do --list to list templates)
                             collect: get the data from the sources and store in the local DB
                             build:   using the local DB update the content of build/
                             preview: serve the content of build/ to preview the result site
+                            notify:  send the push notifications to subscribed clients 
                         """),
                         )
 
@@ -216,3 +217,6 @@ if __name__ == '__main__':
             sys.exit()
         agg.runapi(production=not args.debug,
                    port=args.port)
+
+    if action == "notify":
+        agg.send_push_history()
