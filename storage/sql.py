@@ -47,7 +47,9 @@ class Subscription(Base):
 
     @property
     def min_date(self):
-        return self.last_notification or self.subscription_date
+        return (self.last_notification
+                or self.subscription_date
+                or (datetime.datetime.now() - datetime.timedelta(days=1)))
 
 
 class StorageSqliteDB(Storage):

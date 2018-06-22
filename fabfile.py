@@ -147,7 +147,7 @@ def upload_db():
 
 @task
 def upload_secret_claims():
-    uploads = ['push/private_key', 'push/claims.json']
+    uploads = ['push/private_key.pem', 'push/claims.json']
     upload_files(uploads)
 
 
