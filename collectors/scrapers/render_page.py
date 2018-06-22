@@ -8,10 +8,12 @@ def grab_largest_image(url):
     from pyppeteer import launch
 
     async def main():
-        browser = await launch()
-        page = await browser.newPage()
-        logger.info(f"Opening page {url}")
+        browser = None
         try:
+            browser = await launch()
+            page = await browser.newPage()
+            logger.info(f"Opening page {url}")
+
             await page.goto(url, timeout=10000)
 
             max_img = await page.evaluate('''() => {
@@ -33,10 +35,11 @@ def grab_largest_image(url):
                         return maxImg
                     }''')
             return max_img
-        except:
+        except Exception as e:
+            logger.error(f"Error rendering page {url}")
             pass
         finally:
-            await browser.close()
+            if browser:
+                await browser.close()
 
     return asyncio.get_event_loop().run_until_complete(main())
-
