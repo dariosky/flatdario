@@ -28,5 +28,17 @@ class Storage:
     def max_timestamp(self, **kwargs):
         raise NotImplementedError
 
+    # generic ***
+
     def close(self):
         raise NotImplementedError
+
+    # push notifications ***
+
+    def active_subscriptions(self):
+        """ Return all the active push subscription """
+        raise NotImplementedError()
+
+    def set_last_notification(self, subscription):
+        """ Mark the time when the subscription got last notified """
+        raise NotImplementedError()

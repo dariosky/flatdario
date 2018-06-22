@@ -10,8 +10,8 @@ import textwrap
 from sing import single
 
 from collectors import *
-from collectors.scrapers.grab_opengraph import fill_missing_infos
 from collectors.rss import RSSCollector
+from collectors.scrapers.grab_opengraph import fill_missing_infos
 from collectors.tumblr import TumblrCollector
 from collectors.youtube import YouTubeMineCollector
 from flatbuilder.builder import Builder, Template, NotATemplateFolder
@@ -21,6 +21,8 @@ from storage import Storage
 logger = logging.getLogger(__name__)
 VERSION = "1.0"
 TEMPLATE_CONTAINER_FOLDER = "flatbuilder"
+PROJECT_PATH = os.path.dirname(__file__)
+os.chdir(PROJECT_PATH)
 
 
 class Aggregator:
@@ -46,7 +48,7 @@ class Aggregator:
         self.db = Storage.get(self.db_format, self.db_filename)
 
     @staticmethod
-    def load_config(config_file='flat.json'):
+    def load_config(config_file=os.path.join(PROJECT_PATH, 'flat.json')):
         if os.path.isfile(config_file):
             logger.debug(f"Getting configuration from {config_file}")
             with open(config_file, 'r', encoding='utf8') as f:
@@ -116,6 +118,15 @@ class Aggregator:
     def runapi(self, production=False, port=3001):
         from api.api_server import run_api
         run_api(self.db, production=production, port=port)
+
+    def send_push_notifications(self, data):
+        from push.send import broadcast_notification
+        broadcast_notification(data, self.db)
+
+    def send_push_history(self):
+        """ Send the notifications that clients are missing """
+        from push.send import send_all_missing_notifications
+        send_all_missing_notifications(self.db)
 
 
 def get_options():

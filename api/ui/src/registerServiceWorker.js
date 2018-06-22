@@ -30,8 +30,14 @@ export default function register() {
       // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
       return;
     }
+
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL}/custom-service-worker.js`;
+
+      navigator.serviceWorker.addEventListener('message', function (event) {
+        console.log('Received a message from service worker: ', event.data);
+      });
+
       if (isLocalhost && !RUN_LOCALHOST) {
         // This is running on localhost. Lets check if a service worker still exists or not.
         checkValidServiceWorker(swUrl);

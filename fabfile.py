@@ -5,9 +5,9 @@ from functools import wraps
 
 from crontab import CronTab
 from fabric.api import env, task
-from fabric.context_managers import prefix, cd, lcd
+from fabric.context_managers import prefix, cd, lcd, settings, hide
 from fabric.contrib.files import exists
-from fabric.operations import run, put, local
+from fabric.operations import run, put, local, get
 from fabric.tasks import execute
 
 project_folder = os.path.dirname(__file__)
@@ -107,6 +107,27 @@ def upload_files(uploads):
                 put(src_path, dst_path)
 
 
+def is_dir(path, use_sudo=False):
+    """
+    Check if a path exists, and is a directory.
+    """
+    with settings(hide('running', 'warnings'), warn_only=True):
+        return run(f'[ -d "{path}" ]').succeeded
+
+
+def download_files(downloads):
+    remote_folder = Config.project_path
+    with lcd(project_folder):
+        with cd(Config.project_path):
+            for filepath in downloads:
+                src_path = os.path.join(remote_folder, filepath)
+                dst_path = os.path.join(project_folder, filepath)
+                if is_dir(src_path):
+                    local(f"mkdir -p {dst_path}")
+                    dst_path = os.path.dirname(dst_path)
+                get(src_path, dst_path)
+
+
 @task
 def upload_build():
     """ Upload the React build """
@@ -118,8 +139,23 @@ def upload_build():
 @task
 def upload_db():
     """ Upload the local DB online (deleting it) """
-    uploads = ['db.sqlite']
+    confirm = input("WARNING: You're overwriting the remote DB [y/N]: ")
+    if confirm.strip().lower() == "y":
+        uploads = ['db.sqlite']
+        upload_files(uploads)
+
+
+@task
+def upload_secret_claims():
+    uploads = ['push/private_key', 'push/claims.json']
     upload_files(uploads)
+
+
+@task
+def download_db():
+    """ Download the remote DB online (deleting the local one) """
+    downloads = ['db.sqlite']
+    download_files(downloads)
 
 
 @task
@@ -210,6 +246,7 @@ if __name__ == '__main__':
     from fabric.main import main
 
     sys.argv[1:] = [
-        "deploy",
+        "download_db",
+        # "deploy",
     ]
     main()

@@ -5,9 +5,6 @@ import opengraph
 from collectors.scrapers.render_page import grab_largest_image
 
 logger = logging.getLogger(__name__)
-logging.getLogger('chardet').setLevel(logging.INFO)
-logging.getLogger('pyppeteer').setLevel(logging.WARNING)
-logging.getLogger('websockets').setLevel(logging.INFO)
 
 
 def get_thumbnail(item):

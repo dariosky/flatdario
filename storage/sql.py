@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 import sqlalchemy
@@ -39,7 +40,14 @@ class Subscription(Base):
     __tablename__ = 'subscriptions'
 
     id = Column(Integer, primary_key=True)
+    subscription_date = Column(DateTime, default=datetime.datetime.utcnow)
+    user_agent = Column(String, nullable=True)
     subscription = Column(String, nullable=False)
+    last_notification = Column(DateTime, nullable=True)
+
+    @property
+    def min_date(self):
+        return self.last_notification or self.subscription_date
 
 
 class StorageSqliteDB(Storage):
@@ -101,3 +109,18 @@ class StorageSqliteDB(Storage):
 
     def close(self):
         self.db.close()
+
+    def active_subscriptions(self):
+        return (
+            self.db.query(Subscription)
+                .order_by(sqlalchemy.asc(Subscription.subscription_date))
+        )
+
+    def set_last_notification(self, subscription):
+        """ Mark the time when the subscription got last notified """
+        q = self.db.query(Subscription).filter(
+            Subscription.subscription == subscription
+        )
+        subscription = q.first()
+        subscription.last_notification = datetime.datetime.now()
+        self.db.commit()

@@ -32,4 +32,7 @@ api/ui/dist
 gunicorn.pid
 
 *.log
-*.pem
+
+# push notifications
+/push/*.pem
+/push/claims.json

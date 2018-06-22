@@ -82,7 +82,8 @@ def get_app(storage, production=True):
         logger.info(f"Got sub-request: {subinfo}")
         sub_json = json.dumps(subinfo, sort_keys=True)
         subscription = Subscription(
-            subscription=sub_json
+            subscription=sub_json,
+            user_agent=flask.request.headers.get('User-Agent')
         )
         db_session.add(subscription)
         db_session.commit()

@@ -9,11 +9,9 @@ from oauth2client.tools import (ClientRedirectServer,
 
 muted_loggers = (
     'googleapiclient.discovery',
-    'oauth2client',
-    'requests',
-    'urllib3',
+    'oauth2client', 'requests', 'urllib3',
     'watchdog',
-    'PIL',
+    'PIL', 'chardet', 'pyppeteer', 'websockets',
 )
 
 for logger_name in muted_loggers:
