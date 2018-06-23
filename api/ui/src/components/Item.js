@@ -65,8 +65,8 @@ const SubTitle = (props) => {
 const CardContent = injectSheet(styles)((props) => {
   const {item, classes} = props
 
-  const background = () => {
-    return `url(${item.thumb})` || ''
+  const backgroundStyle = () => {
+    return item.thumb && {backgroundImage: `url(${item.thumb})`}
   }
 
   if (item.contentFormat === 'iframe') {
@@ -78,7 +78,7 @@ const CardContent = injectSheet(styles)((props) => {
   }
   else {
     return <div className={classes.thumb}
-                style={{backgroundImage: background()}}
+                style={backgroundStyle()}
     />
   }
 })

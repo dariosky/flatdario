@@ -1,6 +1,11 @@
 workbox.clientsClaim();
 
-self.__precacheManifest = [].concat(self.__precacheManifest || []);
+self.__precacheManifest = [
+  {url: '/img/dariovarotto-white.svg', revision: 'v1'},
+  {url: '/img/coding-bkg.jpg', revision: 'v1'},
+  {url: 'https://fonts.googleapis.com/css?family=Open+Sans', revision: 'v1'}
+].concat(self.__precacheManifest);
+
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
