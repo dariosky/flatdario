@@ -4,7 +4,7 @@ import Badge from './Badge'
 
 const styles = {
   item: {
-    transition: 'all .3s ease',
+    transition: 'all .2s ease',
 
     position: 'relative',
     border: '1px solid #666',
@@ -66,7 +66,7 @@ const CardContent = injectSheet(styles)((props) => {
   const {item, classes} = props
 
   const backgroundStyle = () => {
-    return item.thumb && {backgroundImage: `url(${item.thumb})`}
+    return item.thumb ? {backgroundImage: `url(${item.thumb})`} : {}
   }
 
   if (item.contentFormat === 'iframe') {
@@ -77,8 +77,7 @@ const CardContent = injectSheet(styles)((props) => {
     />
   }
   else {
-    return <div className={classes.thumb}
-                style={backgroundStyle()}
+    return <div className={classes.thumb} style={backgroundStyle()}
     />
   }
 })

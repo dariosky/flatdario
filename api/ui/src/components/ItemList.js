@@ -8,6 +8,9 @@ import Message from './utils/Message'
 import injectSheet from 'react-jss'
 import Fade from './Animator'
 
+const FETCH_PAGE_SIZE = 12
+
+
 const QueryItems = gql`
 query getItems($first:Int = 3, $cursor: String, $query:String) {
   items(first: $first, sort: TIMESTAMP_DESC, after: $cursor
@@ -76,6 +79,7 @@ class ItemList extends React.Component {
           hasMore={hasMore}
           loader={<Loader key={0}/>}
           useCapture={{passive: true}}
+          threshold={400} // 250 is the default
           className={classes.aggregation}>
           {itemsBlock}
         </InfiniteScroll>
@@ -90,7 +94,7 @@ const queryOptions = {
     // map the object props to query options
     return {
       variables: {
-        first: 9,
+        first: FETCH_PAGE_SIZE,
         query
       }
     }
