@@ -6,10 +6,8 @@ import InfiniteScroll from 'react-infinite-scroller'
 import Loader from './utils/Loader'
 import Message from './utils/Message'
 import injectSheet from 'react-jss'
-import Fade from './Animator'
 
 const FETCH_PAGE_SIZE = 12
-
 
 const QueryItems = gql`
 query getItems($first:Int = 3, $cursor: String, $query:String) {
@@ -38,7 +36,10 @@ const styles = {
   aggregation: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+    gridAutoRows: 'minmax(300px, auto)',
     gridGap: '2rem',
+    gridAutoFlow: 'dense',
+
     justifyContent: 'center',
     maxWidth: '1024px',
     padding: '0 20px', // badges are positioned off-screen: this prevents also scroll
@@ -67,9 +68,8 @@ class ItemList extends React.Component {
     }
     const items = data.items.edges
     const itemsBlock = items.map(
-      (item, p) => <Fade in={true} key={item.node.id}>
-        <Item item={item.node}/>
-      </Fade>
+      (item, p) => <Item key={item.node.id}
+                         item={item.node}/>
     )
     const hasMore = data.items.pageInfo.hasNextPage
     return (

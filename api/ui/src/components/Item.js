@@ -9,12 +9,21 @@ const styles = {
     position: 'relative',
     border: '1px solid #666',
     margin: '20px 0',
-    height: '220px',
+    height: '100%',
 
     '&:hover': {
-      transform: 'scale(1.1)',
+      transform: 'scale(1.05)',
       zIndex: '2'
     }
+  },
+
+  sizeM: {
+    gridColumnEnd: 'span 2',
+    height: '400px'
+  },
+  sizeL: {
+    gridColumnEnd: 'span 3',
+    height: '400px'
   },
 
   itemContent: `
@@ -65,8 +74,15 @@ const SubTitle = (props) => {
 const CardContent = injectSheet(styles)((props) => {
   const {item, classes} = props
 
+
+  let getThumb = function () {
+    if (item.size === 'XL') {
+      if (item.thumbnails.high) return item.thumbnails.high.url
+    }
+    return item.thumb
+  }
   const backgroundStyle = () => {
-    return item.thumb ? {backgroundImage: `url(${item.thumb})`} : {}
+    return item.thumb ? {backgroundImage: `url(${getThumb()})`} : {}
   }
 
   if (item.contentFormat === 'iframe') {
@@ -89,10 +105,24 @@ class Item extends React.Component {
     return {...res, ...extraObj}
   }
 
+  classNames = () => {
+    const item = this.item(),
+      {classes} = this.props,
+      baseClass = classes.item
+
+    if (item.size) {
+      console.log('size', item.size, item)
+      return [baseClass, classes[`size${item.size}`]]
+    }
+    return [baseClass]
+  }
+
   render() {
     const item = this.item(),
-      {classes} = this.props
-    return <div className={classes.item}>
+      {classes} = this.props,
+      classNames = this.classNames()
+
+    return <div className={classNames.join(' ')}>
       <Badge type={item.type}/>
       <a href={item.url} target="_blank" rel="noopener" className={classes.itemContent}>
         <CardContent item={item}/>
