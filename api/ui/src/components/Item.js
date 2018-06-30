@@ -9,21 +9,37 @@ const styles = {
     position: 'relative',
     border: '1px solid #666',
     margin: '20px 0',
-    height: '100%',
+    height: 'calc(100%-40px)',
 
     '&:hover': {
       transform: 'scale(1.05)',
-      zIndex: '2'
-    }
+      zIndex: '2',
+    },
+
+    // it's a 12 column grid default 2cols
+    gridColumnEnd: 'span 6',
   },
 
+  // default are for mobile
   sizeM: {
-    gridColumnEnd: 'span 2',
-    height: '400px'
+    gridColumnEnd: 'span 12',
   },
   sizeL: {
-    gridColumnEnd: 'span 3',
-    height: '400px'
+    gridColumnEnd: 'span 12',
+    height: '400px',
+  },
+
+  '@media (min-width: 1200px)': {
+    item: {
+      gridColumnEnd: 'span 3',
+    },
+    sizeM: {
+      gridColumnEnd: 'span 6',
+    },
+    sizeL: {
+      gridColumnEnd: 'span 12',
+      height: '400px',
+    },
   },
 
   itemContent: `
@@ -57,7 +73,7 @@ const styles = {
     margin: 2px 0;
     text-align: right;
     font-size: 10px;
-  `
+  `,
 }
 
 const SubTitle = (props) => {
