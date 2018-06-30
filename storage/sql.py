@@ -56,14 +56,20 @@ class Subscription(Base):
 class StorageSqliteDB(Storage):
     SQL_FIELDS = {'id', 'type', 'url', 'timestamp', 'title'}
 
+    @staticmethod
+    def item_from_db(dbitem):
+        """ Return an item dictionary out of the DB one """
+        item = {k: getattr(dbitem, k) for k in StorageSqliteDB.SQL_FIELDS}
+        if dbitem.extra:
+            extra_fields = json.loads(dbitem.extra)
+            item.update(extra_fields)
+        return item
+
     def all(self):
         items = []
         for dbitem in self.db.query(Item) \
             .order_by(sqlalchemy.desc(Item.timestamp)):
-            item = {k: getattr(dbitem, k) for k in self.SQL_FIELDS}
-            if dbitem.extra:
-                extra_fields = json.loads(dbitem.extra)
-                item.update(extra_fields)
+            item = self.item_from_db(dbitem)
             items.append(item)
         return items
 
@@ -79,6 +85,10 @@ class StorageSqliteDB(Storage):
 
     def search(self, id, type):
         pass
+
+    def getitem(self, item_id):
+        dbitem = self.db.query(Item).get(item_id)
+        return self.item_from_db(dbitem)
 
     def upsert(self, item, update=False):
         """ Write to SQL Item - move all extra fields in an extra json"""

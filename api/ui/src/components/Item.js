@@ -9,7 +9,6 @@ const styles = {
     position: 'relative',
     border: '1px solid #666',
     margin: '20px 0',
-    height: 'calc(100%-40px)',
 
     '&:hover': {
       transform: 'scale(1.05)',
@@ -29,6 +28,18 @@ const styles = {
     height: '400px',
   },
 
+  '@media (min-width: 1024px)': { // medium size screen 3col
+    item: {
+      gridColumnEnd: 'span 4',
+    },
+    sizeM: {
+      gridColumnEnd: 'span 8',
+    },
+    sizeL: {
+      gridColumnEnd: 'span 12',
+    },
+  },
+
   '@media (min-width: 1200px)': {
     item: {
       gridColumnEnd: 'span 3',
@@ -37,8 +48,7 @@ const styles = {
       gridColumnEnd: 'span 6',
     },
     sizeL: {
-      gridColumnEnd: 'span 12',
-      height: '400px',
+      gridColumnEnd: 'span 9',
     },
   },
 

@@ -22,6 +22,9 @@ class Storage:
     def all(self):
         raise NotImplementedError()
 
+    def getitem(self, item_id):
+        raise NotImplementedError()
+
     def upsert(self, item, update=False):
         raise NotImplementedError
 
