@@ -12,7 +12,6 @@ from sing import single
 from collectors import *
 from collectors.rss import RSSCollector
 from collectors.scrapers.grab_opengraph import fill_missing_infos
-from collectors.tumblr import TumblrCollector
 from collectors.youtube import YouTubeMineCollector
 from flatbuilder.builder import Builder, Template, NotATemplateFolder
 from flatbuilder.preview import serve
@@ -34,7 +33,7 @@ class Aggregator:
         RSSCollector.get(url='https://dariosky.github.io/rss/index.rss'),
         RSSCollector.get(url='http://rss.dariosky.it/public.php?'
                              'op=rss&id=-2&key=bbwf1t5a80b21066d41'),
-        TumblrCollector.get('https://tumblr.dariosky.it'),
+        # TumblrCollector.get('https://tumblr.dariosky.it'),
     ]
 
     def __init__(self):
