@@ -19,4 +19,4 @@ git+https://github.com/erikriver/opengraph.git@master
 pyppeteer
 
 # push notifications
-pywebpush
+pywebpush==1.9.3
