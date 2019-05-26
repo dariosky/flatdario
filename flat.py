@@ -33,6 +33,8 @@ class Aggregator:
         RSSCollector.get(url='https://dariosky.github.io/rss/index.rss'),
         RSSCollector.get(url='http://rss.dariosky.it/public.php?'
                              'op=rss&id=-2&key=bbwf1t5a80b21066d41'),
+        RSSCollector.get(url='https://www.reddit.com/saved.rss?'
+                             'feed=a5174816204085b3bdd43e2df8f8e93ee98c7a1a&user=dariosky'),
         # TumblrCollector.get('https://tumblr.dariosky.it'),
     ]
 
