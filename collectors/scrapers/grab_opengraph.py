@@ -60,18 +60,18 @@ def fill_missing_infos(db, items=None):
             continue
         changed = False
 
-        if item.get('thumb') is None:
+        if not item.get('thumb'):
             # get from content
             content_thumb = get_thumbnail(item)
             if content_thumb:
                 item['thumb'] = content_thumb
                 changed = True
 
-        if item.get('thumb') is None:
+        if not item.get('thumb'):
             # parse the site to get a thumbnail
             changed = changed or get_thumb_from_opengraph(item)
 
-        if item.get('thumb') is None:
+        if not item.get('thumb'):
             # parse and grab the biggest image
             thumb = grab_largest_image(item['url'])
             if thumb:
@@ -79,7 +79,7 @@ def fill_missing_infos(db, items=None):
                 item['thumb'] = thumb
                 changed = True
 
-        if item.get('thumb') is None:
+        if not item.get('thumb'):
             item['thumb'] = ''  # stop searching for thumbs
             changed = True
 
