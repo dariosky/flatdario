@@ -48,7 +48,7 @@ def send_notification(data, subscription, db):
             data, sub_data
         )
     except WebPushException as e:
-        if e.message == "Push failed: 410 NotRegistered":
+        if e.response.status_code == 410:
             logger.warning("Subscription is now invalid, deactivating.")
             db.invalidate_subscription(subscription)
         else:
