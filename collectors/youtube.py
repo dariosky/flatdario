@@ -1,12 +1,13 @@
 import datetime
 import logging
 import os
+from argparse import Namespace
 
 import httplib2
 from googleapiclient.discovery import build
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
-from oauth2client.tools import argparser, run_flow
+from oauth2client.tools import run_flow
 
 from .exceptions import DuplicateFound
 from .generic import Collector
@@ -35,8 +36,13 @@ class YouTubeLikesCollector(Collector):
         storage = Storage(os.path.join("userkeys", "google.json"))
         credentials = storage.get()
         if credentials is None or credentials.invalid:
-            flags = argparser.parse_args()
-            credentials = run_flow(flow, storage, flags)
+            flags = Namespace(
+                logging_level='ERROR',
+                auth_host_name='localhost',
+                noauth_local_webserver=False,
+                auth_host_port=[8080, 8090],
+            )
+            credentials = run_flow(flow, storage, flags=flags)
         return credentials
 
     def run(self, **params):
