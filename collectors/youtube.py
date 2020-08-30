@@ -14,10 +14,18 @@ from .generic import Collector
 
 logger = logging.getLogger(__name__)
 
+DATE_FORMATS = ('%Y-%m-%dT%H:%M:%S.%fZ',
+                '%Y-%m-%dT%H:%M:%SZ',
+                )
+
 
 def parse_datetime(timestamp):
-    return datetime.datetime.strptime(timestamp,
-                                      '%Y-%m-%dT%H:%M:%S.%fZ')
+    for date_format in DATE_FORMATS:
+        try:
+            return datetime.datetime.strptime(timestamp, date_format)
+        except ValueError:
+            pass
+    raise ValueError(f"Cannot find a valid format for {timestamp}")
 
 
 class YouTubeLikesCollector(Collector):
