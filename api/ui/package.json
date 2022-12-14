@@ -33,7 +33,7 @@
     "@fortawesome/react-fontawesome": "^0.0.17",
     "apollo-client": "^2.2.7",
     "apollo-client-preset": "^1.0.8",
-    "axios": "^0.18.0",
+    "axios": "^0.21.2",
     "graphql": "^0.12.3",
     "graphql-tag": "^2.6.1",
     "jss": "^9.8.0",
