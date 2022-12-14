@@ -15,7 +15,7 @@ os.chdir(project_folder)
 
 
 class Config:
-    project_path = '~/webapps/darioskyflat'
+    project_path = '~/apps/darioskyflat'
     venv = "~/.pyenv/versions/flat"
     git_repo = 'git@github.com:dariosky/flatdario.git'
     requirements = 'requirements.txt'
@@ -238,7 +238,7 @@ def reset():
 
 
 if not env.hosts:
-    set_hosts('dariosky')  # the host where to deploy
+    set_hosts('opal')  # the host where to deploy
 
 if __name__ == '__main__':
     # to debug the fabfile, we can specify the command here

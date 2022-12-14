@@ -110,6 +110,10 @@ class YouTubeLikesCollector(Collector):
                         thumbnails=thumbnails,
                     )
                     try:
+                        item['thumb'] = item['thumbnails']['medium']['url']
+                    except:
+                        pass
+                    try:
                         self.db.upsert(item, update=refresh_duplicates)
                         logger.info("{type} - {title} ({id})".format(type=self.type,
                                                                      title=title, id=video_id))

@@ -1,7 +1,5 @@
 import logging
 
-import opengraph
-
 from collectors.scrapers.render_page import grab_largest_image
 
 logger = logging.getLogger(__name__)
@@ -33,6 +31,7 @@ def get_thumb_from_opengraph(item):
     url = item['url']
     logger.info(f"{item['type']} {item['title']} - parsing {url}")
     try:
+        import opengraph
         ogdata = opengraph.OpenGraph(url, scrape=True)
     except:
         ogdata = None

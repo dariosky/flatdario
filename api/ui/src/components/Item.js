@@ -87,7 +87,7 @@ const styles = {
 }
 
 const SubTitle = (props) => {
-  const {item} = props
+  const { item } = props
 
   if (item.type === 'Tumblr' && (item.description || item.subtitle)) {
     return <div className="subtitle">
@@ -98,17 +98,18 @@ const SubTitle = (props) => {
 }
 
 const CardContent = injectSheet(styles)((props) => {
-  const {item, classes} = props
-
+  const { item, classes } = props
 
   let getThumb = function () {
+    console.log('itemsize', item.size)
+    if (item.thumbnails && item.thumbnails.medium) return item.thumbnails.medium.url
     if (item.size === 'XL') {
       if (item.thumbnails.high) return item.thumbnails.high.url
     }
     return item.thumb
   }
   const backgroundStyle = () => {
-    return item.thumb ? {backgroundImage: `url(${getThumb()})`} : {}
+    return item.thumb ? { backgroundImage: `url(${getThumb()})` } : {}
   }
 
   if (item.contentFormat === 'iframe') {
@@ -117,8 +118,7 @@ const CardContent = injectSheet(styles)((props) => {
                    title={item.title}
                    frameBorder="0" allowFullScreen
     />
-  }
-  else {
+  } else {
     return <div className={classes.thumb} style={backgroundStyle()}
     />
   }
@@ -126,14 +126,14 @@ const CardContent = injectSheet(styles)((props) => {
 
 class Item extends React.Component {
   item = () => {
-    let {'extra': extraJSON, ...res} = this.props.item
+    let { 'extra': extraJSON, ...res } = this.props.item
     const extraObj = JSON.parse(extraJSON)
-    return {...res, ...extraObj}
+    return { ...res, ...extraObj }
   }
 
   classNames = () => {
     const item = this.item(),
-      {classes} = this.props,
+      { classes } = this.props,
       baseClass = classes.item
 
     if (item.size) {
@@ -145,17 +145,17 @@ class Item extends React.Component {
 
   render() {
     const item = this.item(),
-      {classes} = this.props,
+      { classes } = this.props,
       classNames = this.classNames()
 
     return <div className={classNames.join(' ')}>
-      <Badge type={item.type}/>
+      <Badge type={item.type} />
       <a href={item.url} target="_blank" rel="noopener" className={classes.itemContent}>
-        <CardContent item={item}/>
+        <CardContent item={item} />
         <div className={classes.title}>
-          <div className='ellipsed-text'>
+          <div className="ellipsed-text">
             {item.title || item.url}
-            <SubTitle item={item}/>
+            <SubTitle item={item} />
           </div>
         </div>
       </a>
