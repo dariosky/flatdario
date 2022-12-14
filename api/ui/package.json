@@ -42,7 +42,7 @@
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-apollo": "^2.0.4",
-    "react-app-rewire-hot-loader": "^1.0.1",
+    "react-app-rewire-hot-loader": "^1.0.3",
     "react-app-rewire-workbox": "^2.0.1",
     "react-dom": "^16.2.0",
     "react-ga": "^2.4.1",
@@ -50,13 +50,13 @@
     "react-infinite-scroller": "^1.1.3",
     "react-jss": "^8.3.5",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "^1.1.4",
+    "react-scripts": "^5.0.1",
     "react-spinners": "^0.2.6",
     "react-transition-group": "^2.2.1",
     "workbox-webpack-plugin": "^3.2.0"
   },
   "devDependencies": {
     "react-app-rewire-webpack-bundle-analyzer": "^1.0.1",
-    "react-app-rewired": "^1.5.2"
+    "react-app-rewired": "^2.2.1"
   }
 }
