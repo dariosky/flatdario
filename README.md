@@ -31,6 +31,12 @@ it locally, and serves it via a small API + React UI (or a legacy static build).
 # Python deps (recommend a virtualenv)
 pip install -r requirements.txt
 
+# Or use uv for a fast Python 3.10 env (no pyenv required)
+uv venv --python python3.10 .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+# (or simply run ./uv-venv.sh)
+
 # Frontend deps
 cd api/ui
 yarn install   # or npm install

@@ -7,14 +7,14 @@ async-timeout==4.0.2
 attrs==22.1.0
 bcrypt==3.1.4
 beautifulsoup4==4.6.0
-bjoern==3.1.0
+# bjoern==3.1.0
 cachetools==4.1.1
 certifi==2018.1.18
 cffi==1.14.3
 chardet==3.0.4
 charset-normalizer==2.1.1
 click==6.7
-cryptography==2.6.1
+# cryptography==2.6.1
 cssselect==1.0.3
 fab-classic==1.19.1
 Fabric3==1.14.post1
@@ -34,7 +34,7 @@ graphene-sqlalchemy==2.0.0
 graphql-core==2.2.1
 graphql-relay==0.4.5
 graphql-server-core==1.1.1
-greenlet==2.0.1
+# greenlet==2.0.1
 http-ece==1.1.0
 httplib2==0.10.3
 idna==2.6
@@ -43,7 +43,7 @@ invoke==1.7.3
 iso8601==0.1.12
 itsdangerous==0.24
 Jinja2==2.10
-lxml==4.6.1
+# lxml==4.6.1
 MarkupSafe==1.1.1
 multidict==6.0.3
 oauth2client==4.1.2

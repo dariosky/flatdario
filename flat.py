@@ -6,6 +6,26 @@ import logging
 import os
 import sys
 import textwrap
+import collections
+
+
+def _patch_collections_for_py3():
+    """Compatibility shim for libraries that import ABCs from collections."""
+    import collections.abc as _abc
+
+    for _name in (
+        'Container',
+        'Iterable',
+        'MutableSet',
+        'Mapping',
+        'MutableMapping',
+        'Sequence',
+    ):
+        if not hasattr(collections, _name):
+            setattr(collections, _name, getattr(_abc, _name))
+
+
+_patch_collections_for_py3()
 
 from sing import single
 

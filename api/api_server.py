@@ -1,7 +1,27 @@
 import json
 import logging
 import os
+import collections
 from setproctitle import setproctitle
+
+# Compatibility for old Werkzeug/Flask on Python 3.10+
+# Older versions import ABCs from collections instead of collections.abc.
+def _patch_collections_for_py3():
+    import collections.abc as _abc
+
+    for _name in (
+        'Container',
+        'Iterable',
+        'MutableSet',
+        'Mapping',
+        'MutableMapping',
+        'Sequence',
+    ):
+        if not hasattr(collections, _name):
+            setattr(collections, _name, getattr(_abc, _name))
+
+
+_patch_collections_for_py3()
 
 import flask
 from flask import Flask
@@ -26,6 +46,7 @@ service_worker_path = '/custom-service-worker.js'  # this is served with no cach
 
 
 def get_app(storage, production=True):
+    _patch_collections_for_py3()
     setproctitle('api webserver [flatAPI]')
     app = Flask(__name__,
                 # static_url_path="",
@@ -130,6 +151,7 @@ def get_app(storage, production=True):
 
 def run_api(storage, host='127.0.0.1', port=3001,
             production=True):
+    _patch_collections_for_py3()
     app = get_app(storage, production)
     if production:
         print(f"Running production server as "
