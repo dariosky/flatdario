@@ -268,6 +268,7 @@ class ItemDetail extends React.Component {
       })
       if (!res.ok) throw new Error('Unable to update visibility')
       item.hidden = targetHidden
+      window.dispatchEvent(new Event('items:refresh'))
       this.forceUpdate()
       this.setStatus(targetHidden ? 'Item hidden' : 'Item visible')
     } catch (err) {
@@ -282,6 +283,7 @@ class ItemDetail extends React.Component {
         credentials: 'include',
       })
       if (!res.ok) throw new Error('Unable to delete item')
+      window.dispatchEvent(new Event('items:refresh'))
       this.setStatus('Item deleted')
       setTimeout(() => {
         this.props.history.push('/')
@@ -393,6 +395,9 @@ class ItemDetail extends React.Component {
             </a>
             {isAdmin ? (
               <React.Fragment>
+                <a className={classes.pill} href={`/edit/${item.id}`}>
+                  Edit
+                </a>
                 <button
                   className={classes.pill}
                   style={{ cursor: 'pointer' }}

@@ -1,10 +1,7 @@
 import React from 'react'
 import injectSheet from 'react-jss'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import {
-  faExternalLinkAlt,
-  faPencilAlt,
-} from '@fortawesome/fontawesome-free-solid'
+import { faExternalLinkAlt, faPencilAlt } from '@fortawesome/fontawesome-free-solid'
 import { Link } from 'react-router-dom'
 import SubscribeBtn from './SubscriptionBtn'
 import config from '../util/config'
@@ -57,6 +54,50 @@ const styles = {
     transform: 'translateY(-2px)',
     filter: 'invert(1) brightness(2.5)',
   },
+  navRight: {
+    marginLeft: 'auto',
+    position: 'relative',
+  },
+  avatarBtn: {
+    width: '38px',
+    height: '38px',
+    borderRadius: '50%',
+    border: '1px solid rgba(255,255,255,0.3)',
+    background: 'rgba(255,255,255,0.06)',
+    color: 'white',
+    fontWeight: 700,
+    fontSize: '13px',
+    cursor: 'pointer',
+    textTransform: 'uppercase',
+  },
+  dropdown: {
+    position: 'absolute',
+    right: 0,
+    marginTop: '10px',
+    background: 'rgba(10, 12, 20, 0.95)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: '12px',
+    minWidth: '160px',
+    boxShadow: '0 18px 40px rgba(0,0,0,0.4)',
+    overflow: 'hidden',
+  },
+  dropdownItem: {
+    display: 'block',
+    width: '100%',
+    padding: '10px 14px',
+    background: 'transparent',
+    color: '#e5e7eb',
+    textAlign: 'left',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    letterSpacing: '0.01em',
+    border: 'none',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    '&:hover': {
+      background: 'rgba(255,255,255,0.06)',
+    },
+  },
 }
 
 const LinkBtn = injectSheet(styles)(
@@ -79,6 +120,41 @@ const LinkBtn = injectSheet(styles)(
 )
 
 class NavBar extends React.Component {
+  state = { isAdmin: false, initials: '', menuOpen: false }
+
+  componentDidMount() {
+    this.fetchAuth()
+  }
+
+  async fetchAuth() {
+    try {
+      const res = await fetch(`${config.API_BASE}auth/me`, { credentials: 'include' })
+      const data = await res.json()
+      if (data.authenticated && data.user) {
+        const initials = data.user
+          .split(/[.\s_-]+/)
+          .map((p) => p[0])
+          .join('')
+          .slice(0, 2)
+        this.setState({ isAdmin: true, initials })
+      }
+    } catch (e) {
+      this.setState({ isAdmin: false })
+    }
+  }
+
+  toggleMenu = () => {
+    this.setState({ menuOpen: !this.state.menuOpen })
+  }
+
+  logout = async () => {
+    await fetch(`${config.API_BASE}auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+    this.setState({ isAdmin: false, initials: '', menuOpen: false })
+  }
+
   render() {
     const { classes } = this.props
     return (
@@ -94,6 +170,23 @@ class NavBar extends React.Component {
         </LinkBtn>
 
         <SubscribeBtn applicationServerKey={config.APPLICATION_SERVER_KEY} />
+        {this.state.isAdmin ? (
+          <li className={classes.navRight}>
+            <button className={classes.avatarBtn} onClick={this.toggleMenu}>
+              {this.state.initials || 'DV'}
+            </button>
+            {this.state.menuOpen ? (
+              <div className={classes.dropdown}>
+                <a className={classes.dropdownItem} href="/new">
+                  New post
+                </a>
+                <button className={classes.dropdownItem} onClick={this.logout}>
+                  Logout
+                </button>
+              </div>
+            ) : null}
+          </li>
+        ) : null}
       </ul>
     )
   }

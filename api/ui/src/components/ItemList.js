@@ -52,6 +52,21 @@ const styles = {
 }
 
 class ItemList extends React.Component {
+  componentDidMount() {
+    window.addEventListener('items:refresh', this.handleRefresh)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('items:refresh', this.handleRefresh)
+  }
+
+  handleRefresh = () => {
+    const { data } = this.props
+    if (data && data.refetch) {
+      data.refetch()
+    }
+  }
+
   render() {
     const { data, loadMore, classes } = this.props
 

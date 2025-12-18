@@ -7,6 +7,8 @@ import NavBar, { Fixed } from './NavBar'
 import Contacts from './Contacts'
 import ItemDetail from './ItemDetail'
 import Login from './Login'
+import NewPost from './NewPost'
+import EditPost from './EditPost'
 import withTracker from '../analytics/withTracker'
 import ReactGA from 'react-ga'
 // Hot-loader
@@ -37,6 +39,8 @@ class App extends React.Component {
         <Route path="/contacts" exact component={withTracker(Contacts)} />
         <Route path="/view/:id" exact component={withTracker(ItemDetail)} />
         <Route path="/login" exact component={withTracker(Login)} />
+        <Route path="/new" exact component={withTracker(NewPost)} />
+        <Route path="/edit/:id" exact component={withTracker(EditPost)} />
       </Switch>,
     ]
   }

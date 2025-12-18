@@ -6,36 +6,23 @@ from functools import wraps
 from setproctitle import setproctitle
 
 
-# Compatibility for old Werkzeug/Flask on Python 3.10+
-# Older versions import ABCs from collections instead of collections.abc.
-def _patch_collections_for_py3():
-    import collections.abc as _abc
+from api.util.compat import patch_collections_for_py3
+from flat import _patch_collections_for_py3
 
-    for _name in (
-        "Container",
-        "Iterable",
-        "MutableSet",
-        "Mapping",
-        "MutableMapping",
-        "Sequence",
-    ):
-        if not hasattr(collections, _name):
-            setattr(collections, _name, getattr(_abc, _name))
-
-
-_patch_collections_for_py3()
+patch_collections_for_py3()
 
 import flask
 from flask import Flask, session, jsonify
 from flask_cors import CORS
 from flask_graphql import GraphQLView
-from graphql_relay import from_global_id
+from graphql_relay import from_global_id, to_global_id
 from jinja2 import Environment, PackageLoader, select_autoescape
 from werkzeug.security import check_password_hash
 
 from api.schema import schema
 from api.util.flask_utils import nocache
 from storage.sql import StorageSqliteDB, Subscription, Item, User
+from collectors.manual import build_item_from_url
 
 try:
     import bjoern
@@ -54,12 +41,13 @@ SERVED_EXTENSIONS = {
     ".json",
     ".css",
     ".txt",
+    ".xml",
 }
 service_worker_path = "/custom-service-worker.js"  # this is served with no cache
 
 
 def get_app(storage, production=True):
-    _patch_collections_for_py3()
+    patch_collections_for_py3()
     setproctitle("api webserver [flatAPI]")
     app = Flask(
         __name__,
@@ -67,7 +55,14 @@ def get_app(storage, production=True):
         static_folder="ui/build",
         template_folder="ui/build",
     )
-    CORS(app, supports_credentials=True)
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=[
+            "http://127.0.0.1:3000",
+            "http://localhost:3000",
+        ],
+    )
     app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-me")
 
     app.debug = not production
@@ -135,10 +130,12 @@ def get_app(storage, production=True):
             return jsonify({"error": "invalid credentials"}), 401
         session["admin"] = True
         session["user"] = username
+        logger.info(f"Login success for user {username}")
         return jsonify({"ok": True, "user": username})
 
     @app.route("/auth/logout", methods=["POST"])
     def logout():
+        logger.info(f"Logout for user {session.get('user')}")
         session.clear()
         return jsonify({"ok": True})
 
@@ -169,6 +166,65 @@ def get_app(storage, production=True):
         db_session.delete(item)
         db_session.commit()
         return jsonify({"deleted": True, "id": item_id})
+
+    @app.route("/admin/items/<item_id>", methods=["GET"])
+    @admin_required
+    def get_item(item_id):
+        db_id = normalize_item_id(item_id)
+        item = db_session.query(Item).get(db_id)
+        if not item:
+            return jsonify({"error": "not found"}), 404
+        return jsonify(
+            {
+                "id": item.id,
+                "type": item.type,
+                "title": item.title,
+                "url": item.url,
+                "timestamp": item.timestamp.isoformat() if item.timestamp else None,
+                "hidden": bool(item.hidden),
+                "extra": item.extra or "{}",
+            }
+        )
+
+    @app.route("/admin/items/<item_id>", methods=["PUT"])
+    @admin_required
+    def update_item(item_id):
+        data = flask.request.json or {}
+        db_id = normalize_item_id(item_id)
+        item = db_session.query(Item).get(db_id)
+        if not item:
+            return jsonify({"error": "not found"}), 404
+        extra_raw = data.get("extra", "{}")
+        try:
+            extra_obj = json.loads(extra_raw) if isinstance(extra_raw, str) else extra_raw
+            extra_json = json.dumps(extra_obj)
+        except Exception:
+            return jsonify({"error": "invalid extra json"}), 400
+        title = data.get("title")
+        url = data.get("url")
+        if title:
+            item.title = title
+        if url:
+            item.url = url
+        item.extra = extra_json
+        db_session.commit()
+        return jsonify({"ok": True, "id": item_id})
+
+    @app.route("/admin/items", methods=["POST"])
+    @admin_required
+    def create_item():
+        data = flask.request.json or {}
+        url = data.get("url", "").strip()
+        if not url:
+            return jsonify({"error": "missing url"}), 400
+        try:
+            item = build_item_from_url(url)
+            storage.upsert(item, update=True)
+            global_id = to_global_id("ItemType", item["id"])
+            return jsonify({"ok": True, "id": global_id})
+        except Exception as exc:
+            logger.exception("Failed to create item from url")
+            return jsonify({"error": str(exc)}), 500
 
     @app.route("/404/")
     def not_found():

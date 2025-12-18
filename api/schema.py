@@ -41,6 +41,9 @@ class Query(graphene.ObjectType):
     def resolve_items(self, info, *args, **kwargs):
         flask_session = info.context.get("flask_session", {})
         is_admin = flask_session.get("admin") is True
+        logger.info(
+            f"Items query by {flask_session.get('user') if is_admin else 'anonymous'}"
+        )
         q = None
         re_arguments = []
         for argument in info.field_asts[0].arguments:

@@ -1,8 +1,12 @@
 // the public server key for push notifications
 
+const DEV_BASE =
+  typeof window !== 'undefined'
+    ? `${window.location.protocol}//${window.location.hostname}:3001/`
+    : 'http://127.0.0.1:3001/'
 const ENV_URLS = {
   // in development use the python API in another port
-  development: 'http://127.0.0.1:3001/',
+  development: DEV_BASE,
 }
 const API_BASE = ENV_URLS[process.env.NODE_ENV] || '/'
 

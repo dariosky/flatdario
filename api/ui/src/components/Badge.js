@@ -28,7 +28,24 @@ const styles = {
     &.fa-youtube {
       color: #b31217; //youtube official red: https://www.youtube.com/yt/brand/color.html
     }
+
+    &.manual-badge {
+      color: #111827;
+    }
 `,
+}
+
+const ManualBadge = ({ classes }) => {
+  return (
+    <img
+      className={`${classes.type} manual-badge`}
+      src="/heart.jpg"
+      alt="Manual item"
+      width="40"
+      height="32"
+      style={{ borderRadius: '4px', objectFit: 'cover' }}
+    />
+  )
 }
 
 class Badge extends React.Component {
@@ -58,6 +75,8 @@ class Badge extends React.Component {
         color = '#01273a' // tumblr official
         icon = faTumblrSquare
         break
+      case 'Manual':
+        return <ManualBadge classes={classes} />
       default:
         console.warn('Unknown item type', type)
         icon = faQuestionCircle

@@ -140,7 +140,7 @@ def deploy():
 def build():
     """Create an optimized production build"""
     with lcd(os.path.join(project_folder, "api", "ui")):
-        local("yarn build")
+        local("npm run build")
 
 
 @task
