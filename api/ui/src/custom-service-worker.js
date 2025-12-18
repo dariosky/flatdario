@@ -1,4 +1,6 @@
+self.skipWaiting()
 workbox.clientsClaim()
+workbox.precaching.cleanupOutdatedCaches()
 
 self.__precacheManifest = [
   { url: '/img/dariovarotto-white.svg', revision: 'v1' },
@@ -9,9 +11,13 @@ self.__precacheManifest = [
 workbox.precaching.suppressWarnings()
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {})
 
-workbox.routing.registerNavigationRoute('/index.html', {
-  blacklist: [/^\/__/, /\/[^\/]+.[^\/]+$/],
-})
+workbox.routing.registerRoute(
+  ({ request }) => request.mode === 'navigate',
+  workbox.strategies.networkFirst({
+    cacheName: 'flatdario-html',
+    networkTimeoutSeconds: 5,
+  })
+)
 
 console.info('Hello from my custom service worker')
 
