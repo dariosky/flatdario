@@ -293,7 +293,7 @@ def reset():
 
 
 if not env.hosts:
-    set_hosts('opal')  # the host where to deploy
+    set_hosts('dariosky@opal16.opalstack.com')  # the host where to deploy
 
 if __name__ == '__main__':
     # to debug the fabfile, we can specify the command here

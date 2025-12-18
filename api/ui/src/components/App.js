@@ -5,6 +5,7 @@ import { Route, Switch } from 'react-router-dom'
 import Search from './Search'
 import NavBar, { Fixed } from './NavBar'
 import Contacts from './Contacts'
+import ItemDetail from './ItemDetail'
 import withTracker from '../analytics/withTracker'
 import ReactGA from 'react-ga'
 // Hot-loader
@@ -15,7 +16,12 @@ ReactGA.initialize('UA-62120-5')
 class App extends React.Component {
   render() {
     return [
-      <Header key="header" />,
+      <Route
+        path={['/', '/search/:query', '/contacts']}
+        exact
+        component={Header}
+        key="header"
+      />,
       <Fixed key="fixed">
         <NavBar key="nav" />
         <Switch key="search">
@@ -28,6 +34,7 @@ class App extends React.Component {
         <Route path="/" exact component={withTracker(ItemList)} />
         <Route path="/search/:query" exact component={withTracker(ItemList)} />
         <Route path="/contacts" exact component={withTracker(Contacts)} />
+        <Route path="/view/:id" exact component={withTracker(ItemDetail)} />
       </Switch>,
     ]
   }

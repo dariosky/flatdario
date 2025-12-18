@@ -31,7 +31,7 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from api.schema import schema
 from api.util.flask_utils import nocache
-from storage.sql import StorageSqliteDB, Subscription
+from storage.sql import StorageSqliteDB, Subscription, Item
 
 try:
     import bjoern
@@ -138,6 +138,16 @@ def get_app(storage, production=True):
         if url.startswith('home'):
             return flask.redirect('https://home.dariosky.it')
         ext = os.path.splitext(url)[-1]
+
+        # If the URL looks like a detail page, return 404 when the item is missing
+        if url.startswith('view/'):
+            item_id = url.split('/', 1)[-1]
+            if not item_id:
+                return flask.render_template("index.html"), 404
+            exists = db_session.query(Item.id).filter_by(id=item_id).first()
+            if not exists:
+                return flask.render_template("index.html"), 404
+
         if ext in SERVED_EXTENSIONS:
             return flask.send_from_directory('ui/build', url)
         return flask.render_template("index.html")

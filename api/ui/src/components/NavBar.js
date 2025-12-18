@@ -18,6 +18,7 @@ const styles = {
     listStyle: 'none',
     display: 'flex',
     flexWrap: 'wrap',
+    alignItems: 'center',
     justifyContent: 'left',
   },
 
@@ -38,6 +39,24 @@ const styles = {
   icon: {
     verticalAlign: '-2px',
     marginRight: '7px',
+  },
+
+  brand: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '6px 12px',
+    marginRight: '6px',
+    borderRadius: '10px',
+    background: 'rgba(255,255,255,0.06)',
+    boxShadow: '0 6px 12px rgba(0,0,0,0.25)',
+  },
+  brandImg: {
+    height: '22px',
+    width: '22px',
+    marginRight: '8px',
+    verticalAlign: 'middle',
+    transform: 'translateY(-2px)',
+    filter: 'invert(1) brightness(2.5)',
   },
 }
 
@@ -66,7 +85,7 @@ class NavBar extends React.Component {
     return (
       <ul className={classes.navbar}>
         <LinkBtn url="/#">
-          <FontAwesomeIcon icon={faHome} className={classes.icon} />
+          <img src="/img/dv.svg" alt="DV" className={classes.brandImg} />
           Home
         </LinkBtn>
         <LinkBtn external="https://home.dariosky.it">Starting Page</LinkBtn>

@@ -1,5 +1,6 @@
 import React from 'react'
 import injectSheet from 'react-jss'
+import { Link } from 'react-router-dom'
 import Badge from './Badge'
 
 const styles = {
@@ -153,7 +154,7 @@ class Item extends React.Component {
     return (
       <div className={classNames.join(' ')}>
         <Badge type={item.type} />
-        <a href={item.url} target="_blank" rel="noopener" className={classes.itemContent}>
+        <Link to={`/view/${item.id}`} className={classes.itemContent}>
           <CardContent item={item} />
           <div className={classes.title}>
             <div className="ellipsed-text">
@@ -161,7 +162,7 @@ class Item extends React.Component {
               <SubTitle item={item} />
             </div>
           </div>
-        </a>
+        </Link>
         <div className={classes.date}>{item.timestamp}</div>
       </div>
     )
