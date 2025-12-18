@@ -50,6 +50,22 @@ const styles = {
     color: 'white',
     fontSize: '15px',
   },
+  passwordRow: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  toggle: {
+    position: 'absolute',
+    right: '10px',
+    top: '36px',
+    border: 'none',
+    background: 'transparent',
+    color: '#a5b4fc',
+    cursor: 'pointer',
+    fontSize: '12px',
+    padding: 0,
+  },
   button: {
     marginTop: '6px',
     padding: '12px 14px',
@@ -77,7 +93,7 @@ const styles = {
 }
 
 class Login extends React.Component {
-  state = { username: '', password: '', message: '', success: false }
+  state = { username: '', password: '', message: '', success: false, showPass: false }
 
   handleChange = (e) => {
     this.setState({ [e.target.name]: e.target.value })
@@ -127,16 +143,23 @@ class Login extends React.Component {
                 autoComplete="username"
               />
             </label>
-            <label className={classes.label}>
+            <label className={`${classes.label} ${classes.passwordRow}`}>
               Password
               <input
                 className={classes.input}
-                type="password"
+                type={this.state.showPass ? 'text' : 'password'}
                 name="password"
                 value={password}
                 onChange={this.handleChange}
                 autoComplete="current-password"
               />
+              <button
+                type="button"
+                className={classes.toggle}
+                onClick={() => this.setState({ showPass: !this.state.showPass })}
+              >
+                {this.state.showPass ? 'Hide' : 'Show'}
+              </button>
             </label>
             <button className={classes.button} type="submit">
               Login
