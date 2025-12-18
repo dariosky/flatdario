@@ -11,8 +11,12 @@
 CURRENT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Activate virtual environment. These 2 lines may be disabled/deleted if you do not use virtualenv.
-ENV_PATH="$CURRENT_PATH/.environment"
-. $ENV_PATH/bin/activate
+# Default to bundled .environment but allow override via ENV_PATH env var
+ENV_PATH="${ENV_PATH:-$CURRENT_PATH/.environment}"
+
+if [ -d "$ENV_PATH" ]; then
+  . "$ENV_PATH/bin/activate"
+fi
 
 # The project location, settings.py, urls.py etc....
 PROJECTLOC="$CURRENT_PATH"
@@ -28,6 +32,7 @@ WSGIAPP=wsgi:app
 
 # The default args for gunicorn see http://gunicorn.org/configure.html#contents
 DEFAULT_ARGS="-c guniconfig.py "
+LOGFILE="$PROJECTLOC/gunicorn.log"
 
 # Do not edit below this line
 BASE_CMD="$GUNICORN $WSGIAPP $DEFAULT_ARGS"
@@ -35,23 +40,28 @@ SERVER_PID="$PROJECTLOC/gunicorn.pid"
 
 start_server () {
   if [ -f $1 ]; then
-    if [ "$(ps -p `cat $1` | wc -l)" -gt 1 ]; then
+    if ps -p "$(cat "$1")" >/dev/null 2>&1; then
        echo "A server is already running"
        return
     fi
   fi
   cd $PROJECTLOC
   echo "starting"
-  $BASE_CMD --daemon --pid=$1
+  $BASE_CMD --daemon --pid="$1" --log-file="$LOGFILE"
 }
 
 stop_server (){
-  if [ -f $1 ] && [ "$(ps -p `cat $1` | wc -l)" -gt 1 ]; then
+  if [ -f "$1" ] && ps -p "$(cat "$1")" >/dev/null 2>&1; then
     echo "stopping server"
-    kill -9 `cat $1`
-    rm $1
+    kill -TERM "$(cat "$1")"
+    sleep 1
+    if ps -p "$(cat "$1")" >/dev/null 2>&1; then
+      echo "force killing server"
+      kill -9 "$(cat "$1")"
+    fi
+    rm -f "$1"
   else
-    if [ -f $1 ]; then
+    if [ -f "$1" ]; then
       echo "server not running"
     else
       echo "No pid file found for server"
@@ -60,12 +70,11 @@ stop_server (){
 }
 
 reload_server() {
-  if [ -f $1 ] && [ "$(ps -p `cat $1` | wc -l)" -gt 1 ]; then
+  if [ -f "$1" ] && ps -p "$(cat "$1")" >/dev/null 2>&1; then
     echo "graceful reloading server"
-    kill -HUP `cat $1`
-    rm $1
+    kill -HUP "$(cat "$1")"
   else
-    if [ -f $1 ]; then
+    if [ -f "$1" ]; then
       echo "server not running"
     else
       echo "No pid file found for server"

@@ -133,6 +133,7 @@ def deploy():
         execute(update_requirements)
         execute(build)
         execute(upload_build)
+        execute(restart_server)
 
 
 @task
@@ -189,6 +190,20 @@ def upload_build():
     # be sure that the build folder is there:
     build_folder = "api/ui/build"
     upload_files([build_folder])
+
+
+@task
+def restart_server():
+    """Reload or restart the server using available scripts."""
+    with cd(Config.project_path):
+        # Prefer runapi.sh if present, else fallback to run
+        if exists("api/scripts/runapi.sh"):
+            run("chmod +x api/scripts/runapi.sh && api/scripts/runapi.sh restart")
+        elif exists("runapi.sh"):
+            run("chmod +x runapi.sh && ./runapi.sh restart")
+        elif exists("run"):
+            if run("./run reload", warn_only=True).failed:
+                run("./run restart")
 
 
 @task
