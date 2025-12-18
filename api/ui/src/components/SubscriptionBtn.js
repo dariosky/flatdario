@@ -1,15 +1,15 @@
-import React from 'react';
-import injectStyles from 'react-jss';
-import {faRssSquare} from '@fortawesome/fontawesome-free-solid'
+import React from 'react'
+import injectStyles from 'react-jss'
+import { faRssSquare } from '@fortawesome/fontawesome-free-solid'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import {
   askPermission,
   isSubscribeAvailable,
   isSubscribed,
   subscribeUser,
-  unsubscribeUser
+  unsubscribeUser,
 } from '../util/pushNotifications'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 import axios from 'axios'
 import config from '../util/config'
 
@@ -34,29 +34,28 @@ const styles = {
   `,
   icon: `
     margin-left: 5px;
-  `
-};
+  `,
+}
 
 class SubscriptionBtn extends React.Component {
   state = {
     error: null,
     subscribed: false,
-    visible: false
+    visible: false,
   }
 
   componentDidMount() {
-    this.componentWillReceiveProps(this.props);
+    this.componentWillReceiveProps(this.props)
   }
 
   componentWillReceiveProps(newProps) {
-
     this.setState({
-      visible: false
+      visible: false,
     })
     isSubscribed().then((result) => {
       this.setState({
         subscribed: result,
-        visible: isSubscribeAvailable()
+        visible: isSubscribeAvailable(),
       })
     })
   }
@@ -68,88 +67,85 @@ class SubscriptionBtn extends React.Component {
   triggerError = (error) => {
     const button = this
     console.error(error)
-    button.setState({error})
+    button.setState({ error })
 
     function resetError() {
-      button.setState({error: null})
+      button.setState({ error: null })
     }
 
     setTimeout(resetError, 5000)
   }
 
   subscribe = () => {
-    const {applicationServerKey} = this.props
-    askPermission().then(() => {
-      console.log('Push accepted')
-      subscribeUser({applicationServerKey})
-        .then(subscription => {
-          if (subscription)
-            axios.post(config.PUSH_SUBSCRIBE_ENDPOINT, subscription)
-        })
-        .then(() => {
-          this.setState({subscribed: true})
-        })
-        .catch(error => {
-          this.triggerError(error)
-        })
-    }).catch(error => {
-      alert('You cannot subscribe if you do not accept.')
-    })
+    const { applicationServerKey } = this.props
+    askPermission()
+      .then(() => {
+        console.log('Push accepted')
+        subscribeUser({ applicationServerKey })
+          .then((subscription) => {
+            if (subscription) axios.post(config.PUSH_SUBSCRIBE_ENDPOINT, subscription)
+          })
+          .then(() => {
+            this.setState({ subscribed: true })
+          })
+          .catch((error) => {
+            this.triggerError(error)
+          })
+      })
+      .catch((error) => {
+        alert('You cannot subscribe if you do not accept.')
+      })
   }
 
   unsubscribe = () => {
-    unsubscribeUser().then(
-      (subscription) => {
+    unsubscribeUser()
+      .then((subscription) => {
         axios.post(config.PUSH_UNSUBSCRIBE_ENDPOINT, subscription)
-      }
-    )
-      .then(() => {
-        this.setState({subscribed: false})
       })
-      .catch(error => {
+      .then(() => {
+        this.setState({ subscribed: false })
+      })
+      .catch((error) => {
         this.triggerError(error)
       })
   }
 
-
   render() {
-    const {classes} = this.props,
-      {error, visible, subscribed} = this.state
+    const { classes } = this.props,
+      { error, visible, subscribed } = this.state
     if (error) {
-      return <div className={[classes.btn, classes.error].join(' ')}>
-        Cannot subscribe
-      </div>
+      return (
+        <div className={[classes.btn, classes.error].join(' ')}>Cannot subscribe</div>
+      )
     }
 
     if (subscribed) {
       return (
-        <button className={[classes.btn, classes.subscribed].join(' ')}
-                onClick={this.unsubscribe}
+        <button
+          className={[classes.btn, classes.subscribed].join(' ')}
+          onClick={this.unsubscribe}
         >
           Subscribed
-          <FontAwesomeIcon className={classes.icon}
-                           icon={faRssSquare}
-          />
+          <FontAwesomeIcon className={classes.icon} icon={faRssSquare} />
         </button>
       )
     }
 
-    return visible && (
-      <button className={classes.btn}
-              onClick={this.subscribe}>
-        Subscribe
-        <FontAwesomeIcon className={classes.icon}
-                         icon={faRssSquare}
-        />
-      </button>
-    );
+    return (
+      visible && (
+        <button className={classes.btn} onClick={this.subscribe}>
+          Subscribe
+          <FontAwesomeIcon className={classes.icon} icon={faRssSquare} />
+        </button>
+      )
+    )
   }
 }
 
 SubscriptionBtn.propTypes = {
-  applicationServerKey: PropTypes.string.isRequired
+  applicationServerKey: PropTypes.string.isRequired,
 }
 
-const styledSubscriptionBtn = injectStyles(styles)(SubscriptionBtn);
+const styledSubscriptionBtn = injectStyles(styles)(SubscriptionBtn)
 
-export default styledSubscriptionBtn;
+export default styledSubscriptionBtn

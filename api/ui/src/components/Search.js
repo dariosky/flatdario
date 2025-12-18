@@ -1,9 +1,8 @@
 import React from 'react'
-import {faSearch} from '@fortawesome/fontawesome-free-solid'
+import { faSearch } from '@fortawesome/fontawesome-free-solid'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import injectSheet from 'react-jss'
 import withRouter from 'react-router-dom/es/withRouter'
-
 
 const styles = {
   searchContainer: {
@@ -14,7 +13,7 @@ const styles = {
     boxSizing: 'border-box',
     padding: '0 30px',
     justifyContent: 'flex-end',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   searchInput: {
@@ -30,56 +29,54 @@ const styles = {
     border: '1px silver',
 
     '&:focus': {
-      background: 'white'
-    }
+      background: 'white',
+    },
   },
 
   searchIcon: {
     verticalAlign: 'middle',
-    marginLeft: '20px'
-  }
+    marginLeft: '20px',
+  },
 }
 
 class Search extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {query: ''}
+    this.state = { query: '' }
   }
 
   componentDidMount() {
-    this.componentWillReceiveProps(this.props);
+    this.componentWillReceiveProps(this.props)
   }
-
 
   componentWillReceiveProps(newProps) {
     const query = newProps.match.params.query || ''
-    this.setState({query})
+    this.setState({ query })
   }
 
   handleChange = (e) => {
     const q = e.target.value,
-      {history} = this.props
+      { history } = this.props
 
-    this.setState({query: q})
-    if (q)
-      history.push('/search/' + q)
-    else
-      history.push('/')
+    this.setState({ query: q })
+    if (q) history.push('/search/' + q)
+    else history.push('/')
   }
 
   render() {
-    const {classes} = this.props
-    const {query} = this.state
+    const { classes } = this.props
+    const { query } = this.state
     return (
       <div className={classes.searchBar}>
         <div className={classes.searchContainer}>
-          <input className={classes.searchInput}
-                 placeholder="Search ..."
-                 value={query}
-                 onChange={this.handleChange}
+          <input
+            className={classes.searchInput}
+            placeholder="Search ..."
+            value={query}
+            onChange={this.handleChange}
           />
           <FontAwesomeIcon
-            color='#fff'
+            color="#fff"
             icon={faSearch}
             size="2x"
             className={classes.searchIcon}

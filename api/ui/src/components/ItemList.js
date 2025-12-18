@@ -1,5 +1,5 @@
 import React from 'react'
-import {graphql} from 'react-apollo'
+import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import Item from './Item'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -10,26 +10,24 @@ import injectSheet from 'react-jss'
 const FETCH_PAGE_SIZE = 12
 
 const QueryItems = gql`
-query getItems($first:Int = 3, $cursor: String, $query:String) {
-  items(first: $first, sort: TIMESTAMP_DESC, after: $cursor
-        q:$query
-  ) {
-    edges {
-      node {
-        id
-        type
-        title
-        url
-        timestamp
-        extra
+  query getItems($first: Int = 3, $cursor: String, $query: String) {
+    items(first: $first, sort: TIMESTAMP_DESC, after: $cursor, q: $query) {
+      edges {
+        node {
+          id
+          type
+          title
+          url
+          timestamp
+          extra
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
-    pageInfo {
-      hasNextPage
-      endCursor
-    }
   }
-}
 `
 
 const styles = {
@@ -47,40 +45,40 @@ const styles = {
 
     '&:after': {
       content: '',
-      flex: 'auto'
-    }
-  }
+      flex: 'auto',
+    },
+  },
 }
 
 class ItemList extends React.Component {
   render() {
-    const {data, loadMore, classes} = this.props
+    const { data, loadMore, classes } = this.props
 
     if (data.loading) {
-      return <Loader/>
+      return <Loader />
     }
     if (!data) {
-      return <Message color="orange" text="No data"/>
+      return <Message color="orange" text="No data" />
     }
     if (data && data.error) {
       console.error('error:', data.error.message)
-      return <Message color="tomato" text="Error getting data"/>
+      return <Message color="tomato" text="Error getting data" />
     }
     const items = data.items.edges
-    const itemsBlock = items.map(
-      (item, p) => <Item key={item.node.id}
-                         item={item.node}/>
-    )
+    const itemsBlock = items.map((item, p) => (
+      <Item key={item.node.id} item={item.node} />
+    ))
     const hasMore = data.items.pageInfo.hasNextPage
     return (
-      <div className="clipper" style={{overflow: 'auto'}}>
+      <div className="clipper" style={{ overflow: 'auto' }}>
         <InfiniteScroll
           loadMore={loadMore}
           hasMore={hasMore}
-          loader={<Loader key={0}/>}
-          useCapture={{passive: true}}
+          loader={<Loader key={0} />}
+          useCapture={{ passive: true }}
           threshold={400} // 250 is the default
-          className={classes.aggregation}>
+          className={classes.aggregation}
+        >
           {itemsBlock}
         </InfiniteScroll>
       </div>
@@ -95,20 +93,20 @@ const queryOptions = {
     return {
       variables: {
         first: FETCH_PAGE_SIZE,
-        query
-      }
+        query,
+      },
     }
   },
-  props: ({data}) => {
+  props: ({ data }) => {
     // get data from GQL response, and return object props
     return {
       data,
       loadMore: () => {
         return data.fetchMore({
           variables: {
-            cursor: data.items.pageInfo.endCursor
+            cursor: data.items.pageInfo.endCursor,
           },
-          updateQuery(previousResult, {fetchMoreResult}) {
+          updateQuery(previousResult, { fetchMoreResult }) {
             if (!fetchMoreResult.items) {
               return previousResult
             }
@@ -118,18 +116,16 @@ const queryOptions = {
               ...fetchMoreResult,
               items: {
                 ...fetchMoreResult.items,
-                edges: [...previousItems, ...newItems]
-              }
+                edges: [...previousItems, ...newItems],
+              },
             }
-          }
+          },
         })
-      }
+      },
     }
-  }
+  },
 }
 
-const ItemData = graphql(QueryItems, queryOptions)(
-  injectSheet(styles)(ItemList)
-)
+const ItemData = graphql(QueryItems, queryOptions)(injectSheet(styles)(ItemList))
 
 export default ItemData

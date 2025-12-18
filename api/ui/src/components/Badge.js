@@ -1,7 +1,12 @@
 import React from 'react'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import {faGetPocket, faTumblrSquare, faVimeo, faYoutube} from '@fortawesome/fontawesome-free-brands'
-import {faQuestionCircle, faRssSquare} from '@fortawesome/fontawesome-free-solid'
+import {
+  faGetPocket,
+  faTumblrSquare,
+  faVimeo,
+  faYoutube,
+} from '@fortawesome/fontawesome-free-brands'
+import { faQuestionCircle, faRssSquare } from '@fortawesome/fontawesome-free-solid'
 import injectSheet from 'react-jss'
 
 const styles = {
@@ -23,14 +28,13 @@ const styles = {
     &.fa-youtube {
       color: #b31217; //youtube official red: https://www.youtube.com/yt/brand/color.html
     }
-`
-
+`,
 }
 
 class Badge extends React.Component {
   /* A Badge with the type of the content */
   render() {
-    const {type, classes} = this.props
+    const { type, classes } = this.props
     let icon, color
 
     switch (type) {
@@ -58,11 +62,9 @@ class Badge extends React.Component {
         console.warn('Unknown item type', type)
         icon = faQuestionCircle
     }
-    return <FontAwesomeIcon className={classes.type}
-                            color={color}
-                            icon={icon}
-                            size="2x"
-    />
+    return (
+      <FontAwesomeIcon className={classes.type} color={color} icon={icon} size="2x" />
+    )
   }
 }
 

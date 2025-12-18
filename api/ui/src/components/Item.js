@@ -28,7 +28,8 @@ const styles = {
     height: '400px',
   },
 
-  '@media (min-width: 1024px)': { // medium size screen 3col
+  '@media (min-width: 1024px)': {
+    // medium size screen 3col
     item: {
       gridColumnEnd: 'span 4',
     },
@@ -90,9 +91,7 @@ const SubTitle = (props) => {
   const { item } = props
 
   if (item.type === 'Tumblr' && (item.description || item.subtitle)) {
-    return <div className="subtitle">
-      {item.description || item.subtitle}
-    </div>
+    return <div className="subtitle">{item.description || item.subtitle}</div>
   }
   return null
 }
@@ -113,20 +112,23 @@ const CardContent = injectSheet(styles)((props) => {
   }
 
   if (item.contentFormat === 'iframe') {
-    return <iframe src={item.content || item.url}
-                   className={classes.thumb}
-                   title={item.title}
-                   frameBorder="0" allowFullScreen
-    />
+    return (
+      <iframe
+        src={item.content || item.url}
+        className={classes.thumb}
+        title={item.title}
+        frameBorder="0"
+        allowFullScreen
+      />
+    )
   } else {
-    return <div className={classes.thumb} style={backgroundStyle()}
-    />
+    return <div className={classes.thumb} style={backgroundStyle()} />
   }
 })
 
 class Item extends React.Component {
   item = () => {
-    let { 'extra': extraJSON, ...res } = this.props.item
+    let { extra: extraJSON, ...res } = this.props.item
     const extraObj = JSON.parse(extraJSON)
     return { ...res, ...extraObj }
   }
@@ -148,22 +150,21 @@ class Item extends React.Component {
       { classes } = this.props,
       classNames = this.classNames()
 
-    return <div className={classNames.join(' ')}>
-      <Badge type={item.type} />
-      <a href={item.url} target="_blank" rel="noopener" className={classes.itemContent}>
-        <CardContent item={item} />
-        <div className={classes.title}>
-          <div className="ellipsed-text">
-            {item.title || item.url}
-            <SubTitle item={item} />
+    return (
+      <div className={classNames.join(' ')}>
+        <Badge type={item.type} />
+        <a href={item.url} target="_blank" rel="noopener" className={classes.itemContent}>
+          <CardContent item={item} />
+          <div className={classes.title}>
+            <div className="ellipsed-text">
+              {item.title || item.url}
+              <SubTitle item={item} />
+            </div>
           </div>
-        </div>
-      </a>
-      <div className={classes.date}>
-        {item.timestamp}
+        </a>
+        <div className={classes.date}>{item.timestamp}</div>
       </div>
-    </div>
-
+    )
   }
 }
 
