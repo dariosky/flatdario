@@ -1,5 +1,6 @@
 import glob
 import os
+import subprocess
 from contextlib import contextmanager
 from functools import wraps
 
@@ -25,11 +26,63 @@ class Config:
 if os.path.exists(os.path.expanduser("~/.ssh/config")):
     env.use_ssh_config = True
 
+# Default host alias (matches ~/.ssh/config entry)
+DEFAULT_HOST = ['opal']
+
+
+def _load_identity_from_ssh_config(host_alias):
+    """
+    Try to read IdentityFile from `ssh -G <host>` so includes/Match rules are honored.
+    """
+    try:
+        output = subprocess.check_output(
+            ['ssh', '-G', host_alias], stderr=subprocess.DEVNULL, text=True
+        )
+    except Exception:
+        return
+    parsed = {}
+    keys = []
+    for line in output.splitlines():
+        parts = line.strip().split()
+        if len(parts) == 2 and parts[0].lower() == 'identityfile':
+            candidate = os.path.expanduser(parts[1])
+            if os.path.isfile(candidate):
+                keys.append(candidate)
+        elif len(parts) == 2:
+            parsed[parts[0].lower()] = parts[1]
+    return parsed, keys
+
 
 def set_hosts(hosts):
     # using env.hosts only didn't work for me
-    env.hosts = hosts
-    env.host_string = ",".join(hosts)
+    if isinstance(hosts, str):
+        hosts = [hosts]
+    resolved_hosts = []
+    keyfiles = []
+    first_host = hosts[0]
+    host_alias = first_host.split('@')[-1]
+    parsed, keys = _load_identity_from_ssh_config(host_alias) or ({}, [])
+    if keys:
+        keyfiles.extend(keys)
+    user = parsed.get('user', None)
+    port = parsed.get('port', None)
+    for h in hosts:
+        alias = h.split('@')[-1]
+        host_cfg, host_keys = _load_identity_from_ssh_config(alias) or ({}, [])
+        if host_keys:
+            keyfiles.extend(host_keys)
+        host_user = host_cfg.get('user', user)
+        host_port = host_cfg.get('port', port)
+        host_entry = alias  # keep SSH alias to respect ssh_config resolution
+        if host_user:
+            host_entry = f"{host_user}@{host_entry}"
+        if host_port:
+            host_entry = f"{host_entry}:{host_port}"
+        resolved_hosts.append(host_entry)
+    env.hosts = resolved_hosts
+    env.host_string = ",".join(resolved_hosts)
+    if keyfiles:
+        env.key_filename = keyfiles
 
 
 @contextmanager
@@ -70,6 +123,8 @@ def pull_repo():
 @task
 def deploy():
     """ Pull the changes, update requirements on remote host"""
+    if not env.hosts:
+        set_hosts(DEFAULT_HOST)
     with cd(Config.project_path):
         if not exists('.git'):
             print("Cloning GIT repo")
