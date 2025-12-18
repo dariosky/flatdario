@@ -3,7 +3,6 @@ import injectSheet from 'react-jss'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import {
   faExternalLinkAlt,
-  faHome,
   faPencilAlt,
 } from '@fortawesome/fontawesome-free-solid'
 import { Link } from 'react-router-dom'

@@ -20,6 +20,7 @@ const QueryItems = gql`
           url
           timestamp
           extra
+          hidden
         }
       }
       pageInfo {
@@ -64,7 +65,7 @@ class ItemList extends React.Component {
       console.error('error:', data.error.message)
       return <Message color="tomato" text="Error getting data" />
     }
-    const items = data.items.edges
+    const items = data.items.edges.filter((edge) => !edge.node.hidden)
     const itemsBlock = items.map((item, p) => (
       <Item key={item.node.id} item={item.node} />
     ))
