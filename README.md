@@ -1,122 +1,101 @@
 # flatdario
-My flatsite generator - an aggregator of social activities 
-from various services.
+Personal “flat site” generator that collects activity I like across the web, saves
+it locally, and serves it via a small API + React UI (or a legacy static build).
 
-This is an app that works scanning a number of social accounts related
- to his powerful master, save them in a local smallDB and
- generate a static website (that will be periodically updated) to
- show them to the world.
+## High level
+- Collectors in `collectors/` pull data from YouTube (likes + uploads), Pocket,
+  Vimeo and a few RSS feeds. Credentials live in `appkeys/` (app) and
+  `userkeys/` (per-user tokens).
+- Data is stored in SQLite by default (`flat.json` config), but the storage layer
+  also supports TinyDB/JSON.
+- The `flat.py` CLI orchestrates collection, static builds (via
+  `flatbuilder/`), push notifications, and running the Flask/GraphQL API.
+- The API in `api/` serves a GraphQL endpoint plus push-subscribe routes and
+  ships the React bundle in `api/ui/build`. The UI uses Apollo to talk to the
+  API and offers search and infinite scrolling over the feed.
 
-Services may require an API key to access the various API
-and a user authorization to access the data for read access
- (check the services documentation down here).
-Apps keys are in `appkeys/` user keys in `userkeys/`.
+## Repository map
+- `flat.py` – main entry point with CLI actions.
+- `collectors/` – individual sources (YouTube, Pocket, Vimeo, RSS, OpenGraph
+  enrichments).
+- `storage/` – SQLite (`db.sqlite`) and TinyDB storage backends.
+- `flatbuilder/` – legacy static-site builder and template copier.
+- `api/` – Flask app (`api_server.py`, `schema.py`), GraphQL schema and push
+  helpers.
+- `api/ui/` – React app served by the API in production; uses `react-app-rewired`.
+- `push/` – web push helpers.
+- `build/` – generated static site (when using the builder).
 
-# How to use it
-
-### collect
-
-Collect all your data, scraping the supported services, and update the DB:
-	
-	flat.py collect
-
-This will update the DB, that by default is stored as `db.json`.
-
-### build
-
-The generated static site is stored in the `build` subfolder.
-
-Initialize the build subfolder typing
-
-	flat.py init --template empty
-	
-You can create a new template, for your site: check the `/flatbuilder/empty` folder
-and create a new template if you like.
-
-Now you can create the static site with the collected data:
-
-	flat.py build
-	
-The static file is ready to be served and deployed.
-
-### serve static
-
-If you want to check it out locally, you can run:
-
-	flat.py preview
-	
-And then point your browser to [http://localhost:7747](http://localhost:7747)
-
-### Supported services
-
-#### Youtube (likes and uploaded)
-
-Collect videos you like in Youtube.
-
-How to use it:
-
-*	It needs Google API credentials:
- 	create an app that can access Youtube API, and save its secrets as
- 	`appkeys/google.json`
- 
- 		then on the first run it will ask oauth2 authentication with your
- 		Youtube account (saved in `userkeys/google.json`).
-
-#### Pocket
-
-What you archive in Pocket is saved.
-
-You need pocket credentials, [get them here](https://getpocket.com/developer/docs/authentication)
-and put the consumer_key in a json file in `appkeys/pocket.json` 
-
-#### Vimeo
-
-Collect videos you like in Vimeo.
-
-You have to create an app [here](https://developer.vimeo.com/apps/new)
- and put their credentials in `appkeys/vimeo.json`
-
-### RSS
-
-Collect entries from any RSS feed (or Atom or CDF).
-Just provide the feed url.
-
-### Serve dynamically
-
-There is an additional mode to serve the generated site,
-that allows to serve the site dynamically, allowing search and (soon),
-autentication and updates the DB.
-
-You'll need to run an API server that is done in Python (Flask and GraphQL)
-to serve a React web application.
-
-* Start the API server
-
-		flat.py runapi
-		
-* Build the UI machinery using WebPack:
-  
+## Setup
 ```bash
-    cd api/ui
-    # install the dependencies 
-    yarn
-    # yarn run watch
+# Python deps (recommend a virtualenv)
+pip install -r requirements.txt
+
+# Frontend deps
+cd api/ui
+yarn install   # or npm install
 ```
-		
-* Connect to [http://localhost:3001/](http://localhost:3001/)
+Secrets:
+- Drop app credentials in `appkeys/<service>.json` (e.g. `google.json`,
+  `pocket.json`, `vimeo.json`).
+- User tokens are written/read from `userkeys/<service>.json` on first auth.
 
+Configuration:
+- `flat.json` controls DB path/format and builder template. Defaults to SQLite
+  at `db.sqlite` and the `empty` template.
 
-# TODO - Desiderata:
+## CLI usage (python flat.py …)
+- `collect` – run all collectors and persist results.
+- `build` – render the legacy static site into `build/` using `flatbuilder`.
+- `collect+build` (default) – do both steps.
+- `init --template empty` – copy a template from `flatbuilder/<name>` into
+  `build/`.
+- `preview` – serve the built static site locally.
+- `runapi` – launch the Flask + GraphQL server (serves `api/ui/build` too).
+- `notify` – send pending push notifications to subscribers.
 
-* Be light, fast and save the planet
-* Full-text search for content
-* Search by feed
-* Login and update content
-* Share a post to social networks, with a permanent link
-* Instagram collector
-* Highlighted feed taking a full row, shown with content
+Flags:
+- `--debug` for verbose logging (also allows multiple `runapi` instances).
+- `--update` to refresh duplicates instead of skipping.
+- `--template <name>` to pick a template.
+- `--port <port>` for `runapi`.
+- `--list` to list available templates.
 
-Done:
+## API + UI (dynamic mode)
+1) Start the API against the current DB:
+```bash
+python flat.py runapi --debug --port 3001
+```
+This exposes `http://localhost:3001/graphql`, push endpoints, and serves the
+built React bundle from `api/ui/build`.
 
-* <del> Support for generic RSS feeds, in particular: TinyTinyRSS </del>
-* <del> Tumblr specific reader (supporting pagination)</del>
+2) Develop the UI with hot reload:
+```bash
+cd api/ui
+yarn start   # proxies GraphQL to http://localhost:3001/
+```
+
+3) Build the production UI bundle (served by the API):
+```bash
+cd api/ui
+yarn build   # outputs to api/ui/build
+```
+
+## Legacy static build (deprecated but still available)
+The original flow renders a static site under `build/` using templates in
+`flatbuilder/`. Customize `flatbuilder/empty` (or add your own template) and run:
+```bash
+python flat.py init --template empty
+python flat.py collect
+python flat.py build
+python flat.py preview   # view at http://localhost:7747
+```
+Prefer the dynamic API/UI path above for day-to-day use.
+
+## Supported services and credentials
+- **YouTube** (likes + uploads): app creds in `appkeys/google.json`; first run
+  stores user tokens in `userkeys/google.json`.
+- **Pocket**: consumer key in `appkeys/pocket.json`.
+- **Vimeo**: app credentials in `appkeys/vimeo.json`.
+- **RSS**: see hard-coded feeds in `flat.py`’s `Aggregator.collectors`; adjust as
+  needed.
