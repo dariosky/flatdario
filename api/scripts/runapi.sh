@@ -3,10 +3,16 @@
 
 set -euo pipefail
 
-PROJECT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$( cd "$SCRIPT_DIR/../.." && pwd )"
 cd "$PROJECT_ROOT"
 
-PYTHON_BIN="${PYTHON_BIN:-python}"
+DEFAULT_PY_BIN="$PROJECT_ROOT/.venv/bin/python"
+if [ -x "$DEFAULT_PY_BIN" ]; then
+  PYTHON_BIN="${PYTHON_BIN:-$DEFAULT_PY_BIN}"
+else
+  PYTHON_BIN="${PYTHON_BIN:-python}"
+fi
 PORT="${PORT:-39991}"
 PIDFILE="${PIDFILE:-$PROJECT_ROOT/runapi.pid}"
 LOGFILE="${LOGFILE:-$PROJECT_ROOT/logs/runapi.log}"
