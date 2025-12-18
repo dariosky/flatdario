@@ -16,7 +16,7 @@ def grab_largest_image(url):
 
             await page.goto(url, timeout=10000)
 
-            max_img = await page.evaluate('''() => {
+            max_img = await page.evaluate("""() => {
                         var images = document.getElementsByTagName('img')
                         var maxImg = null, maxArea=0, anchor;
                         for (var i=0, len=images.length; i<len; i++)  {
@@ -33,7 +33,7 @@ def grab_largest_image(url):
                             return anchor.href; // return the absolute path
                         }
                         return maxImg
-                    }''')
+                    }""")
             return max_img
         except Exception as e:
             logger.error(f"Error rendering page {url}")

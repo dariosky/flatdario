@@ -24,12 +24,13 @@ class StorageTinyDB(Storage):
             return self.db.search(Item.id == id)
 
     def upsert(self, item, update=False):
-        existing = self.search(id=item['id'], type=item['type'])
+        existing = self.search(id=item["id"], type=item["type"])
         if existing:
-            assert len(existing) == 1, \
-                'We have 2 duplicates with id: {id} and type: {type}'.format(
-                    id=item['id'], type=item['type']
+            assert len(existing) == 1, (
+                "We have 2 duplicates with id: {id} and type: {type}".format(
+                    id=item["id"], type=item["type"]
                 )
+            )
             existing = existing[0]
             if update:
                 existing.update(item)
@@ -38,12 +39,12 @@ class StorageTinyDB(Storage):
             raise DuplicateFound(
                 f"We already have the id {item['id']} of type {item['type']} in the DB"
             )
-        logger.info('Adding: %s' % item)
+        logger.info("Adding: %s" % item)
         self.db.insert(item)
 
     def all(self):
         data = self.db.all()
-        data.sort(key=lambda item: item['timestamp'], reverse=True)
+        data.sort(key=lambda item: item["timestamp"], reverse=True)
         return data
 
     def max_timestamp(self, **kwargs):
@@ -51,8 +52,8 @@ class StorageTinyDB(Storage):
         # we scan all item to get the max_timestamp
         max_timestamp = None
         for item in items:
-            if max_timestamp is None or item['timestamp'] > max_timestamp:
-                max_timestamp = item['timestamp']
+            if max_timestamp is None or item["timestamp"] > max_timestamp:
+                max_timestamp = item["timestamp"]
         return max_timestamp
 
     def __str__(self):

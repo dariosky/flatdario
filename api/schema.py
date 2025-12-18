@@ -22,31 +22,41 @@ class Query(graphene.ObjectType):
         ItemType,
         fts=dict(
             fields=[  # all these fields get the _like query
-                'title', 'url'
+                "title",
+                "url",
             ],
         ),
         q=String(),
     )
     item = relay.Node.Field(ItemType)
 
+    def resolve_item(self, info, *args, **kwargs):
+        flask_session = info.context.get("flask_session", {})
+        is_admin = flask_session.get("admin") is True
+        item_obj = Query.item.get_node(info, *args, **kwargs)
+        if item_obj and (item_obj.hidden and not is_admin):
+            return None
+        return item_obj
+
     def resolve_items(self, info, *args, **kwargs):
+        flask_session = info.context.get("flask_session", {})
+        is_admin = flask_session.get("admin") is True
         q = None
         re_arguments = []
         for argument in info.field_asts[0].arguments:
-            if argument.name.value == 'q':
+            if argument.name.value == "q":
                 q = get_arg_val(argument, info)
             else:
                 re_arguments.append(argument)
         # info.field_asts[0].arguments = re_arguments
         query = Query.items.get_query(Item, info)
+        if not is_admin:
+            query = query.filter(Item.hidden.is_(False))
         if q:
-            fts_fields = ('title', 'type', 'url')
+            fts_fields = ("title", "type", "url")
             logger.debug("FTS with like in {fts_fields}")
             query = query.filter(
-                or_(*[
-                    getattr(Item, field).like(f'%{q}%')
-                    for field in fts_fields
-                ])
+                or_(*[getattr(Item, field).like(f"%{q}%") for field in fts_fields])
             )
         # add an artificial delay?
         # import time

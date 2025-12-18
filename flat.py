@@ -14,12 +14,12 @@ def _patch_collections_for_py3():
     import collections.abc as _abc
 
     for _name in (
-        'Container',
-        'Iterable',
-        'MutableSet',
-        'Mapping',
-        'MutableMapping',
-        'Sequence',
+        "Container",
+        "Iterable",
+        "MutableSet",
+        "Mapping",
+        "MutableMapping",
+        "Sequence",
     ):
         if not hasattr(collections, _name):
             setattr(collections, _name, getattr(_abc, _name))
@@ -50,11 +50,14 @@ class Aggregator:
         YouTubeLikesCollector,
         PocketCollector,
         VimeoCollector,
-        RSSCollector.get(url='https://dariosky.github.io/rss/index.rss'),
-        RSSCollector.get(url='http://rss.dariosky.it/public.php?'
-                             'op=rss&id=-2&key=bbwf1t5a80b21066d41'),
-        RSSCollector.get(url='https://www.reddit.com/saved.rss?'
-                             'feed=a5174816204085b3bdd43e2df8f8e93ee98c7a1a&user=dariosky'),
+        RSSCollector.get(url="https://dariosky.github.io/rss/index.rss"),
+        RSSCollector.get(
+            url="http://rss.dariosky.it/public.php?op=rss&id=-2&key=bbwf1t5a80b21066d41"
+        ),
+        RSSCollector.get(
+            url="https://www.reddit.com/saved.rss?"
+            "feed=a5174816204085b3bdd43e2df8f8e93ee98c7a1a&user=dariosky"
+        ),
         # TumblrCollector.get('https://tumblr.dariosky.it'),
     ]
 
@@ -62,17 +65,17 @@ class Aggregator:
         super(Aggregator, self).__init__()
         config = self.load_config()
         c = config.get
-        self.db_filename = c('db', 'db.json')
-        self.db_format = c('format', 'json')
-        self.build_template = c('template', 'empty')
+        self.db_filename = c("db", "db.json")
+        self.db_format = c("format", "json")
+        self.build_template = c("template", "empty")
 
         self.db = Storage.get(self.db_format, self.db_filename)
 
     @staticmethod
-    def load_config(config_file=os.path.join(PROJECT_PATH, 'flat.json')):
+    def load_config(config_file=os.path.join(PROJECT_PATH, "flat.json")):
         if os.path.isfile(config_file):
             logger.debug(f"Getting configuration from {config_file}")
-            with open(config_file, 'r', encoding='utf8') as f:
+            with open(config_file, "r", encoding="utf8") as f:
                 return json.load(f)
         return {}
 
@@ -106,11 +109,15 @@ class Aggregator:
     @staticmethod
     def preview():
         logger.info("Serving locally a preview of the built site")
-        served_folder = os.path.realpath('build')
+        served_folder = os.path.realpath("build")
         if not os.path.isdir(served_folder):
             logger.warning("We miss the build folder in %s" % served_folder)
-            logger.warning("You'll need to flat.py init --template empty to create a base")
-            logger.warning("And then run flat.py to collect data and update the template")
+            logger.warning(
+                "You'll need to flat.py init --template empty to create a base"
+            )
+            logger.warning(
+                "And then run flat.py to collect data and update the template"
+            )
             sys.exit(1)
         serve(served_folder)
 
@@ -123,7 +130,7 @@ class Aggregator:
     def list_templates(self):
         print("Available templates:")
         for name in os.listdir(TEMPLATE_CONTAINER_FOLDER):
-            if name[0] in ('.', '_'):
+            if name[0] in (".", "_"):
                 continue  # Ignore hidden/temp folders
             template_folder = os.path.join(TEMPLATE_CONTAINER_FOLDER, name)
             if os.path.isdir(template_folder):
@@ -138,41 +145,55 @@ class Aggregator:
 
     def runapi(self, production=False, port=3001):
         from api.api_server import run_api
+
         run_api(self.db, production=production, port=port)
 
     def send_push_notifications(self, data):
         from push.send import broadcast_notification
+
         broadcast_notification(data, self.db)
 
     def send_push_history(self):
-        """ Send the notifications that clients are missing """
+        """Send the notifications that clients are missing"""
         from push.send import send_all_missing_notifications
+
         send_all_missing_notifications(self.db)
 
 
 def get_options():
     parser = argparse.ArgumentParser(
         "FlatDario",
-        description="Aggregate your social activities in a simple fast static flat site"
+        description="Aggregate your social activities in a simple fast static flat site",
     )
     parser.add_argument("-v", "--version", action="version", version=VERSION)
-    parser.add_argument("--debug",
-                        help="Run in debug mode, verbose output is shown",
-                        default=False,
-                        action="store_true")
-    parser.add_argument("--update",
-                        help="Scan all the elements and update them instead"
-                             " of doing an incremental sync",
-                        default=False,
-                        action="store_true")
+    parser.add_argument(
+        "--debug",
+        help="Run in debug mode, verbose output is shown",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--update",
+        help="Scan all the elements and update them instead"
+        " of doing an incremental sync",
+        default=False,
+        action="store_true",
+    )
 
-    parser.add_argument('action',
-                        default="collect+build", nargs='?',
-                        choices=("init",
-                                 "collect+build", "collect", "build",
-                                 "preview", "runapi",
-                                 "notify"),
-                        help=textwrap.dedent("""
+    parser.add_argument(
+        "action",
+        default="collect+build",
+        nargs="?",
+        choices=(
+            "init",
+            "collect+build",
+            "collect",
+            "build",
+            "preview",
+            "runapi",
+            "notify",
+        ),
+        help=textwrap.dedent("""
                             init:    initialize the build/ folder with the template specified
                                      by the --template option (do --list to list templates)
                             collect: get the data from the sources and store in the local DB
@@ -180,31 +201,37 @@ def get_options():
                             preview: serve the content of build/ to preview the result site
                             notify:  send the push notifications to subscribed clients 
                         """),
-                        )
+    )
 
-    parser.add_argument("--template",
-                        default='empty',
-                        help="Select the template to be used for build and preview",
-                        )
+    parser.add_argument(
+        "--template",
+        default="empty",
+        help="Select the template to be used for build and preview",
+    )
 
-    parser.add_argument("--list",
-                        help="List all the available templates",
-                        default=False,
-                        action="store_true")
-    parser.add_argument("--port",
-                        help="Serve the API and the Dynamic server on a given port",
-                        type=int,
-                        default=3001,
-                        )
+    parser.add_argument(
+        "--list",
+        help="List all the available templates",
+        default=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "--port",
+        help="Serve the API and the Dynamic server on a given port",
+        type=int,
+        default=3001,
+    )
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("FlatDario %s" % VERSION)
     this_year = datetime.date.today().year
     start_year = 2016
-    copy_years = start_year if this_year == start_year else "%s-%s" % (start_year, this_year)
+    copy_years = (
+        start_year if this_year == start_year else "%s-%s" % (start_year, this_year)
+    )
     print("Copyright (C) %s Dario Varotto\n" % copy_years)
 
     args = get_options()
@@ -240,8 +267,7 @@ if __name__ == '__main__':
             # in debug mode, we have the watcher that run the 2nd time
             print("Process already runing")
             sys.exit()
-        agg.runapi(production=not args.debug,
-                   port=args.port)
+        agg.runapi(production=not args.debug, port=args.port)
 
     if action == "notify":
         agg.send_push_history()

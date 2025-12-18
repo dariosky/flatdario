@@ -2,7 +2,7 @@ import logging
 
 from graphql_relay.node.node import from_global_id
 
-logger = logging.getLogger('flat.util')
+logger = logging.getLogger("flat.util")
 
 
 def change_sizes(sizes, db):
@@ -10,14 +10,14 @@ def change_sizes(sizes, db):
         for gid in ids:
             id_type, rid = from_global_id(gid)
             item = db.getitem(rid)
-            current_size = item.get('size')
+            current_size = item.get("size")
             if current_size != size:
                 logger.info(f"Changing size of {item['title']}: {current_size}=>{size}")
-                item['size'] = size
+                item["size"] = size
                 db.upsert(item, update=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from flat import Aggregator
 
     logging.basicConfig(level=logging.INFO)
@@ -39,8 +39,7 @@ if __name__ == '__main__':
                 "SXRlbVR5cGU6NTliNDViNzkyMWYzM2YwOTAyNTA3NGVj",
                 "SXRlbVR5cGU6elV6UlMxZmhTbjA=",
                 "SXRlbVR5cGU6aXBjM09PREJGZ00=",
-
-            )
+            ),
         },
-        agg.db
+        agg.db,
     )

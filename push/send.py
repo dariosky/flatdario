@@ -8,14 +8,12 @@ logger = logging.getLogger("flat.push")
 
 
 class PushSender:
-    claim_filename = os.path.join(os.path.dirname(__file__), 'claims.json')
-    private_key_filename = os.path.join(os.path.dirname(__file__), 'private_key.pem')
+    claim_filename = os.path.join(os.path.dirname(__file__), "claims.json")
+    private_key_filename = os.path.join(os.path.dirname(__file__), "private_key.pem")
 
     if not os.path.isfile(claim_filename):
         print("claims.json not found: Please create it.")
-        example_json = json.dumps({
-            "sub": "mailto:your@email.com"
-        })
+        example_json = json.dumps({"sub": "mailto:your@email.com"})
         print(f"It should be a json with something like this: {example_json}")
         raise Exception("Missing claims.json")
 
@@ -37,16 +35,14 @@ class PushSender:
             subscription_info,
             data,
             vapid_private_key=cls.private_key_filename,
-            vapid_claims=claims
+            vapid_claims=claims,
         )
 
 
 def send_notification(data, subscription, db):
     sub_data = json.loads(subscription)
     try:
-        PushSender.send_push_notification(
-            data, sub_data
-        )
+        PushSender.send_push_notification(data, sub_data)
     except WebPushException as e:
         if e.response.status_code == 410:
             logger.warning("Subscription is now invalid, deactivating.")
@@ -63,7 +59,7 @@ def send_notification(data, subscription, db):
 def broadcast_notification(data, db):
     subitems = db.active_subscriptions()
     count = len(subitems)
-    title = data.get('title', 'data')
+    title = data.get("title", "data")
     logger.info(f"Broadcasting `{title}` to {count} subscriber")
     for item in subitems:
         subscription = item.subscription
@@ -79,19 +75,19 @@ def send_all_missing_notifications(db):
     for subscription in subscriptions[1:]:
         min_date = min(min_date, subscription.min_date)
 
-    items = list(filter(lambda item: item['timestamp'] > min_date, db.all()))
+    items = list(filter(lambda item: item["timestamp"] > min_date, db.all()))
 
     logger.debug(f"Notifications for {len(items)} items")
 
     for subitem in subscriptions:
         start_date = subitem.min_date
         for item in items:
-            if item['timestamp'] > start_date:
+            if item["timestamp"] > start_date:
                 data = dict(
-                    title='Dario Varotto shared',
-                    body=item['title'],
-                    image=item['thumb'],
-                    url=item['url']
+                    title="Dario Varotto shared",
+                    body=item["title"],
+                    image=item["thumb"],
+                    url=item["url"],
                 )
                 print(f"Notifying {data} to {subitem.id}")
                 send_notification(data, subitem.subscription, db)

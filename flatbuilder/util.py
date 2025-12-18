@@ -13,8 +13,6 @@ def recursive_overwrite(src, dest, ignore=None):
             ignored = set()
         for f in files:
             if f not in ignored:
-                recursive_overwrite(os.path.join(src, f),
-                                    os.path.join(dest, f),
-                                    ignore)
+                recursive_overwrite(os.path.join(src, f), os.path.join(dest, f), ignore)
     else:
         shutil.copyfile(src, dest)

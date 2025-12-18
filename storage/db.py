@@ -6,11 +6,13 @@ logger = logging.getLogger(__name__)
 class Storage:
     @staticmethod
     def get(db_format, db_filename):
-        if db_format == 'json':
+        if db_format == "json":
             from .json import StorageTinyDB
+
             db = StorageTinyDB(db_filename=db_filename)
-        elif db_format == 'sqlite':
+        elif db_format == "sqlite":
             from .sql import StorageSqliteDB
+
             db = StorageSqliteDB(db_filename)
         else:
             db = Storage()
@@ -39,9 +41,9 @@ class Storage:
     # push notifications ***
 
     def active_subscriptions(self):
-        """ Return all the active push subscription """
+        """Return all the active push subscription"""
         raise NotImplementedError()
 
     def set_last_notification(self, subscription):
-        """ Mark the time when the subscription got last notified """
+        """Mark the time when the subscription got last notified"""
         raise NotImplementedError()

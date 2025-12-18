@@ -4,6 +4,7 @@ import gql from 'graphql-tag'
 import injectSheet from 'react-jss'
 import Loader from './utils/Loader'
 import Message from './utils/Message'
+import config from '../util/config'
 
 const QueryItem = gql`
   query getItem($id: ID!) {
@@ -14,6 +15,7 @@ const QueryItem = gql`
       url
       timestamp
       extra
+      hidden
     }
   }
 `
@@ -227,13 +229,65 @@ const setMeta = (item) => {
 }
 
 class ItemDetail extends React.Component {
+  state = { isAdmin: false, status: '' }
+
   componentDidMount() {
+    this.checkAuth()
     this.updateMeta()
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.data !== prevProps.data && !this.props.data.loading) {
       this.updateMeta()
+    }
+  }
+
+  async checkAuth() {
+    try {
+      const res = await fetch(`${config.API_BASE}auth/me`, { credentials: 'include' })
+      const json = await res.json()
+      this.setState({ isAdmin: !!json.authenticated })
+    } catch (e) {
+      this.setState({ isAdmin: false })
+    }
+  }
+
+  setStatus(message) {
+    this.setState({ status: message })
+    setTimeout(() => this.setState({ status: '' }), 2000)
+  }
+
+  async toggleHidden(item) {
+    const targetHidden = !item.hidden
+    try {
+      const res = await fetch(`${config.API_BASE}admin/items/${item.id}/hide`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ hidden: targetHidden }),
+      })
+      if (!res.ok) throw new Error('Unable to update visibility')
+      item.hidden = targetHidden
+      this.forceUpdate()
+      this.setStatus(targetHidden ? 'Item hidden' : 'Item visible')
+    } catch (err) {
+      this.setStatus(err.message)
+    }
+  }
+
+  async deleteItem(item) {
+    try {
+      const res = await fetch(`${config.API_BASE}admin/items/${item.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+      if (!res.ok) throw new Error('Unable to delete item')
+      this.setStatus('Item deleted')
+      setTimeout(() => {
+        this.props.history.push('/')
+      }, 500)
+    } catch (err) {
+      this.setStatus(err.message)
     }
   }
 
@@ -276,6 +330,7 @@ class ItemDetail extends React.Component {
 
   render() {
     const { data, classes } = this.props
+    const { isAdmin, status } = this.state
     if (data.loading) return <Loader />
     if (data.error) {
       console.error('Item detail error:', data.error)
@@ -336,7 +391,26 @@ class ItemDetail extends React.Component {
             >
               Open original
             </a>
+            {isAdmin ? (
+              <React.Fragment>
+                <button
+                  className={classes.pill}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => this.toggleHidden(item)}
+                >
+                  {item.hidden ? 'Unhide' : 'Hide'}
+                </button>
+                <button
+                  className={classes.pill}
+                  style={{ cursor: 'pointer', borderColor: '#ef4444', color: '#fca5a5' }}
+                  onClick={() => this.deleteItem(item)}
+                >
+                  Delete
+                </button>
+              </React.Fragment>
+            ) : null}
           </div>
+          {status ? <div className={classes.meta}>{status}</div> : null}
         </div>
       </div>
     )

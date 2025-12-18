@@ -2,7 +2,7 @@
 
 const ENV_URLS = {
   // in development use the python API in another port
-  development: 'http://localhost:3001/',
+  development: 'http://127.0.0.1:3001/',
 }
 const API_BASE = ENV_URLS[process.env.NODE_ENV] || '/'
 
@@ -13,6 +13,7 @@ const config = {
     'Zuhap5rBj6m7ngRE7o2ADn_bqkCCF5WKJuvrTRqMCRDDffak',
   PUSH_SUBSCRIBE_ENDPOINT: API_BASE + 'push/subscribe',
   PUSH_UNSUBSCRIBE_ENDPOINT: API_BASE + 'push/unsubscribe',
+  API_BASE,
 }
 
 export default config

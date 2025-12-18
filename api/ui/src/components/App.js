@@ -6,6 +6,7 @@ import Search from './Search'
 import NavBar, { Fixed } from './NavBar'
 import Contacts from './Contacts'
 import ItemDetail from './ItemDetail'
+import Login from './Login'
 import withTracker from '../analytics/withTracker'
 import ReactGA from 'react-ga'
 // Hot-loader
@@ -35,6 +36,7 @@ class App extends React.Component {
         <Route path="/search/:query" exact component={withTracker(ItemList)} />
         <Route path="/contacts" exact component={withTracker(Contacts)} />
         <Route path="/view/:id" exact component={withTracker(ItemDetail)} />
+        <Route path="/login" exact component={withTracker(Login)} />
       </Switch>,
     ]
   }

@@ -3,8 +3,16 @@ import logging
 
 import sqlalchemy
 from flask import json
-from sqlalchemy import (create_engine, Column, String,
-                        DateTime, func, Integer)
+from sqlalchemy import (
+    create_engine,
+    Column,
+    String,
+    DateTime,
+    func,
+    Integer,
+    Boolean,
+    text,
+)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +26,7 @@ Base = declarative_base()
 
 
 class Item(Base):
-    __tablename__ = 'items'
+    __tablename__ = "items"
 
     id = Column(String, primary_key=True)
     type = Column(String, nullable=False)
@@ -26,10 +34,11 @@ class Item(Base):
     timestamp = Column(DateTime, nullable=False)
     title = Column(String, nullable=False)
     extra = Column(String)
+    hidden = Column(Boolean, nullable=False, default=False, server_default=text("0"))
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(String, primary_key=True)
     name = Column(String, nullable=False)
@@ -37,7 +46,7 @@ class User(Base):
 
 
 class Subscription(Base):
-    __tablename__ = 'subscriptions'
+    __tablename__ = "subscriptions"
 
     id = Column(Integer, primary_key=True)
     subscription_date = Column(DateTime, default=datetime.datetime.utcnow)
@@ -48,17 +57,19 @@ class Subscription(Base):
 
     @property
     def min_date(self):
-        return (self.last_notification
-                or self.subscription_date
-                or (datetime.datetime.now() - datetime.timedelta(days=1)))
+        return (
+            self.last_notification
+            or self.subscription_date
+            or (datetime.datetime.now() - datetime.timedelta(days=1))
+        )
 
 
 class StorageSqliteDB(Storage):
-    SQL_FIELDS = {'id', 'type', 'url', 'timestamp', 'title'}
+    SQL_FIELDS = {"id", "type", "url", "timestamp", "title", "hidden"}
 
     @staticmethod
     def item_from_db(dbitem):
-        """ Return an item dictionary out of the DB one """
+        """Return an item dictionary out of the DB one"""
         item = {k: getattr(dbitem, k) for k in StorageSqliteDB.SQL_FIELDS}
         if dbitem.extra:
             extra_fields = json.loads(dbitem.extra)
@@ -67,18 +78,23 @@ class StorageSqliteDB(Storage):
 
     def all(self):
         items = []
-        for dbitem in self.db.query(Item) \
-            .order_by(sqlalchemy.desc(Item.timestamp)):
+        for dbitem in (
+            self.db.query(Item)
+            .filter(Item.hidden.is_(False))
+            .order_by(sqlalchemy.desc(Item.timestamp))
+        ):
             item = self.item_from_db(dbitem)
             items.append(item)
         return items
 
     def __init__(self, db_filename) -> None:
         super().__init__()
-        engine = create_engine(f"sqlite:///{db_filename}",
-                               # echo=True  # show the queries
-                               )
+        engine = create_engine(
+            f"sqlite:///{db_filename}",
+            # echo=True  # show the queries
+        )
         Base.metadata.create_all(engine)
+        self._ensure_hidden_column(engine)
         # noinspection PyPep8Naming
         Session = sessionmaker(bind=engine)
         self.db = Session()
@@ -91,15 +107,11 @@ class StorageSqliteDB(Storage):
         return self.item_from_db(dbitem)
 
     def upsert(self, item, update=False):
-        """ Write to SQL Item - move all extra fields in an extra json"""
-        fields = {k: v for k, v in item.items()
-                  if k in self.SQL_FIELDS}
-        extra = {k: v for k, v in item.items()
-                 if k not in self.SQL_FIELDS}
-        new = Item(
-            **fields,
-            extra=json.dumps(extra)
-        )
+        """Write to SQL Item - move all extra fields in an extra json"""
+        fields = {k: v for k, v in item.items() if k in self.SQL_FIELDS}
+        extra = {k: v for k, v in item.items() if k not in self.SQL_FIELDS}
+        fields.setdefault("hidden", False)
+        new = Item(**fields, extra=json.dumps(extra))
         if update:
             self.db.merge(new)
         else:
@@ -126,12 +138,20 @@ class StorageSqliteDB(Storage):
     def active_subscriptions(self):
         return list(
             self.db.query(Subscription)
-                .filter(Subscription.invalidation_date.is_(None))
-                .order_by(sqlalchemy.asc(Subscription.subscription_date))
+            .filter(Subscription.invalidation_date.is_(None))
+            .order_by(sqlalchemy.asc(Subscription.subscription_date))
         )
 
+    @staticmethod
+    def _ensure_hidden_column(engine):
+        """Add the hidden column if it is missing (SQLite ALTER TABLE ADD COLUMN)."""
+        inspector = engine.execute("PRAGMA table_info(items)")
+        columns = [row[1] for row in inspector]
+        if "hidden" not in columns:
+            engine.execute("ALTER TABLE items ADD COLUMN hidden BOOLEAN DEFAULT 0")
+
     def set_last_notification(self, subscription):
-        """ Mark the time when the subscription got last notified """
+        """Mark the time when the subscription got last notified"""
         q = self.db.query(Subscription).filter(
             Subscription.subscription == subscription
         )

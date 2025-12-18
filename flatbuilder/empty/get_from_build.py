@@ -1,7 +1,8 @@
-""" This script clear the dynamic things from the build path
-    and place them back in the template...
-    Useful to commit any new customization, without publishing your data
+"""This script clear the dynamic things from the build path
+and place them back in the template...
+Useful to commit any new customization, without publishing your data
 """
+
 import logging
 import os
 
@@ -10,7 +11,7 @@ from flatbuilder.util import recursive_overwrite
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger("template.frombuild")
-if __name__ == '__main__':
+if __name__ == "__main__":
     logger.info("Clearing the build folder")
     builder = Builder()
     build_folder = "build"

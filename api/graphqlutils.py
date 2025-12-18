@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def sort_enum_for(cls):
     """Create Graphene Enum for sorting a SQLAlchemy class query"""
     # https://github.com/graphql-python/graphene-sqlalchemy/issues/40
-    name = cls.__name__ + 'SortEnum'
+    name = cls.__name__ + "SortEnum"
     items = []
     for attr in inspect(cls).attrs:
         try:
@@ -24,13 +24,13 @@ def sort_enum_for(cls):
             pass
         else:
             key = attr.key.upper()
-            items.extend([(key + '_ASC', asc), (key + '_DESC', desc)])
+            items.extend([(key + "_ASC", asc), (key + "_DESC", desc)])
     return graphene.Enum(name, items)
 
 
 class FilterableConnectionField(SQLAlchemyConnectionField):
-    """ An enhanced ConnectionField that adds 'sort' by any field
-        and arguments in the SqlAlchemy columns for filtering
+    """An enhanced ConnectionField that adds 'sort' by any field
+    and arguments in the SqlAlchemy columns for filtering
     """
 
     # see discussion on https://github.com/graphql-python/graphene-sqlalchemy/issues/27
@@ -40,14 +40,17 @@ class FilterableConnectionField(SQLAlchemyConnectionField):
             self.set_field_case(field_name): self.get_type(field_type)
             for field_name, field_type in type._meta.fields.items()
         }
-        super().__init__(type, *args,
-                         **filter_fields,
-                         sort=Argument(List(sort_enum_for(model))),
-                         **kwargs)
+        super().__init__(
+            type,
+            *args,
+            **filter_fields,
+            sort=Argument(List(sort_enum_for(model))),
+            **kwargs,
+        )
 
     @staticmethod
     def set_field_case(field_name):
-        if field_name in {'type', 'sort'}:
+        if field_name in {"type", "sort"}:
             return field_name.upper()
         return field_name
 
@@ -59,7 +62,7 @@ class FilterableConnectionField(SQLAlchemyConnectionField):
         return Argument(result)
 
     # See: https://github.com/graphql-python/graphene-sqlalchemy/issues/27#issuecomment-341824371
-    RELAY_ARGS = ['first', 'last', 'before', 'after']
+    RELAY_ARGS = ["first", "last", "before", "after"]
 
     @classmethod
     def get_query(cls, model, info, **kwargs):
@@ -67,10 +70,10 @@ class FilterableConnectionField(SQLAlchemyConnectionField):
 
         attrs = info_to_kwargs(info)
         for field, value in attrs.items():
-            if field == 'sort':
+            if field == "sort":
                 order_field = get_arg_val(value, info).lower()
 
-                if order_field.endswith('_desc'):
+                if order_field.endswith("_desc"):
                     order_field = order_field[:-5]
                     order = sqlalchemy.desc(order_field)
                 else:
@@ -88,14 +91,14 @@ class FilterableConnectionField(SQLAlchemyConnectionField):
 
 
 class FTSFilterableConnectionField(FilterableConnectionField):
-    _fulltext_field_suffix = '__like'
+    _fulltext_field_suffix = "__like"
 
     def __init__(self, type, *args, fts=None, **kwargs):
         # add the *__like additional arguments to the schema
         self.fts = fts
         filter_fields = {}
         self._fts_attributes = {}  # the attribute with it's fieldname
-        for field_name in fts['fields'] or []:
+        for field_name in fts["fields"] or []:
             attr_name = field_name + self._fulltext_field_suffix
             attr_name = self.set_field_case(attr_name)
             field_type = type._meta.fields[field_name]
@@ -110,9 +113,11 @@ class FTSFilterableConnectionField(FilterableConnectionField):
 
         attrs = info_to_kwargs(info)
         for attr_name, value in attrs.items():
-            if attr_name.lower().endswith(cls._fulltext_field_suffix):  # when they ends in __like
-                field_name = attr_name[:-len(cls._fulltext_field_suffix)]
-                logger.debug(f'Filter field {field_name} like {value}')
+            if attr_name.lower().endswith(
+                cls._fulltext_field_suffix
+            ):  # when they ends in __like
+                field_name = attr_name[: -len(cls._fulltext_field_suffix)]
+                logger.debug(f"Filter field {field_name} like {value}")
                 column = getattr(model, field_name)
                 query = query.filter(column.like(f"%{value.value}%"))
 
@@ -121,19 +126,18 @@ class FTSFilterableConnectionField(FilterableConnectionField):
 
 def info_to_kwargs(info):
     return {
-        argument.name.value: argument.value
-        for argument in info.field_asts[0].arguments
+        argument.name.value: argument.value for argument in info.field_asts[0].arguments
     }
 
 
 def get_arg_val(arg, info: ResolveInfo):
     result = arg
-    if hasattr(result, 'value'):
+    if hasattr(result, "value"):
         result = arg.value
     if isinstance(result, Variable):
         variable_name = result.name.value
         return info.variable_values.get(variable_name)
-    if hasattr(result, 'value'):
+    if hasattr(result, "value"):
         return result.value
     else:
         return result

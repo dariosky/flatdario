@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 class RSSCollector(Collector):
-    type = 'RSS'
+    type = "RSS"
 
     @staticmethod
     def get(url, **feed_kwargs):
-        """ Return a function to instanciate the proper collector """
+        """Return a function to instanciate the proper collector"""
 
         def instantiator(**call_kwargs):
             kwargs = {**call_kwargs, **feed_kwargs}
@@ -34,15 +34,15 @@ class RSSCollector(Collector):
         count = 0
         for entry in doc.entries:
             entry_date = datetime.datetime.fromtimestamp(
-                mktime(entry.get('published_parsed', entry['updated_parsed']))
+                mktime(entry.get("published_parsed", entry["updated_parsed"]))
             )
-            title = entry['title']
-            content = "\n".join([c['value'] for c in entry.get('content', [])])
-            tags = [t['term'] for t in entry.get('tags', [])]
-            url = entry['link']
+            title = entry["title"]
+            content = "\n".join([c["value"] for c in entry.get("content", [])])
+            tags = [t["term"] for t in entry.get("tags", [])]
+            url = entry["link"]
 
             item = dict(
-                id=entry['id'],
+                id=entry["id"],
                 type=self.type,
                 url=url,
                 timestamp=entry_date,
@@ -51,15 +51,18 @@ class RSSCollector(Collector):
                 tags=tags,
             )
             try:
-                self.db.upsert(item,
-                               update=self.refresh_duplicates)
-                logger.info("{type} - {title} ({id})".format(type=self.type,
-                                                             title=title, id=url))
+                self.db.upsert(item, update=self.refresh_duplicates)
+                logger.info(
+                    "{type} - {title} ({id})".format(
+                        type=self.type, title=title, id=url
+                    )
+                )
                 count += 1
             except DuplicateFound:
                 if not self.refresh_duplicates:
                     logger.debug(
-                        "We already know this one. Stopping after %d added." % count)
+                        "We already know this one. Stopping after %d added." % count
+                    )
                     return
 
         logger.debug("Runner finished, after %d added" % count)
