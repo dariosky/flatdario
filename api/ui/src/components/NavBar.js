@@ -36,6 +36,12 @@ const styles = {
     verticalAlign: '-2px',
     marginRight: '7px',
   },
+  customIcon: {
+    height: '26px',
+    width: '26px',
+    marginRight: '7px',
+    verticalAlign: '-9px',
+  },
 
   brand: {
     display: 'flex',
@@ -101,11 +107,13 @@ const styles = {
 }
 
 const LinkBtn = injectSheet(styles)(
-  ({ title, url, external, children, icon, classes, ...rest }) => {
+  ({ title, url, external, children, icon, showIcon = true, classes, ...rest }) => {
     return external ? (
       <li className={classes.li}>
         <a href={external} className={classes.link} {...rest} target="_blank">
-          <FontAwesomeIcon icon={icon || faExternalLinkAlt} className={classes.icon} />
+          {showIcon ? (
+            <FontAwesomeIcon icon={icon || faExternalLinkAlt} className={classes.icon} />
+          ) : null}
           {children}
         </a>
       </li>
@@ -164,6 +172,10 @@ class NavBar extends React.Component {
           Home
         </LinkBtn>
         <LinkBtn external="https://home.dariosky.it">Starting Page</LinkBtn>
+        <LinkBtn external="https://lykd.it" showIcon={false}>
+          <img src="/lykd-heart.svg" alt="" className={classes.customIcon} />
+          Lykd
+        </LinkBtn>
         <LinkBtn url="/contacts">
           <FontAwesomeIcon icon={faPencilAlt} className={classes.icon} />
           Contacts
